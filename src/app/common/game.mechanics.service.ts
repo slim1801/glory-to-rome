@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 import { Injectable, Inject } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 

@@ -1,0 +1,116 @@
+<div class="lobby-container">
+
+    <div class="logo-banner-container">
+        <img class="logo-img" [src]="logoURL">
+    </div>
+
+    <div class="game-content-container">
+        <div class="active-game-list-container">
+            <div class="active-game-list">
+
+                <div class="ag-left-column">
+
+                    <div class="player-name-title">
+                        Player Name
+                    </div>
+
+                    <div class="name-container"
+                         style="position:relative"
+                         (mouseover)="nameInputHover()"
+                         (mouseleave)="nameInputLeave()">
+                        <input  class="name-input"
+                                type="text"
+                                placeholder="Enter Player Name..."
+                                maxlength="15"
+                                [(ngModel)]="_playerInfoService.player.name">
+                        <i class="fa fa-pencil right-input-icon" *ngIf="nameEditIconVisible"></i>
+                    </div>
+
+                    <div class="create-game-title">
+                        Create Game
+                    </div>
+
+                    <div class="create-game-container" *ngIf="!joinedRoom">
+                        <div class="no-players-container">
+                            <div class="players-create-left">
+                                Players
+                            </div>
+                            <div class="players-create-right">
+                                <div class="player-choice"
+                                     *ngFor="let pc of playerChoices; let i = index">
+                                    <div [class.player-choice-button-selected]="pc.selected"
+                                         [class.player-choice-button]="!pc.selected"
+                                         (click)="selectNumPlayers(i)">
+                                        {{pc.players}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="create-game-button" (click)="createRoomClick()">
+                            <div class="button-border"></div>
+                            <div class="button-text">Create Game</div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="ag-right-column">
+                    <div class="room-container" *ngFor="let room of rooms">
+                        <div class="left-players">
+                            <div class="room-player">
+                                <i class="fa fa-user"></i>
+                                <span class="room-player-name">{{room.players[0].name}}</span>
+                            </div>
+                            <div class="room-player" *ngIf="room.players[1]">
+                                <i class="fa fa-user"></i>
+                                <span class="room-player-name">{{room.players[1].name}}</span>
+                            </div>
+                        </div>
+                        <div class="right-players">
+                            <div class="room-player" *ngIf="room.players[2]">
+                                <i class="fa fa-user"></i>
+                                <span class="room-player-name">{{room.players[2].name}}</span>
+                            </div>
+                            <div class="room-player" *ngIf="room.players[3]">
+                                <i class="fa fa-user"></i>
+                                <span class="room-player-name">{{room.players[3].name}}</span>
+                            </div>
+                        </div>
+                        <div class="room-controls">
+
+                            <div class="join-room"
+                                 *ngIf="!hideJoinButton(room) && room.players.length != room.numPlayers"
+                                (click)="joinGame(room)">
+                                <div class="join-game-border"></div>
+                                <div class="join-game-text">Join Game</div>
+                            </div>
+
+                            <div class="join-room"
+                                 *ngIf="_inRoom(room) && room.host.id != _playerInfoService.player.id"
+                                 (click)="leaveRoom(room)">
+                                <div class="join-game-border"></div>
+                                <div class="exit-game-text">Leave Game</div>
+                            </div>
+
+                            <div class="join-room"
+                                 *ngIf="room.numPlayers == room.players.length && room.host.id == _playerInfoService.player.id"
+                                 (click)="startGame(room)">
+                                <div class="join-game-border"></div>
+                                <div class="exit-game-text">Start Game</div>
+                            </div>
+
+                            <div class="room-is-full"
+                                 *ngIf="roomIsFull(room)">
+                                <div class="room-full-text">Full</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

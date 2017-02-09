@@ -1,0 +1,117 @@
+.app-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.left-container, .right-container {
+    float: left;
+    height: 100%;
+    width: 50%;
+}
+
+.left-container, .right-container {
+    padding: 5px;
+}
+.inner-left-container, .inner-right-container {
+    height: 100%;
+
+    display: flex;
+    flex-flow: row;
+}
+.inner-left-container {
+    padding: 10px;
+    flex-flow: column;
+}
+.inner-right-container {
+    border: 2px solid black;
+}
+
+.middle-container {
+    flex: 1;
+    position: relative;
+}
+
+.action-card-container {
+    position: absolute;
+    top: 25px;
+    left: 12px;
+}
+
+.player-template-container {
+    flex: 1;
+}
+
+.section-container {
+    height: 100%;
+    padding-left: 10px;
+    float: left;
+}
+
+.card-detail-container {
+    overflow: hidden;
+}
+
+.game-ended-container {
+    height: 50%;
+    width: 40%;
+
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    background: white;
+    border: 3px solid black;
+    position: absolute;
+    z-index: 10;
+
+    display: flex;
+    flex-flow: column;
+}
+
+.game-end-header {
+    font-size: 25px;
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 5px 0px;
+}
+
+.game-over-content-container {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 15px 0px;
+}
+
+.game-over-content {
+    display: flex;
+}
+
+.game-over-player {
+    width: 200px;
+    border: 1px solid black;
+    margin-right: 5px;
+}
+.player-name {
+    width: 100%;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.stat-row {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: flex;
+}
+.stat-header {
+    flex: 2;
+    font-weight: bold;
+    padding-left: 5px;
+}
+.game-stat {
+    flex: 1;
+    text-align: center;
+}

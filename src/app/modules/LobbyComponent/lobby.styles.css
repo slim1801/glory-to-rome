@@ -1,0 +1,251 @@
+.lobby-container {
+    height: 100%;
+
+    display: flex;
+    flex-flow: column;
+}
+
+.logo-banner-container {
+    height: 200px;
+    margin-top: 40px;
+
+    background-color: black;
+
+    flex: 0 1 auto;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.logo-img {
+    height: 140%;
+}
+
+.game-content-container {
+    flex: 1 1 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.active-game-list-container {
+    height: 100%;
+    width: 750px;
+    padding: 15px;
+    position: absolute;
+}
+
+.active-game-list {
+    height: 100%;
+    border: 2px solid black;
+    display: flex;
+}
+
+.ag-left-column {
+    padding: 10px;
+    flex: 4;
+    border-right: 2px solid black;
+}
+
+.ag-right-column {
+    padding: 10px;
+    flex: 8;
+}
+
+.name-input {
+    width: 100%;
+    height: 40px;
+    font-size: 20px;
+    padding: 10px;
+    border: none;
+}
+
+.right-input-icon {
+    font-size: 20px;
+    top: 50%;
+    transform: translate(0%, -50%);
+    right: 10px;
+    position: absolute;
+}
+
+.player-name-title,
+.create-game-title {
+    margin-bottom: 3px;
+    font-weight: bold;
+}
+
+.create-game-title {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.create-game-container {
+    padding: 10px;
+}
+
+.no-players-container {
+    display: flex;
+}
+
+.players-create-left {
+    flex: 4;
+}
+
+.players-create-right {
+    flex: 6;
+    display: flex;
+}
+
+.player-choice {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-choice-button,
+.player-choice-button-selected {
+    height: 20px;
+    width: 20px;
+    border-radius: 3px;
+
+    text-align: center;
+    cursor: pointer;
+}
+.player-choice-button:hover,
+.player-choice-button-selected:hover {
+    transform: scale(1.1);
+}
+
+.player-choice-button {
+    border: 1px solid black;
+}
+.player-choice-button-selected {
+    background-color: black;
+    color: white;
+}
+
+.create-game-button {
+    height: 50px;
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 5px;
+    background-color: black;
+    cursor: pointer;
+    position: relative;
+}
+
+.create-game-button:hover {
+    transform: scale(1.05);
+}
+
+.button-border,
+.join-game-border {
+    width: 95%;
+    height: 75%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    border-radius: 5px;
+    border: 1px solid white;
+}
+
+.join-game-border {
+    width: 91%;
+    height: 75%;
+}
+
+.button-text,
+.join-game-text,
+.exit-game-text {
+    color: white;
+    font-size: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.room-container {
+    height: 80px;
+    border: 1px solid black;
+    display: flex;
+}
+
+.room-controls {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.join-room {
+    height: 30px;
+    width: 75px;
+    border-radius: 5px;
+    background-color: black;
+    cursor: pointer;
+    position: relative;
+}
+
+.room-is-full {
+    height: 30px;
+    width: 50px;
+    border: 2px solid black;
+    position: relative;
+
+    display: flex;
+    align-items: center;
+}
+
+.room-full-text {
+    color: black;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.join-room:hover {
+    transform: scale(1.05);
+}
+
+.join-game-text,
+.exit-game-text {
+    color: white;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+}
+
+.exit-game-text {
+    font-size: 10px;
+}
+
+.left-players,
+.right-players {
+    height: 100%;
+
+    flex: 1;
+
+    display: flex;
+    flex-flow: column;
+
+    padding-left: 15px;
+}
+
+.room-player {
+    font-size: 18px;
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+}
+
+.room-player-name {
+    margin-left: 15px;
+}
