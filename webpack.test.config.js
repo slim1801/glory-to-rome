@@ -7,13 +7,11 @@ module.exports = {
     devtool: 'inline-source-map',
     module: {
         loaders: [
-            { loader: 'raw', test: /\.(css|html)$/ },
-            { exclude: /node_modules/, loader: 'ts', test: /\.ts$/ }
+            { loader: 'raw-loader', test: /\.(css|html)$/ },
+            { exclude: /node_modules/, loader: 'ts-loader', test: /\.ts$/ }
         ]
     },
     resolve: {
-        extensions: ['', '.js', '.ts'],
-        modulesDirectories: ['node_modules'],
-        root: path.resolve('.', 'src')
+        extensions: ['.js', '.ts']
     }
 }
