@@ -25,14 +25,22 @@ module.exports = {
                 exclude: [/node_modules\/(?!(ng2-.+))/]
             },
             {
-                test: /\.html$/,
+                test: /\.(html|css)$/,
                 loader: 'raw-loader', 
                 exclude: root('src', 'public')
-            }
+            },
+            //file loader
+            { test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/, loader: "file-loader" },
+            //json loader
+            { test: /\.json$/, loader: 'json-loader' },
+            //bootstrap
+            { test: /\.scss$/, loaders: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader'] },
+            { test: /\.(woff2?|ttf|eot|svg)$/, loader: 'url-loader?limit=10000' },
+            { test: /bootstrap\/dist\/js\/umd\//, loader: 'imports-loader?jQuery=jquery' },
         ]
     },
     resolve: {
-        extensions: ['', '.js', '.ts']
+        extensions: ['.js', '.ts']
     },
     plugins: [
         new CommonsChunkPlugin({
@@ -48,7 +56,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './index.html',
             chunksSortMode: 'dependency'
-        }),
+        })
     ]
 }
 

@@ -8,3 +8,5 @@ import '@angular/router';
 
 import 'rxjs';
 import '@angularclass/hmr';
+
+import 'bootstrap-loader';
