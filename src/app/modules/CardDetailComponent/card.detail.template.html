@@ -1,0 +1,19 @@
+<div class="card-detail-container">
+    <div class="card-image-section">
+        <div class="card-image-container">
+            <card-image [card]="card" [size]="size"></card-image>
+        </div>
+    </div>
+    <div class="card-desc-section">
+        <div class="card-desc-label"><b>Description</b></div>
+        <div class="card-desc">
+            <span>{{card.desc}}</span>
+        </div>
+    </div>
+    <div class="foundation-section">
+        <foundation-component></foundation-component>
+    </div>
+    <div class="user-stats-section">
+        <user-stats-component></user-stats-component>
+    </div>
+</div>

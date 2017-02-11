@@ -1,0 +1,81 @@
+<div class="player-template-container">
+
+    <div class="board-section">
+
+        <!-- MESSAGE SECTION -->
+        <div class="message-section">
+            <div class="message-content" *ngIf="!romeIsDemanding()">
+                <div>
+                    <div>{{message()}}</div>
+                    <div *ngIf="message()" style="margin:5px;">
+                        <button type="button"
+                                *ngIf="yesVisible()"
+                                (click)="yesClicked()"
+                                [disabled]="_playerService.activeActionTrigger !== null">Yes</button>
+                        <button type="button" *ngIf="noVisible()" (click)="noClicked()">No</button>
+                    </div>
+                    <div style="margin:10px;">{{additionalActionMessage()}}</div>
+                    <div *ngIf="additionalActionMessage()" style="margin:5px;">
+                        <button type="button" *ngIf="additionalYesVisible()" (click)="yesClicked()">Yes</button>
+                    </div>
+
+                    <div class="fountain-container" *ngIf="_playerService.activeActionTrigger === 16">
+                        <div class="fountain-card"
+                             (click)="fountainClicked()"
+                             (mouseover)="onMouseOver()"
+                             (mouseleave)="onMouseLeave()">
+                            <card-image [card]="_playerService.fountainCard" [size]="size" [interactable]="fountainInteraction()"></card-image>
+                        </div>
+                        <div class="fountain-message">
+                            <div>Add to hand?</div>
+                            <button type="button" (click)="fountainYes()" style="margin-top:10px">Yes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rome-demands-content" *ngIf="romeIsDemanding()">
+                <div class="rome-demands-container" #romeDemands>
+                    <div>Rome Demands...</div>
+                    <div *ngFor="let rDemands of _gameService.gameState.romeDemands; let i = index">
+                        <card-image [card]="rDemands"
+                                    [size]="size"
+
+                                    [cardGroup]="romeDemands"
+                                    [cardGroupIndex]="i"
+                                    [cardGroupLength]="_gameService.gameState.romeDemands.length">
+                        </card-image>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CLIENTELLE SECTION -->
+        <div class="clientelle-sub-section">
+            <clientelle-component></clientelle-component>
+        </div>
+
+        <!-- ACTION CARD SECTION -->
+        <div class="board-sub-section">
+            <div class="action-label">Action</div>
+            <action-card-component></action-card-component>
+        </div>
+        
+    </div>
+
+    <div class="pool-section">
+        <div class="pool-label"><i class="fa fa-trash"></i>Pool</div>
+        <div class="pool-body">
+            <pool-component></pool-component>
+        </div>
+    </div>
+
+    <div class="control-section">
+        <control-component></control-component>
+    </div>
+
+    <div class="detail-tab-section">
+        <detail-tab></detail-tab>
+    </div>
+</div>

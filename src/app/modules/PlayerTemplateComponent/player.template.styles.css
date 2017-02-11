@@ -1,0 +1,155 @@
+
+.player-template-container {
+    height: 100%;
+    width: 100%;
+
+    padding: 10px;
+
+    display: flex;
+    flex-flow: column;
+
+    overflow: hidden;
+}
+
+.section-label {
+    font-weight: bold;
+}
+
+.stockpile-section,
+.under-construction-section,
+.completed-section {
+    display: flex;
+    flex-flow: column;
+}
+
+.stockpile-card-section,
+.clientelle-card-section,
+.vault-card-section,
+.under-construction-card-section {
+    flex: 1;
+}
+
+.under-construction-section,
+.completed-section,
+.stockpile-section,
+.client-section
+ {
+    flex: 1;
+    min-height: 80px;
+}
+
+.completed-section {
+    height: 12%;
+}
+
+.stockpile-section {
+    height: 22%;
+}
+
+.vault-section,
+.clientelle-section {
+    height: 100%;
+    width: 50%;
+    float: left;
+}
+
+.board-section {
+    display: flex;
+    min-height: 150px;
+}
+
+.board-sub-section {
+    position: relative;
+    margin-left: 5px;
+}
+.message-section {
+    width: 170px;
+    flex: 1;
+}
+.message-content {
+    height: 100%;
+    width: 100%;
+
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clientelle-sub-section {
+    position: relative;
+    margin-left: 10px;
+}
+
+.deck-section {
+    position: relative;
+}
+
+.pool-label,
+.deck-label,
+.action-label,
+.clientelle-label {
+    font-weight: bold;
+    padding-bottom: 3px;
+}
+
+.pool-section {
+    display: flex;
+    flex-flow: column;
+
+    padding-top: 10px;
+    position: relative;
+
+    min-height: 80px;
+}
+
+.pool-body {
+    height: 135px;
+}
+
+.detail-tab-section {
+    flex: 1;
+}
+
+.pool-section,
+.control-section,
+.detail-tab-section {
+    background-color: white;
+}
+
+.control-section {
+    padding-top: 10px;
+    background-color: white;
+    z-index: 1;
+}
+
+.detail-tab-section {
+    z-index: 2;
+}
+
+i {
+    margin-right: 10px;
+}
+
+.rome-demands-container {
+    margin-bottom: 5px;
+    font-weight: bold;
+    position: relative;
+}
+
+.fountain-container {
+    display: flex;
+}
+
+.fountain-message {
+    text-align: center;
+    padding: 15px;
+    
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+}

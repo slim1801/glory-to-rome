@@ -1,0 +1,16 @@
+<div class="card"
+    [@hover]="_hoverState"
+    (click)="cardClicked()"
+    >
+    <card-image [card]="card"
+                [size]="size"
+                [inactive]="!modeEnable()"
+                [interactable]="modeEnable()">
+    </card-image>
+    <div class="jack-menu-container"
+        [hidden]="!jackMenuVisible()"
+        [style.height]="height"
+        [style.width]="width">
+        <jack-menu-component (optionClicked)="optionClicked($event)"></jack-menu-component>
+    </div>
+</div>

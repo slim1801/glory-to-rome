@@ -3,6 +3,7 @@ var path = require('path');
 
 var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
     devtool: 'inline-source-map',
@@ -35,8 +36,10 @@ module.exports = {
             { test: /\.json$/, loader: 'json-loader' },
             //bootstrap
             { test: /\.scss$/, loaders: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader'] },
-            { test: /\.(woff2?|ttf|eot|svg)$/, loader: 'url-loader?limit=10000' },
             { test: /bootstrap\/dist\/js\/umd\//, loader: 'imports-loader?jQuery=jquery' },
+            //font awesome loader
+            { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader" },
+            { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" }
         ]
     },
     resolve: {
@@ -56,6 +59,12 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './index.html',
             chunksSortMode: 'dependency'
+        }),
+
+        new webpack.ProvidePlugin({
+            jQuery: 'jquery',
+            $: 'jquery',
+            jquery: 'jquery'
         })
     ]
 }

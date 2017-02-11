@@ -10,3 +10,4 @@ import 'rxjs';
 import '@angularclass/hmr';
 
 import 'bootstrap-loader';
+import 'font-awesome-loader';

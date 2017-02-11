@@ -1,0 +1,15 @@
+<div class="action-card-container">
+    <card-image [card]="_playerInfoService.getPlayerState().actionCard" [size]="size" [invert]="true"></card-image>
+    <div *ngIf="_playerService.activeActionItem && _playerService.activeActionItem.numActions > 0" class="num-actions">
+        {{_playerService.activeActionItem.numActions}}
+    </div>
+
+    <div *ngIf="_playerService.activeActionItem && _playerService.actionStack.length > 1 && !_playerService.resolvingCard" class="extra-action">
+        <div *ngFor="let actionItem of _playerService.actionStack; let i = index">
+            <div *ngIf="i != (_playerService.actionStack.length - 1)">
+                {{actionItem.numActions}} {{_gameService.getNameOfAction(actionItem.action).toUpperCase()}}
+            </div>
+        </div>
+    </div>
+
+</div>

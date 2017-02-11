@@ -7,15 +7,17 @@ import { CommonModule } from '../../common/common.module';
 import { LobbyComponent } from './lobby.component';
 import { LobbyService } from './lobby.service';
 
-@NgModule({
-  declarations: [ LobbyComponent ],
-  bootstrap:    [ LobbyComponent ],
-  imports: [
+export const LobbyImports = [
     BrowserModule,
     HttpModule,
     FormsModule,
     CommonModule
-  ],
+]
+
+@NgModule({
+  declarations: [ LobbyComponent ],
+  bootstrap:    [ LobbyComponent ],
+  imports: LobbyImports,
   exports: [
     LobbyComponent
   ],

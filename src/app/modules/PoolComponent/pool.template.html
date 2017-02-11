@@ -1,0 +1,10 @@
+<div *ngFor="let card of _gameService.gameState.pool; let i = index">
+    <div
+        class="pool-card-container"
+        (click)="cardClicked(card)"
+        [ngStyle]="cardStyle(i)"
+        (mouseover)="onMouseOver(card)"
+        (mouseleave)="onMouseLeave(card)">
+        <card-image [card]="card" [size]="size" [interactable]="cardCanInteract(card)"></card-image>
+    </div>
+</div>

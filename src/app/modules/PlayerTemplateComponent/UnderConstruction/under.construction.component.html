@@ -1,0 +1,38 @@
+<div class="under-construction-container" #underConstructionContainer>
+
+    <div *ngFor="let foundation of _playerInfoService.getPlayerState().underConstruction; let i = index">
+        <div
+            class="under-construction-card-container"
+            [ngStyle]="cardStyle(i)"
+            (click)="buildingClicked(foundation)">
+                <div class="behind-container">
+                    <div *ngFor="let material of foundation.materials; let j = index">
+                        <card-image 
+                                    class="material-container"
+                                    [card]="material"
+                                    [size]="size"
+                                    [ngStyle]="materialStyle(i, j)">
+                        </card-image>
+                    </div>
+                </div>
+                <div class="front-container" >
+                    <card-image
+                        [card]="foundation.building"
+                        [size]="size"
+                        [interactable]="checkInteraction(foundation)"></card-image>
+                    <card-image
+                        class="site-card"
+                        *ngIf="foundation.site"
+                        [card]="foundation.site"
+                        [size]="size"></card-image>
+                </div>
+        </div>
+    
+        <card-image
+            *ngIf="foundation.building.phantom"
+            [card]="foundation.building"
+            [size]="size">
+        </card-image>
+    </div>
+    
+</div>

@@ -8,7 +8,8 @@ module.exports = {
     module: {
         loaders: [
             { loader: 'raw-loader', test: /\.(css|html)$/ },
-            { exclude: /node_modules/, loader: 'ts-loader', test: /\.ts$/ }
+            { test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/, loader: "file-loader" },
+            { exclude: /node_modules/, loaders: ['awesome-typescript-loader?', 'angular2-template-loader'], test: /\.ts$/ }
         ]
     },
     resolve: {

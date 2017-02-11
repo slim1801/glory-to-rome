@@ -1,22 +1,26 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 
+import { LobbyModule } from './modules/LobbyComponent/lobby.module';
+
 import { AppComponent } from './app.component';
 
 describe('TEST', () => {
+    
+    let fixture;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
+            imports: [ LobbyModule ],
             declarations: [ AppComponent ]
         });
+        fixture = TestBed.createComponent(AppComponent);
+        fixture.detectChanges();
     });
 
-    // it('should say HELLO WORLD!', () => {
-    //     let fixture = TestBed.createComponent(AppComponent);
-    //     fixture.detectChanges();
-
-    //     let title = fixture.debugElement.componentInstance.title;
-    //     expect(title).toBe('HELLO WORLD!');
-    // });
+    it('should say HELLO WORLD!', () => {
+        let pTitle = fixture.debugElement.nativeElement.querySelector('.player-name-title');
+        expect(pTitle.innerText).toBe('Player Name');
+    });
 
     // it('should show when button is clicked', () => {
     //     let fixture = TestBed.createComponent(AppComponent);

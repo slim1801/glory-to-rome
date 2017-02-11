@@ -1,0 +1,39 @@
+<div class="summary-container">
+
+    <div class="stockpile-section">
+        <div class="summary-title">Stockpile</div>
+        <div class="summary-list">
+            <div
+                *ngFor="let card of _playerService.stockpile"
+                (mouseover)="onTitleHover(card)">
+                <role-block-component [role]="uCon.building.role"></role-block-component>
+                <span>{{card.title}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="under-construction-section">
+        <div class="summary-title">Under Const.</div>
+        <div class="summary-list">
+            <div
+                *ngFor="let uCon of _playerService.underConstruction"
+                (mouseover)="onTitleHover(uCon.building)">
+                <role-block-component [role]="uCon.building.role"></role-block-component>
+                <span>{{uCon.building.title}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="completed-section">
+        <div class="summary-title">Completed</div>
+        <div class="summary-list">
+            <div 
+                *ngFor="let card of _playerService.completedBuildings"
+                (mouseover)="onTitleHover(card)">
+                <role-block-component [role]="card.role"></role-block-component>
+                <span>{{card.title}}</span>
+            </div>
+        </div>
+    </div>
+
+</div>

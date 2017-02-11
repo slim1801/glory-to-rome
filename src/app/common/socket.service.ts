@@ -35,37 +35,38 @@ export class SocketService {
         this.hostUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         this.io = io(this.hostUrl);
 
-        this._initSocketListeners();
+        this.initSocketListeners(this.io);
     }
 
-    private _initSocketListeners() {
-        this.io.on("room created", data => {
+    protected initSocketListeners(io) {
+        
+        io.on("room created", data => {
             this.roomID = data.id;
             this.roomCreatedSubject.next(data);
         });
-        this.io.on("room changed", data => {
+        io.on("room changed", data => {
             this.roomChangedSubject.next(data);
         });
-        this.io.on("game started", data => {
+        io.on("game started", data => {
             this._gameService.gameState = data;
             this._onNext(this.gameStartedSubject, data);
         });
-        this.io.on("on card played", data => {
+        io.on("on card played", data => {
             this._onNext(this.cardPlayedSubject, data);
         });
-        this.io.on("on turn end", data => {
+        io.on("on turn end", data => {
             this._onNext(this.turnEndSubject, data);
         });
-        this.io.on("on turn started", data => {
+        io.on("on turn started", data => {
             this._onNext(this.turnStartedSubject, data);
         });
-        this.io.on("on rome demands", data => {
+        io.on("on rome demands", data => {
             this._onNext(this.romeDemandsSubject, data);
         });
-        this.io.on("on extort material", data => {
+        io.on("on extort material", data => {
             this._onNext(this.extortMaterialSubject, data);
         });
-        this.io.on("game ended", data => {
+        io.on("game ended", data => {
             this._onNext(this.gameEndedSubject, data);
         });
     }

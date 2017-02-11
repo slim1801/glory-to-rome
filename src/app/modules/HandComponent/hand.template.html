@@ -1,0 +1,8 @@
+<div class="hand-screen" #handContainer>
+    <div
+        class="card-in-hand"
+        *ngFor="let card of _playerService.handCards; let i = index"
+        [ngStyle]="cardPosition(i)">
+            <card-component [card]="card"></card-component>
+    </div>
+</div>

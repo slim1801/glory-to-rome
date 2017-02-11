@@ -1,0 +1,34 @@
+.num-actions {
+    width: 25px;
+    height: 25px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+}
+
+.action-card-container {
+    position: relative;
+}
+
+.extra-action {
+    width: 100%;
+    color: white;
+    padding: 2px;
+    background-color: black;
+    font-size: 12px;
+    right: 0px;
+    bottom: 5px;
+    position: absolute;
+    text-align: center;
+    font-weight: bold;
+}

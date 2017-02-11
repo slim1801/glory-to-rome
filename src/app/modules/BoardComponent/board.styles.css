@@ -1,0 +1,117 @@
+
+.board-container {
+    height: 300px;
+    width: 100%;
+
+    padding: 5px;
+
+    display: flex;
+    flex-flow: column;
+}
+
+.other-players {
+    min-height: 140px;
+    
+    display: flex;
+    flex-flow: column;
+}
+
+.player-detail-container {
+    flex: 1;
+    display: flex;
+}
+
+.player-name {
+    font-weight: bold;
+    min-width: 120px;
+}
+
+.action-section {
+    width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.detail-section {
+    flex: 1;
+
+    display: flex;
+    flex-flow: column;
+}
+
+.top-row,
+.bottom-row {
+    flex: 1;
+    display: flex;
+}
+
+.under-construction-section,
+.completed-section,
+.stockpile-section,
+.clientelles-section,
+.stairway-section {
+    min-width: 100px;
+
+    padding: 5px;
+
+    display: flex;
+    flex-flow: column;
+}
+
+.stairway-section,
+.stockpile-section,
+.clientelles-section {
+    flex: 3;
+}
+
+
+.completed-section,
+.under-construction-section {
+    flex: 5;
+}
+
+
+.other-players,
+.action-section,
+.header-border-section,
+
+.stockpile-section,
+.under-construction-section,
+.completed-section,
+.clientelles-section,
+.stairway-section {
+    border: 1px solid black;
+}
+
+.header-border-section {
+    display: flex;
+    padding: 10px;
+}
+
+.title-section {
+    text-align: center;
+}
+
+.card-content {
+    flex: 1;
+    padding: 5px;
+    min-height: 50px;
+    max-height: 90px;
+
+    overflow: hidden;
+    position: relative;
+}
+
+.dialogue {
+    flex: 1;
+}
+
+.vault,
+.influence {
+    width: 100px;
+}
+
+.hand {
+    width: 120px;
+}

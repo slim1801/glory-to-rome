@@ -1,0 +1,145 @@
+<div class="board-container">
+    <div *ngFor="let pState of _gameService.gameState.playerStates">
+
+        <div class="other-players"
+             *ngIf="pState.player.id !== _playerInfoService.player.id">
+            <div class="header-section">
+                <div class="header-border-section">
+                    <div class="player-name">{{pState.player.name}}</div>
+
+                    <div class="dialogue">
+                        {{setDialogue()}}
+                    </div>
+
+                    <div class="hand">
+                        <i class="fa fa-hand-paper-o"></i>
+                        <span>Hand ({{pState.maxHandSize}}): {{pState.cardsInHand}}</span>
+                    </div>
+
+                    <div class="vault">
+                        <i class="fa fa-lock"></i>
+                        <span>Vault ({{pState.maxVault}}): {{pState.vault.length}}</span>
+                    </div>
+
+                    <div class="influnce">
+                        <i class="fa fa-star"></i>
+                        <span>Influence: {{pState.influence}}</span>
+                    </div>
+
+                </div>
+            </div>
+            <div class="player-detail-container">
+                <div class="action-section">
+                    <card-image [card]="pState.actionCard"
+                                [size]="size"
+                                [invert]="true">
+                    </card-image>
+                </div>
+                <div class="detail-section">
+
+                    <div class="top-row">
+
+                        <div class="under-construction-section">
+                            <div class="card-content" #underCoGroup>
+                                <div *ngFor="let underCo of pState.underConstruction; let i = index">
+                                    <card-image [card]="underCo.building"
+                                                [size]="size"
+                                                [cardGroup]="underCoGroup"
+                                                [cardGroupIndex]="i"
+                                                [cardGroupLength]="pState.underConstruction.length">
+                                    </card-image>
+                                </div>
+                            </div>
+                            <div class="title-section">
+                                <i class="fa fa-gavel"></i>
+                                <span>Under Construction</span>
+                            </div>
+                        </div>
+
+                        <div class="completed-section">
+                            <div class="card-content" #completedGroup>
+                                <div *ngFor="let comp of pState.completed; let i = index"
+                                     (click)="completedBuildingClicked(pState, comp)">
+                                    <card-image *ngIf="!comp.stairway"
+                                                [card]="comp.building"
+                                                [size]="size"
+                                                [interactable]="completedCanInteract(comp)"
+
+                                                [cardGroup]="completedGroup"
+                                                [cardGroupIndex]="i"
+                                                [cardGroupLength]="completedLength(pState.completed)">
+                                    </card-image>
+                                </div>
+                            </div>
+                            <div class="title-section">
+                                <i class="fa fa-university"></i>
+                                <span>Completed</span>
+                            </div>
+                        </div>
+
+                        <div class="stairway-section" *ngIf="hasPublicBuilding(pState)">
+                            <div class="card-content" #stairway>
+                                <div *ngFor="let stair of pState.completed; let i = index">
+                                    <card-image *ngIf="stair.stairway"
+                                                [card]="stair.building"
+                                                [size]="size"
+
+                                                [cardGroup]="stairway"
+                                                [cardGroupIndex]="i"
+                                                [cardGroupLength]="stairwayLength(pState.completed)">
+                                    </card-image>
+                                </div>
+                            </div>
+
+                            <div class="title-section">
+                                <i class="fa fa-align-justify"></i>
+                                <span>Public</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="bottom-row">
+                        
+                        <div class="clientelles-section">
+                            <div class="card-content" #clientelles>
+                                <div *ngFor="let client of pState.clientelles; let i = index">
+                                    <card-image [card]="client"
+                                                [size]="size"
+
+                                                [cardGroup]="clientelles"
+                                                [cardGroupIndex]="i"
+                                                [cardGroupLength]="pState.clientelles.length">
+                                    </card-image>
+                                </div>
+                            </div>
+                            <div class="title-section">
+                                <i class="fa fa-users"></i>
+                                <span>Clientelles ({{pState.maxClientelles}})</span>
+                            </div>
+                        </div>
+
+                        <div class="stockpile-section">
+                            <div class="card-content" #stockpile>
+                                <div *ngFor="let stock of pState.stockpile; let i = index">
+                                    <card-image [card]="stock"
+                                                [size]="size"
+
+                                                [cardGroup]="stockpile"
+                                                [cardGroupIndex]="i"
+                                                [cardGroupLength]="pState.stockpile.length">
+                                    </card-image>
+                                </div>
+                            </div>
+                            <div class="title-section">
+                                <i class="fa fa-bars"></i>
+                                <span>Stockpile</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

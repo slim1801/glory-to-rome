@@ -1,4 +1,11 @@
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    position: absolute;
+}
 .app-container {
+    height: 100%;
     position: relative;
     overflow: hidden;
 }

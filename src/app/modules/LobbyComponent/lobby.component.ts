@@ -2,11 +2,9 @@ import * as _ from 'lodash';
 
 import { Component } from '@angular/core';
 
-import { LobbyService } from './lobby.service';
 import { GameService } from '../../common/game.service';
 import { SocketService, IRoom } from '../../common/socket.service';
 import { PlayerInfoService } from '../../common/player.info.service';
-import { PlayerService } from '../../common/player.service';
 
 const gloryToRomeLogo = require('../../assets/glory-to-rome-logo.png');
 
@@ -37,9 +35,7 @@ export class LobbyComponent {
     }];
 
     constructor(
-        private _lobbyService: LobbyService,
         private _playerInfoService: PlayerInfoService,
-        private _playerService: PlayerService,
         private _socketService: SocketService,
         private _gameService: GameService
     ) {

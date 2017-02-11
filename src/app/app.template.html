@@ -1,1 +1,70 @@
 <lobby-component *ngIf="!gameStarted"></lobby-component>
+<div class="app-container" *ngIf="gameStarted">
+    <div class="left-container">
+        <div class="inner-left-container">
+            <div class="board-container">
+                <board-component></board-component>
+            </div>
+            <div class="middle-container">
+            </div>
+            <div class="hand-container">
+                <hand-component></hand-component>
+            </div>
+        </div>
+    </div>
+    <div class="right-container">
+        <div class="inner-right-container">
+            <div class="player-template-container">
+                <player-template></player-template>
+            </div>
+            <div class="card-detail-container">
+                <card-detail></card-detail>
+            </div>
+        </div>
+    </div>
+    <div class="game-ended-container" *ngIf="gameEnded">
+        <div class="game-end-header">Game Over</div>
+        <div class="game-over-content-container">
+            <div class="game-over-content">
+                <div class="game-over-player"
+                    *ngFor="let res of endGameResult; let i = $index">
+
+                    <div class="stat-row">
+                        <div class="player-name">{{res.playerState.player.name}}</div>
+                    </div>
+
+                    <div class="stat-row">
+                        <div class="stat-header">Building Influence:</div>
+                        <div class="game-stat">{{res.buildingInfluence}}</div>
+                    </div>
+
+                    <div class="stat-row">
+                        <div class="stat-header">Vault:</div>
+                        <div class="game-stat">{{res.vault}}</div>
+                    </div>
+
+                    <div class="stat-row">
+                        <div class="stat-header">Vault Bonus:</div>
+                        <div class="game-stat">{{res.vaultBonus}}</div>
+                    </div>
+
+                    <div class="stat-row">
+                        <div class="stat-header">Statue Bonus:</div>
+                        <div class="game-stat">{{res.statueBonus}}</div>
+                    </div>
+
+                    <div class="stat-row">
+                        <div class="stat-header">Wall Bonus:</div>
+                        <div class="game-stat">{{res.wallBonus}}</div>
+                    </div>
+
+                    <div class="stat-row">
+                        <div class="stat-header">Total:</div>
+                        <div class="game-stat">{{res.total}}</div>
+                    </div>
+
+                </div>
+            </div>
+        <div>
+    </div>
+</div>
