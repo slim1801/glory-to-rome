@@ -55,7 +55,6 @@ export class GameMechanicsService {
         });
 
         skt.onCardPlayed().subscribe(gameState => {
-
             if (gameState.playerOrder[gameState.playerTurn].id == this._playerInfoService.player.id) {
                 this._playerInfoService.isPlayersTurn = true;
             }

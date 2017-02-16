@@ -3,7 +3,7 @@ import {
     ComponentFixture
 } from '@angular/core/testing';
 
-import { SocketService, IRoom } from '../../common/socket.service';
+import { SocketService } from '../../common/socket.service';
 import { MockSocketService } from '../../test-util/socket.service.mock';
 
 import { LobbyImports } from './lobby.module';
@@ -51,27 +51,29 @@ describe('Test Lobby Component', () => {
         expect(th.getElement('.right-input-icon')).not.toBeNull();
     });
 
-    it('should show player joined in game list', () => {
+    it('should show player joined in game list and join game', () => {
         let createButton = th.getElement('.create-game-button');
         th.click(createButton);
 
         expect(component.rooms.length).toBe(1);
-    });
+        expect(component.rooms[0].players.length).toBe(1);
 
-    it('should join game when player clicks on Join Game', () => {
+        let randomPlayer = {
+            id: "1234567890",
+            name: "Doug"
+        };
 
+        component.rooms[0].players[0] = randomPlayer
+        component.rooms[0].host = randomPlayer;
+        fixture.detectChanges();
+        
         let joinButton = th.getElement('.join-room');
         th.click(joinButton);
 
         expect(component.rooms[0].players.length).toBe(2);
+
+        let leaveRoomText = th.getElementText('.exit-game-text');
+        expect(leaveRoomText).toBe('Leave Game');
     });
-
-    // it('should say TEST', () => {
-    //     let fixture = TestBed.createComponent(TestComponent);
-    //     fixture.detectChanges();
-
-    //     let title = fixture.debugElement.componentInstance.title;
-    //     expect(title).toBe('TEST');
-    // });
 
 });

@@ -1,10 +1,14 @@
-import { Component } from '@angular/core';
+import * as _ from 'lodash';
+
+import { Component, ViewChild } from '@angular/core';
 
 import { ICard, ICompletedFoundation, eWorkerType, eCardEffect } from './common/card/card';
 import { SocketService } from './common/socket.service';
 import { PlayerService } from './common/player.service';
 import { IPlayerState } from './common/player.info.service';
 import { GameService } from './common/game.service';
+
+import { LobbyComponent } from './modules/LobbyComponent/lobby.component';
 
 @Component({
     selector: 'my-app',
@@ -111,4 +115,6 @@ export class AppComponent {
     private _computeWall(cards: ICard[]) {
         return Math.floor(cards.length / 2);
     }
+
+    @ViewChild(LobbyComponent) lobbyComponent: LobbyComponent;
 }

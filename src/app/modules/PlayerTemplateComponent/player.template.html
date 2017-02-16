@@ -5,31 +5,33 @@
         <!-- MESSAGE SECTION -->
         <div class="message-section">
             <div class="message-content" *ngIf="!romeIsDemanding()">
-                <div>
-                    <div>{{message()}}</div>
-                    <div *ngIf="message()" style="margin:5px;">
-                        <button type="button"
-                                *ngIf="yesVisible()"
-                                (click)="yesClicked()"
-                                [disabled]="_playerService.activeActionTrigger !== null">Yes</button>
-                        <button type="button" *ngIf="noVisible()" (click)="noClicked()">No</button>
-                    </div>
-                    <div style="margin:10px;">{{additionalActionMessage()}}</div>
-                    <div *ngIf="additionalActionMessage()" style="margin:5px;">
-                        <button type="button" *ngIf="additionalYesVisible()" (click)="yesClicked()">Yes</button>
-                    </div>
+                <div class="message-text">{{message()}}</div>
+                <div class="message-action" *ngIf="message()" style="margin:5px;">
+                    <button class="yes-button"
+                            type="button"
+                            *ngIf="yesVisible()"
+                            (click)="yesClicked()"
+                            [disabled]="_playerService.activeActionTrigger !== null">Yes</button>
+                    <button class="no-button" type="button" *ngIf="noVisible()" (click)="noClicked()">No</button>
+                </div>
+                <div class="additional-message-text" style="margin:10px;">{{additionalActionMessage()}}</div>
+                <div *ngIf="additionalActionMessage()" style="margin:5px;">
+                    <button class="additional-yes-button"
+                            type="button"
+                            *ngIf="additionalYesVisible()"
+                            (click)="yesClicked()">Yes</button>
+                </div>
 
-                    <div class="fountain-container" *ngIf="_playerService.activeActionTrigger === 16">
-                        <div class="fountain-card"
-                             (click)="fountainClicked()"
-                             (mouseover)="onMouseOver()"
-                             (mouseleave)="onMouseLeave()">
-                            <card-image [card]="_playerService.fountainCard" [size]="size" [interactable]="fountainInteraction()"></card-image>
-                        </div>
-                        <div class="fountain-message">
-                            <div>Add to hand?</div>
-                            <button type="button" (click)="fountainYes()" style="margin-top:10px">Yes</button>
-                        </div>
+                <div class="fountain-container" *ngIf="_playerService.activeActionTrigger === 16">
+                    <div class="fountain-card"
+                            (click)="fountainClicked()"
+                            (mouseover)="onMouseOver()"
+                            (mouseleave)="onMouseLeave()">
+                        <card-image [card]="_playerService.fountainCard" [size]="size" [interactable]="fountainInteraction()"></card-image>
+                    </div>
+                    <div class="fountain-message">
+                        <div>Add to hand?</div>
+                        <button type="button" (click)="fountainYes()" style="margin-top:10px">Yes</button>
                     </div>
                 </div>
             </div>

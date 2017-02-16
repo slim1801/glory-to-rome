@@ -77,8 +77,8 @@ export class ControlComponent {
         if (!this.enableJack()) return;
 
         this._playerService.addCards(this._gameService.drawJack());
-        this._socketService.think();
         this._playerInfoService.isPlayersTurn = false;
+        this._socketService.think();
     }
 
     private jackMenuVisible = false;

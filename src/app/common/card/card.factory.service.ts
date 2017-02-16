@@ -1,5 +1,16 @@
 import { Injectable } from '@angular/core';
-import { ICard, ICardData, Card, eCardSize, eCardEffect, eWorkerType } from './card';
+import {
+    ICard,
+    ICardData,
+    ICompletedFoundation,
+    IFoundation,
+
+    eCardEffect,
+    eCardSize,
+    eWorkerType,
+
+    Card
+} from './card';
 
 import * as _ from 'lodash';
 const cardConfig = require('../../config/card.config.json');
@@ -51,6 +62,26 @@ export class CardFactoryService {
     getCardByName = (title: string) => this.cardDictionary[title];
     getJack = (): ICard => _.clone(this.jackCard);
 
+    createCard(cardID: eCardEffect) {
+        return new Card(this.cards[cardID]);
+    }
+
+    createFoundation(card: ICard, siteType: eWorkerType, materials: ICard[]): IFoundation {
+        return {
+            building: card,
+            site: this.getCardSite(siteType),
+            materials
+        }
+    }
+
+    createCompletedFoundation(card: ICard, siteType: eWorkerType, materials: ICard[], stairway?: boolean): ICompletedFoundation {
+        return _.extend({}, this.createFoundation(card, siteType, materials), { stairway: stairway ? true : false });
+    }
+
+    createCompletedFromFoundation(foundation: IFoundation, stairway?: boolean) {
+        return _.extend({}, foundation, { stairway: stairway ? true : false });
+    }
+
     getCardHeight(height: eCardSize) {
         switch(height) {
             case eCardSize.medium:
@@ -69,8 +100,8 @@ export class CardFactoryService {
         }
     }
 
-    getCardSite(card: ICard) {
-        switch(card.role) {
+    getCardSite(type: eWorkerType) {
+        switch(type) {
             case eWorkerType.architect:
                 return this.cardDictionary['Concrete'];
             case eWorkerType.craftsman:
@@ -88,6 +119,18 @@ export class CardFactoryService {
 
     getRole(card: ICard) {
         switch(card.role) {
+            case eWorkerType.architect: return 'architect';
+            case eWorkerType.craftsman: return 'craftsman';
+            case eWorkerType.jack: return 'jack';
+            case eWorkerType.laborer: return 'laborer';
+            case eWorkerType.legionary: return 'legionary';
+            case eWorkerType.merchant: return 'merchant';
+            case eWorkerType.patron: return 'patron';
+        }
+    }
+
+    getRoleFromType(type: eWorkerType) {
+        switch(type) {
             case eWorkerType.architect: return 'architect';
             case eWorkerType.craftsman: return 'craftsman';
             case eWorkerType.jack: return 'jack';

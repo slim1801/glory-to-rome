@@ -16,7 +16,8 @@ import { PlayerService } from '../../common/player.service';
         <div class="foundation-container">
             <div
                 class="foundation-card"
-                *ngFor="let pile of _gameService.gameState.foundations; let i = index">
+                *ngFor="let pile of _gameService.gameState.foundations; let i = index"
+                (click)="onFoundationClick(pile)">
                 
                     <div
                         class="out-of-town-image"
@@ -31,8 +32,7 @@ import { PlayerService } from '../../common/player.service';
                                 [card]="pile.foundation"
                                 [size]="size"
                                 [customSize]="customSize"
-                                [interactable]="enableFoundation()"
-                                (click)="onFoundationClick(pile)">
+                                [interactable]="enableFoundation()">
                     </card-image>
 
                     <div class="in-town-count" *ngIf="pile.inTown > 0">

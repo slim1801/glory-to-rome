@@ -54,22 +54,22 @@ export class PoolComponent {
         });
     }
 
-    private _poolAction = () => {
-        switch(this._gameMechanicsService.getMode()) {
-            case eWorkerType.laborer:
-                this._cardAction = this._laborerAction;
-                break;
-            case eWorkerType.patron:
-                this._cardAction = this._patronAction;
-                break;
-            case eWorkerType.legionary:
-                this._cardAction = this._legionaryFromPoolAction;
-                break;
-        }
-        if (this._archwayCondition()) {
-            this._cardAction = this._architectAction;
-        }
-    }
+    // private _poolAction = () => {
+    //     switch(this._gameMechanicsService.getMode()) {
+    //         case eWorkerType.laborer:
+    //             this._cardAction = this._laborerAction;
+    //             break;
+    //         case eWorkerType.patron:
+    //             this._cardAction = this._patronAction;
+    //             break;
+    //         case eWorkerType.legionary:
+    //             this._cardAction = this._legionaryFromPoolAction;
+    //             break;
+    //     }
+    //     if (this._archwayCondition()) {
+    //         this._cardAction = this._architectAction;
+    //     }
+    // }
 
     private _archwayCondition() {
         return this._gameMechanicsService.getMode() == eWorkerType.architect &&
@@ -131,6 +131,9 @@ export class PoolComponent {
             case eWorkerType.legionary:
                 this._legionaryFromPoolAction(card);
                 break;
+        }
+        if (this._archwayCondition()) {
+            this._architectAction(card);
         }
     }
 

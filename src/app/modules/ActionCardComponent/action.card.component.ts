@@ -77,7 +77,7 @@ export class ActionCardComponent {
     }
 
     private _storeroomCondition() {
-        return this._gameMechanicsService.getMode() == eWorkerType.laborer &&
+        return this._gameService.gameState.mode == eWorkerType.laborer &&
                 this._playerService.hasCompletedBuilding(eCardEffect.storeroom);
     }
 

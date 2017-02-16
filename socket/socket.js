@@ -210,6 +210,7 @@ module.exports = function() {
             socket.to(params.roomID).emit("on turn end", state);
         }
         else {
+            socket.emit("on card played", res);
             socket.to(params.roomID).emit("on card played", res);
         }
     }

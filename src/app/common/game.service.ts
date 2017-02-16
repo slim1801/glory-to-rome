@@ -200,6 +200,20 @@ export class GameService {
             case eWorkerType.patron: return "patron";
         }
     }
+
+    materialsToComplete(type: eWorkerType): number {
+        switch(type) {
+            case eWorkerType.craftsman:
+            case eWorkerType.laborer:
+                return 1;
+            case eWorkerType.legionary:
+            case eWorkerType.architect:
+                return 2;
+            case eWorkerType.patron:
+            case eWorkerType.merchant:
+                return 3;
+        }
+    }
 }
 
 export function removeFromList(card: ICard, cardArr: ICard[]) {

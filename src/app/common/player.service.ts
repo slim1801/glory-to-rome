@@ -23,10 +23,8 @@ export class PlayerService {
 
     handSize: number = userConfig.handSize;
 
-    maxHandSize: number = userConfig.handSize;
-
-    //cardsToPlayJack: number = userConfig.cardsToPlayJack;
-    cardsToPlayJack: number = 2;
+    cardsToPlayJack: number = userConfig.cardsToPlayJack;
+    //cardsToPlayJack: number = 2;
 
     handCards: ICard[] = [];
 
@@ -46,27 +44,26 @@ export class PlayerService {
     setupForCompletion(cardEff: eCardEffect) {
         let card = this._cardFactoryService.getCard(cardEff);
 
-        let materials = [];
+        let materials: ICard[] = [];
         if (card.role === eWorkerType.architect || card.role === eWorkerType.legionary)
             materials = [card];
         else if (card.role === eWorkerType.merchant || card.role === eWorkerType.patron)
             materials = [card, card];
         
-        this._playerInfoService.getPlayerState().underConstruction.push({
-            building: card,
-            site: this._cardFactoryService.getCardSite(card),
-            materials
-        });
+        this._playerInfoService.getPlayerState().underConstruction.push(
+            this._cardFactoryService.createFoundation(card, card.role, materials)
+        );
     }
 
     setupCompletion(cardEff: eCardEffect) {
         let card = this._cardFactoryService.getCard(cardEff);
 
-        let completedCard = this.createCompletedFoundation({
-            building: card,
-            site: this._cardFactoryService.getCardSite(card),
-            materials: []
-        });
+        let completedCard = this._cardFactoryService.createCompletedFoundation(
+            card,
+            this._cardFactoryService.getCardSite(card.role),
+            []
+        );
+        
         this._playerInfoService.getPlayerState().completed.push(completedCard);
     }
 
@@ -76,20 +73,26 @@ export class PlayerService {
         skt.onGameStarted().subscribe(gameState => {
             let index = _.findLastIndex(gameState.playerOrder, player => player.id == this._playerInfoService.player.id);
             this.addCards(_.concat(gameState.startingHand[index], this._cardFactoryService.getJack()));
-
+            
             this.configurePlayersTurn(gameState);
             this.configurePlayersLead(gameState.playerLead);
 
-            let card = this._cardFactoryService.getCard(eCardEffect.foundry);
-            let card1 = this._cardFactoryService.getCard(eCardEffect.ludusMagna);
-            let card2 = this._cardFactoryService.getCard(eCardEffect.amphitheatre);
-            let card3 = this._cardFactoryService.getCard(eCardEffect.wall);
-            let card4 = this._cardFactoryService.getCard(eCardEffect.palisade);
-            let card5 = this._cardFactoryService.getCard(eCardEffect.road);
-            let card6 = this._cardFactoryService.getCard(eCardEffect.scriptorium);
+            let card = this._cardFactoryService.getCard(eCardEffect.bath);
+            let card1 = this._cardFactoryService.createCard(eCardEffect.statue);
+            // let card2 = this._cardFactoryService.getCard(eCardEffect.amphitheatre);
+            // let card3 = this._cardFactoryService.getCard(eCardEffect.wall);
+            // let card4 = this._cardFactoryService.getCard(eCardEffect.palisade);
+            // let card5 = this._cardFactoryService.getCard(eCardEffect.road);
+            // let card6 = this._cardFactoryService.getCard(eCardEffect.scriptorium);
+            // this.handCards = [
+            //     this._cardFactoryService.createCard(eCardEffect.dock),
+            //     this._cardFactoryService.createCard(eCardEffect.statue),
+            //     this._cardFactoryService.createCard(eCardEffect.dock),
+            //     this._cardFactoryService.createCard(eCardEffect.dock)
+            // ];
 
-            this.addCards([card6]);
-            // this._gameService.addToPool([card4]);
+            // this.addCards([card6]);
+            // this._gameService.addToPool([card1]);
             // this._playerInfoService.getPlayerState().stockpile.push(card1);
             // this._playerInfoService.getPlayerState().stockpile.push(card2);
             // this._playerInfoService.getPlayerState().clientelles.push(card);
@@ -97,23 +100,23 @@ export class PlayerService {
             // this._playerInfoService.getPlayerState().clientelles.push(card2);
             // this._playerInfoService.getPlayerState().clientelles.push(card3);
             //this._playerInfoService.getPlayerState().clientelles.push(card5);
-            this._playerInfoService.getPlayerState().clientelles.push(card4);
+            // this._playerInfoService.getPlayerState().clientelles.push(card4);
 
-            this.setupForCompletion(eCardEffect.garden);
+            // this.setupForCompletion(eCardEffect.garden);
             // });
             // this._playerInfoService.getPlayerState().completed.push(completedCard1);
             // this._playerInfoService.getPlayerState().maxClientelles = 4;
             // this._playerInfoService.getPlayerState().maxVault = 4;
             // let completedCard1 = new CompletedCard(card1);
             // this._playerInfoService.getPlayerState().completed.push(completedCard1);
-            //this._playerInfoService.getPlayerState().completed.push(card3);
+            //this._playerInfoService.getPlayerState().clientelles.push(card1);
 
             // let secondPlayer = _.find(this._gameService.gameState.playerStates, p => p.player.id != this._playerInfoService.player.id);
-            // secondPlayer.completed.push(this.createCompletedFoundation({
-            //     building: card5,
-            //     site: this._cardFactoryService.getCardSite(card),
-            //     materials: [card5]
-            // }));
+            // this._playerInfoService.getPlayerState().completed.push(this._cardFactoryService.createCompletedFoundation(
+            //     card,
+            //     card.role,
+            //     [card, card]
+            // ));
         });
 
         skt.onTurnStarted().subscribe(gameState => {
@@ -137,7 +140,11 @@ export class PlayerService {
             if (academy) {
                 this.actionFinishTrigger = eCardEffect.academy;
             }
-            else if (sewer && this._gameMechanicsService.activeCard.role != eWorkerType.jack) {
+            else if (
+                sewer &&
+                this._playerInfoService.getPlayerState().actionCard &&
+                this._playerInfoService.getPlayerState().actionCard.role != eWorkerType.jack
+            ) {
                 this.actionFinishTrigger = eCardEffect.sewer;
             }
             else if (senate && this._jackHasBeenPlayed()) {
@@ -240,7 +247,7 @@ export class PlayerService {
     }
 
     getCardsToMax = () => {
-        let val = this.maxHandSize - this.getNumCardsInHand();
+        let val = this._playerInfoService.getPlayerState().maxHandSize - this.getNumCardsInHand();
         return val <= 0 ? 1 : val;
     }
 
@@ -335,8 +342,8 @@ export class PlayerService {
                 this._gameService.gameState.legionaryStage = eLegionaryStage.declare;
             }
 
-            this._socketService.cardPlayed(card, gamMech.getMode());
             this._playerInfoService.isPlayersTurn = false;
+            this._socketService.cardPlayed(card, gamMech.getMode());
         }
     }
 
@@ -431,8 +438,8 @@ export class PlayerService {
         this.actionPerformTrigger = null;
         this.actionFinishTrigger = null;
         this.think();
-        this._socketService.think();
         this._playerInfoService.isPlayersTurn = false;
+        this._socketService.think();
     }
 
     hasCardTypeInHand(type: eWorkerType) {
@@ -466,8 +473,8 @@ export class PlayerService {
         this.updatePlayerState();
         this._gameService.updateGameState();
 
-        this._socketService.cardPlayed(null, this._gameMechanicsService.getMode());
         this._playerInfoService.isPlayersTurn = false;
+        this._socketService.cardPlayed(null, this._gameMechanicsService.getMode());
     }
 
     turnFinished() {
@@ -841,7 +848,7 @@ export class PlayerService {
         let completed = pState.completed;
         let addClients = _.find(completed, card => card.building.id == eCardEffect.insula) ? 2 : 0;
         let multClient = _.find(completed, card => card.building.id == eCardEffect.aqueduct) ? 2 : 1;
-        pState.maxClientelles = (userConfig.clientelleSize + addClients) * multClient;
+        pState.maxClientelles = (pState.influence + addClients) * multClient;
     }
 
     addToClientelles(card: ICard) {
@@ -854,10 +861,10 @@ export class PlayerService {
             return false;
         }
         else if (this.hasCompletedBuilding(eCardEffect.bath)) {
-            this.activeActionItem.numActions--;
             this.selectedBuilding = null;
             this.resolvingCard = true;
             this.actionPerformTrigger = eCardEffect.bath;
+            return false;
         }
         return true;
     }
@@ -884,20 +891,23 @@ export class PlayerService {
             this.activeActionTrigger !== eCardEffect.fountain;
     }
 
-    createCompletedFoundation(foundation: IFoundation): ICompletedFoundation {
-        return _.extend({} , foundation, {
-            stairway: false
-        });
-    }
-
     isBuildingCompleted(id: eCardEffect) {
         return !!_.find(this._playerInfoService.getPlayerState().completed, card => card.building.id == id);
     }
 
     addToCompleted(foundation: IFoundation) {
         foundation.building.selected = false;
-        this._playerInfoService.getPlayerState().completed.push(this.createCompletedFoundation(foundation));
-        this._playerInfoService.getPlayerState().influence += this.getInfluence(foundation)
+
+        let pState = this._playerInfoService.getPlayerState();
+        pState.completed.push(
+            this._cardFactoryService.createCompletedFromFoundation(foundation)
+        );
+
+        let inf = this.getInfluence(foundation);
+        pState.influence += inf;
+        pState.maxVault += inf;
+        this._calcMaxClientelles();
+        
         this.buildingIsCompleted(foundation.building);
     }
 
@@ -937,7 +947,7 @@ export class PlayerService {
         _.remove(pState.completed, comp => comp.building.id == foundation.building.id);
         let playerState = this._playerInfoService.getPlayerState();
 
-        playerState.completed.push(this.createCompletedFoundation(foundation));
+        playerState.completed.push(this._cardFactoryService.createCompletedFromFoundation(foundation));
         playerState.influence = playerState.influence - 3;
     }
 
@@ -1000,6 +1010,10 @@ export class PlayerService {
                 !!_.find(this.handCards, card => card.role == eWorkerType.patron && !card.phantom);
     }
 
+    statueCondition(site: ICard) {
+        return !!_.find(this.handCards, card => card.role == eWorkerType.patron || card.role == site.role)
+    }
+
     isInActionStack(id: eCardEffect) {
         return !!_.find(this.actionStack, actionItem => actionItem.cardEffect && actionItem.cardEffect == id);
     }
@@ -1021,9 +1035,6 @@ export class PlayerService {
         switch(card.id) {
             case eCardEffect.amphitheatre:
                 completionState = this._createCompletedStackItem(influence, eWorkerType.craftsman, card.id);
-                break;
-            case eCardEffect.aqueduct:
-                this._calcMaxClientelles();
                 break;
             case eCardEffect.catacomb:
                 this._endGame();
@@ -1165,11 +1176,7 @@ export class PlayerService {
         if (card.id == eCardEffect.statue) {
             this.addBuildingSubject.next(card);
 
-            let newBuilding = {
-                building: card,
-                site: null,
-                materials: []
-            };
+            let newBuilding = this._cardFactoryService.createFoundation(card, null, []);
 
             underCo.push(newBuilding);
             this.actionPerformTrigger = eCardEffect.statue;
@@ -1180,11 +1187,7 @@ export class PlayerService {
             }
         }
         else {
-            underCo.push({
-                building: card,
-                site: this._cardFactoryService.getCardSite(card),
-                materials: []
-            });
+            underCo.push(this._cardFactoryService.createFoundation(card, card.role, []));
 
             // Gate Condition
             if (card.role == eWorkerType.patron && this.hasCompletedBuilding(eCardEffect.gate)) {
@@ -1215,7 +1218,7 @@ export class PlayerService {
 
     foundationChosen(fPile: IFoundationPile) {
         let newBuilding = _.last(this._playerInfoService.getPlayerState().underConstruction);
-        newBuilding.site = this._cardFactoryService.getCardSite(fPile.foundation);
+        newBuilding.site = this._cardFactoryService.getCardSite(fPile.foundation.role);
         this.decrementActions();
     }
 
@@ -1247,10 +1250,12 @@ export class PlayerService {
         // Villa condition
         if (
             foundation.building.id == eCardEffect.villa &&
-            this._gameMechanicsService.getMode() == eWorkerType.architect
-        ) return;
-
-        if(
+            this._gameService.gameState.mode == eWorkerType.architect
+        ) {
+            this.resolvingCard = true;
+            this.actionPerformTrigger = eCardEffect.villa;
+        }
+        else if(
             this._isCompleted() || 
             this._scriptoriumCompleted(card)
         ) {
@@ -1289,7 +1294,7 @@ export class PlayerService {
         let villa = this.getVillaFromUnderConstruction();
         return  villa &&
                 this.getNonPhantomCards(villa.materials).length > 0 &&
-                !!(this._gameMechanicsService.getMode() == eWorkerType.architect);
+                !!(this._gameService.gameState.mode == eWorkerType.architect);
     }
 
     getNonPhantomCards(cards: ICard[]): ICard[] {
@@ -1359,9 +1364,9 @@ export class PlayerService {
                 if (this.hasCompletedBuilding(eCardEffect.scriptorium) && card.role === eWorkerType.patron) return true;
                 // Statue condition
                 if (this.selectedBuilding.building.id === eCardEffect.statue && 
-                    card.role === eWorkerType.patron || card.role === this.selectedBuilding.site.role) return true;
+                    (card.role === eWorkerType.patron || card.role === this.selectedBuilding.site.role)) return true;
                 // Normal condition
-                return this.selectedBuilding.building.role === card.role;
+                return this.selectedBuilding.site.role === card.role;
             }
             else return true;
         }

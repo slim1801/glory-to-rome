@@ -23,15 +23,13 @@ export class MockSocketService extends SocketService {
     }
 }
 
-let socketIO = require('../../../socket/socket')();
-
 class MockIO {
 
     private listenerMap = {};
     private socket = new MockSocket(this);
 
     constructor() {
-        socketIO.listen(this.socket);
+        require('../../../socket/socket')().listen(this.socket);
     }
 
     emit(msg: string, params) {
@@ -85,6 +83,8 @@ class MockSocket {
     }
 
     to(msg: string, params) {
-        return this;
+        return {
+            emit: () => {}
+        };
     }
 }

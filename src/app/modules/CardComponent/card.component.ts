@@ -348,7 +348,6 @@ export class CardComponent {
     }
 
     modeEnable = () => {
-        let gameMech = this._gameMechanicsService;
         let gState = this._gameService.gameState;
         let mode = gState.actionMode;
 
@@ -388,7 +387,7 @@ export class CardComponent {
                 return !!this._playerInfoService.isPlayersLead;
             }
             else if (mode == eActionMode.resolveCardMode) {
-                let role = this._gameMechanicsService.getMode();
+                let role = gState.mode;
 
                 if (this.card.role == eWorkerType.jack) return false;
                 if (this._playerService.actionFinishTrigger == eCardEffect.prison) return false;

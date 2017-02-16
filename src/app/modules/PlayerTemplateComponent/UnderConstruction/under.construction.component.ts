@@ -195,6 +195,11 @@ export class UnderConstructionComponent implements AfterContentInit {
             return true;
         }
 
+        // Statue Condition
+        if (foundation.site !== undefined && this._playerService.statueCondition(foundation.site)) {
+            return true;
+        }
+
         // Tower Condition
         if (this._playerService.hasCompletedBuilding(eCardEffect.tower) &&
             (this._playerService.hasCardTypeInHand(eWorkerType.laborer) ||

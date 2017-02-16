@@ -14,10 +14,7 @@ import { HandModule } from './modules/HandComponent/hand.module';
 import { LobbyModule } from './modules/LobbyComponent/lobby.module';
 import { PlayerTemplateModule } from './modules/PlayerTemplateComponent/player.template.module';
 
-@NgModule({
-  declarations: [ AppComponent ],
-  bootstrap:    [ AppComponent ],
-  imports: [
+export const AppImports = [
     BrowserModule,
     HttpModule,
     
@@ -30,6 +27,11 @@ import { PlayerTemplateModule } from './modules/PlayerTemplateComponent/player.t
     HandModule,
     LobbyModule,
     PlayerTemplateModule
-  ]
+]
+
+@NgModule({
+  declarations: [ AppComponent ],
+  bootstrap:    [ AppComponent ],
+  imports: AppImports
 })
 export class AppModule {}

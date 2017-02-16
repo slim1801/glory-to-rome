@@ -42,14 +42,12 @@ export class PlayerTemplateComponent {
     selected: boolean = false;
 
     message() {
-        if (this.selected) {
+        if (!this._playerService.resolvingCard) {
             if (this._playerService.actionPerformTrigger === eCardEffect.palace) {
-                this.currCompleted = eCardEffect.palace;
                 this.yesAction = this._palaceFinishAction;
                 this.noAction = null;
                 return `[Palace] Finish playing cards?`;
             }
-            return;
         }
 
         if (
@@ -85,7 +83,6 @@ export class PlayerTemplateComponent {
 
         // Academy trigger
         else if (this._playerService.actionFinishTrigger === eCardEffect.academy) {
-            this.currCompleted = eCardEffect.academy;
             this.yesAction = this._academyYesAction;
             this.noAction = this.noTurnFinish;
             return `[Academy] Think on turn end?`;
@@ -94,7 +91,7 @@ export class PlayerTemplateComponent {
         else if (this._playerService.actionPerformTrigger === eCardEffect.amphitheatre) {
             this.yesAction = this.yesResolveAction;
             this.noAction = this.noCompletionAction;
-            return `Perform CRAFSTMAN for each each influence?`;
+            return `Perform CRAFTSMAN for each influence?`;
         }
         // Atrium trigger
         else if (this._playerService.actionPerformTrigger === eCardEffect.atrium) {
@@ -110,7 +107,6 @@ export class PlayerTemplateComponent {
         }
         // Bath trigger
         else if (this._playerService.actionPerformTrigger === eCardEffect.bath) {
-            this.currCompleted = eCardEffect.bath;
             this.yesAction = this._bathYesAction;
             this.noAction = this.noActionFinish;
 
@@ -147,7 +143,7 @@ export class PlayerTemplateComponent {
         else if (this._playerService.actionPerformTrigger === eCardEffect.garden) {
             this.yesAction = this.yesResolveAction;
             this.noAction = this.noCompletionAction;
-            return `Perform PATRON action for each influence?`;
+            return `Perform PATRON for each influence?`;
         }
         // Latrine trigger
         else if (this._playerService.actionPerformTrigger === eCardEffect.latrine) {
@@ -157,10 +153,15 @@ export class PlayerTemplateComponent {
         }
         // Palace trigger
         else if (this._playerService.actionPerformTrigger === eCardEffect.palace) {
-            this.currCompleted = eCardEffect.palace;
             this.yesAction = this._palaceYesAction;
             this.noAction = this._palaceNoAction;
             return `[Palace] Play multiple cards of the same role for additional actions?`;
+        }
+        // School trigger
+        else if (this._playerService.actionPerformTrigger === eCardEffect.school) {
+            this.yesAction = this._schoolYesAction;
+            this.noAction = this.noCompletionAction;
+            return `Perform THINKER action for each influence?`;
         }
         // Senate trigger
         else if (this._playerService.actionFinishTrigger === eCardEffect.senate) {
@@ -171,7 +172,6 @@ export class PlayerTemplateComponent {
         }
         // Sewer trigger
         else if (this._playerService.actionFinishTrigger === eCardEffect.sewer) {
-            this.currCompleted = eCardEffect.sewer;
             this.yesAction = this._sewerYesAction;
             this.noAction = this.noTurnFinish;
             return `[Sewer] Place order card into STOCKPILE?`;
@@ -189,10 +189,9 @@ export class PlayerTemplateComponent {
             return `Select a foundation to build your STATUE`;
         }
         // Villa trigger
-        else if (this._playerService.villaCanBeCompleted()) {
+        else if (this._playerService.actionPerformTrigger === eCardEffect.villa) {
             this.noAction = this.noActionFinish;
             this.yesAction = this._villaAction;
-            this.currCompleted = eCardEffect.villa;
             return `Complete VILLA?`
         }
         // Vomitorium trigger
@@ -206,24 +205,27 @@ export class PlayerTemplateComponent {
 
     yesVisible = () => {
         let perfTrig = this._playerService.actionPerformTrigger;
-        return  this.currCompleted == eCardEffect.school ||
-                this.currCompleted == eCardEffect.villa ||
-                this.currCompleted == eCardEffect.academy || 
+        let finTrig = this._playerService.actionFinishTrigger;
+
+        return  this.currCompleted == eCardEffect.villa ||
+                finTrig == eCardEffect.academy || 
                 perfTrig == eCardEffect.amphitheatre || 
                 this.currCompleted == eCardEffect.atrium || 
                 perfTrig == eCardEffect.bar ||
-                this.currCompleted == eCardEffect.bath ||
+                perfTrig == eCardEffect.bath ||
                 perfTrig == eCardEffect.bridge ||
                 perfTrig == eCardEffect.coliseum ||
                 perfTrig == eCardEffect.foundry ||
                 this._playerService.fountainCondition() ||
                 perfTrig == eCardEffect.garden ||
                 perfTrig == eCardEffect.latrine ||
-                this.currCompleted == eCardEffect.palace ||
+                perfTrig == eCardEffect.palace ||
                 this.currCompleted == eCardEffect.prison ||
+                perfTrig == eCardEffect.school ||
                 this.currCompleted == eCardEffect.senate ||
-                this.currCompleted == eCardEffect.sewer ||
+                finTrig == eCardEffect.sewer ||
                 perfTrig == eCardEffect.stairway ||
+                perfTrig == eCardEffect.villa ||
                 this.currCompleted == eCardEffect.vomitorium;
     }
 
@@ -239,21 +241,25 @@ export class PlayerTemplateComponent {
 
     noVisible = () => {
         let perfTrig = this._playerService.actionPerformTrigger;
+        let finTrig = this._playerService.actionFinishTrigger;
+
         return  this.currCompleted == eCardEffect.school ||
                 this.currCompleted == eCardEffect.garden ||
                 this.currCompleted == eCardEffect.villa ||
-                this.currCompleted == eCardEffect.academy ||
+                finTrig == eCardEffect.academy ||
                 perfTrig == eCardEffect.amphitheatre ||
-                this.currCompleted == eCardEffect.bath ||
+                perfTrig == eCardEffect.bath ||
                 perfTrig == eCardEffect.bridge ||
                 perfTrig == eCardEffect.coliseum ||
                 perfTrig == eCardEffect.foundry ||
                 perfTrig == eCardEffect.garden ||
                 perfTrig == eCardEffect.latrine ||
-                (this.currCompleted == eCardEffect.palace && this._playerService.resolvingCard) ||
+                (perfTrig == eCardEffect.palace && this._playerService.resolvingCard) ||
                 this.currCompleted == eCardEffect.prison ||
+                perfTrig == eCardEffect.school ||
                 this.currCompleted == eCardEffect.senate ||
-                this.currCompleted == eCardEffect.sewer ||
+                finTrig == eCardEffect.sewer ||
+                perfTrig == eCardEffect.villa ||
                 this.currCompleted == eCardEffect.vomitorium;
     }
 
@@ -285,17 +291,17 @@ export class PlayerTemplateComponent {
         // Aqueduct trigger
         if (additionTrig === eCardEffect.aqueduct) {
             this.yesAction = () => this._yesAdditional(eCardEffect.aqueduct);
-            return `[Aqueduct] Addtionally perform PATRON from hand?`;
+            return `[Aqueduct] Additionally perform PATRON from hand?`;
         }
         // Basilica trigger
         else if (additionTrig === eCardEffect.basilica) {
             this.yesAction = () => this._yesAdditional(eCardEffect.basilica);
-            return `[Basilica] Addtionally perform MERCHANT from hand?`;
+            return `[Basilica] Additionally perform MERCHANT from hand?`;
         }
         // Dock trigger
         else if (additionTrig === eCardEffect.dock) {
             this.yesAction = () => this._yesAdditional(eCardEffect.dock);
-            return `[Dock] Addtionally perform LABORER from hand?`;
+            return `[Dock] Additionally perform LABORER from hand?`;
         }
     }
 
@@ -362,6 +368,7 @@ export class PlayerTemplateComponent {
 
     // BATH
     private _bathYesAction() {
+        this._playerService.actionPerformTrigger = null;
 
         let clientelles = this._playerInfoService.getPlayerState().clientelles;
         let card = clientelles[clientelles.length - 1];
@@ -373,7 +380,6 @@ export class PlayerTemplateComponent {
         });
 
         this._playerService.resolveNextActionState();
-        this._gameMechanicsService.cardPerform();
     }
 
     // COLISEUM
@@ -426,7 +432,10 @@ export class PlayerTemplateComponent {
     
     // SCHOOL
     private _schoolYesAction() {
-        this._playerService.drawCards(this._playerInfoService.getPlayerState().influence);
+        let inf = this._playerInfoService.getPlayerState().influence;
+        for (let i = 0; i < inf; i++) {
+            this._playerService.think();
+        }
         this._playerService.actionStack.pop();
         this._playerService.actionFinished();
     }
@@ -441,7 +450,6 @@ export class PlayerTemplateComponent {
 
     // PALACE
     private _palaceYesAction() {
-        this._playerService.resolvingCard = false;
         this._playerService.palaceResolved();
     }
 

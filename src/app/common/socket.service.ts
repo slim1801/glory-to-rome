@@ -73,7 +73,7 @@ export class SocketService {
 
     private _onNext(subject: Subject<IGameState>, data: IGameState) {
         // CONSOLE LOG
-        console.log(data);
+        // console.log(data);
         let gState = this._gameService.gameState;
         _.extend(gState, data);
         this._playerInfoService.setPlayerState(gState)
