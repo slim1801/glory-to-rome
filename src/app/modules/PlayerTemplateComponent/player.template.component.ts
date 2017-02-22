@@ -60,27 +60,6 @@ export class PlayerTemplateComponent {
             return `Rome Demands...`;
         }
 
-        // else if (completed.length > 0) {
-
-        //     // Prison trigger
-        //     let prison = this._playerService.isInActionStack(eCardEffect.prison);
-        //     if (prison) {
-        //         this.currCompleted = eCardEffect.prison;
-        //         this.yesAction = this._prisonYesAction;
-        //         this.noAction = this._prisonNoAction;
-        //         return `Exchange 3 INFLUENCE for opponent's structure?`;
-        //     }
-
-        //     // School trigger
-        //     let school = this._playerService.isInActionStack(eCardEffect.school);
-        //     if (school) {
-        //         this.yesAction = this._schoolYesAction
-        //         this.noAction = this.noCompletionAction;
-        //         this.currCompleted = eCardEffect.prison;
-        //         return `Perform THINKER action for each influence?`;
-        //     }
-        // }
-
         // Academy trigger
         else if (this._playerService.actionFinishTrigger === eCardEffect.academy) {
             this.yesAction = this._academyYesAction;
@@ -117,7 +96,6 @@ export class PlayerTemplateComponent {
         }
         // Bridge trigger
         else if (this._playerService.actionPerformTrigger === eCardEffect.bridge) {
-            this.currCompleted = eCardEffect.bridge;
             this.yesAction = this._bridgeYesAction;
             this.noAction = this._bridgeNoAction;
             return `[Bridge] Take from opponents stockpile?`;
@@ -156,6 +134,12 @@ export class PlayerTemplateComponent {
             this.yesAction = this._palaceYesAction;
             this.noAction = this._palaceNoAction;
             return `[Palace] Play multiple cards of the same role for additional actions?`;
+        }
+        // Prison trigger
+        else if (this._playerService.actionPerformTrigger === eCardEffect.prison) {
+            this.yesAction = this._prisonYesAction;
+            this.noAction = this._prisonNoAction;
+            return `Exchange 3 INFLUENCE for opponent's structure?`;
         }
         // School trigger
         else if (this._playerService.actionPerformTrigger === eCardEffect.school) {
@@ -220,7 +204,7 @@ export class PlayerTemplateComponent {
                 perfTrig == eCardEffect.garden ||
                 perfTrig == eCardEffect.latrine ||
                 perfTrig == eCardEffect.palace ||
-                this.currCompleted == eCardEffect.prison ||
+                perfTrig == eCardEffect.prison ||
                 perfTrig == eCardEffect.school ||
                 this.currCompleted == eCardEffect.senate ||
                 finTrig == eCardEffect.sewer ||
@@ -243,8 +227,7 @@ export class PlayerTemplateComponent {
         let perfTrig = this._playerService.actionPerformTrigger;
         let finTrig = this._playerService.actionFinishTrigger;
 
-        return  this.currCompleted == eCardEffect.school ||
-                this.currCompleted == eCardEffect.garden ||
+        return  this.currCompleted == eCardEffect.garden ||
                 this.currCompleted == eCardEffect.villa ||
                 finTrig == eCardEffect.academy ||
                 perfTrig == eCardEffect.amphitheatre ||
@@ -255,7 +238,7 @@ export class PlayerTemplateComponent {
                 perfTrig == eCardEffect.garden ||
                 perfTrig == eCardEffect.latrine ||
                 (perfTrig == eCardEffect.palace && this._playerService.resolvingCard) ||
-                this.currCompleted == eCardEffect.prison ||
+                perfTrig == eCardEffect.prison ||
                 perfTrig == eCardEffect.school ||
                 this.currCompleted == eCardEffect.senate ||
                 finTrig == eCardEffect.sewer ||
@@ -463,7 +446,7 @@ export class PlayerTemplateComponent {
 
     // PRISON
     private _prisonYesAction() {
-        this._playerService.actionFinishTrigger = eCardEffect.prison;
+        this._playerService.actionPerformTrigger = null;
     }
 
     private _prisonNoAction() {

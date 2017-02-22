@@ -64,6 +64,15 @@ describe('Test whole application', () => {
         SocketService
     ];
 
+    const ALL_CLIENTS = [
+        eCardEffect.academy,
+        eCardEffect.dock,
+        eCardEffect.latrine,
+        eCardEffect.amphitheatre,
+        eCardEffect.scriptorium,
+        eCardEffect.basilica
+    ]
+
     function mapService(services): IServices {
         return {
             cfs: services[0],
@@ -256,6 +265,40 @@ describe('Test whole application', () => {
 
     }
 
+    it('is testing BRIDGE functionality', injector(srvs => {
+        gth.configureState({
+            completed: [eCardEffect.bridge],
+            stockpile: [eCardEffect.latrine],
+            handCards: [
+                eCardEffect.gate,
+                eCardEffect.latrine
+            ],
+            pool: [eCardEffect.latrine]
+        });
+        // Legionary Action
+        gth.clickOnHandCard(0);
+        expect(gth.promptTextIs('Rome Demands...'));
+
+        gth.clickOnHandCard(0);
+        gth.checkPrompt('[Bridge] Take from opponents stockpile?', true, true);
+
+        srvs.pis.isPlayersTurn = false;
+        fixture.detectChanges();
+        // Legionary from hand
+        gth.clickOnHandCard(0);
+        expect(srvs.ps.handCards.length).toBe(0);
+
+        srvs.pis.isPlayersTurn = true;
+        fixture.detectChanges();
+        // Legionary from stockpile
+        gth.clickOnStockpile(0);
+        expect(srvs.pis.getPlayerState().stockpile.length).toBe(0);
+
+        gth.clickOnPool(0);
+        // After action is finished
+        expect(srvs.gs.gameState.pool.length).toBe(1);
+    }));
+
     it('is testing CATACOMB functionality', injector(srvs => {
         gth.configureState({
             underConstruction: [{ cardEff: eCardEffect.catacomb }]
@@ -302,14 +345,7 @@ describe('Test whole application', () => {
     function circusMaximusLoop(handCards: eCardEffect[], srvs: IServices) {
         gth.configureState({
             completed: [eCardEffect.circusMaximus],
-            clientelles: [
-                eCardEffect.academy,
-                eCardEffect.dock,
-                eCardEffect.latrine,
-                eCardEffect.amphitheatre,
-                eCardEffect.scriptorium,
-                eCardEffect.basilica
-            ],
+            clientelles: ALL_CLIENTS,
             handCards
         });
 
@@ -318,6 +354,40 @@ describe('Test whole application', () => {
         let activeItem = srvs.ps.activeActionItem;
         expect(activeItem.numActions).toBe(3);
     }
+
+    it('is testing COLISEUM functionality', injector(srvs => {
+        gth.configureState({
+            completed: [eCardEffect.coliseum],
+            clientelles: [eCardEffect.latrine],
+            handCards: [
+                eCardEffect.gate,
+                eCardEffect.latrine
+            ],
+            pool: [eCardEffect.latrine]
+        });
+        // Legionary Action
+        gth.clickOnHandCard(0);
+        expect(gth.promptTextIs('Rome Demands...'));
+
+        gth.clickOnHandCard(0);
+        gth.checkPrompt("[Coliseum] Take opponent's client's and place in VAULT?", true, true);
+
+        srvs.pis.isPlayersTurn = false;
+        fixture.detectChanges();
+        // Legionary from hand
+        gth.clickOnHandCard(0);
+        expect(srvs.ps.handCards.length).toBe(0);
+
+        srvs.pis.isPlayersTurn = true;
+        fixture.detectChanges();
+        // Legionary from stockpile
+        gth.clickOnClientelles(0);
+        expect(srvs.pis.getPlayerState().stockpile.length).toBe(0);
+
+        gth.clickOnPool(0);
+        // After action is finished
+        expect(srvs.gs.gameState.pool.length).toBe(1);
+    }));
 
     it('is testing DOCK functionality', injector(srvs => {
         gth.configureState({
@@ -336,6 +406,48 @@ describe('Test whole application', () => {
         expect(srvs.pis.getPlayerState().stockpile.length).toBe(2);
     }));
 
+    it('is testing FORUM functionality', injector(srvs => {
+        gth.configureState({
+            underConstruction: [{ cardEff: eCardEffect.forum }],
+            clientelles: ALL_CLIENTS
+        });
+        gth.completeBuilding(eCardEffect.forum);
+        expect(component.gameEnded).toBe(true);
+    }));
+
+    it('is testing FORUM functionality [STOREROOM]', injector(srvs => {
+        gth.configureState({
+            completed: [eCardEffect.storeroom],
+            underConstruction: [{ cardEff: eCardEffect.forum }],
+            clientelles: [
+                eCardEffect.academy,
+                eCardEffect.dock,
+                eCardEffect.amphitheatre,
+                eCardEffect.scriptorium,
+                eCardEffect.basilica
+            ]
+        });
+        gth.completeBuilding(eCardEffect.forum);
+        expect(component.gameEnded).toBe(true);
+    }));
+
+    it('is testing FORUM functionality [LUDUS MAGNA]', injector(srvs => {
+        gth.configureState({
+            completed: [eCardEffect.ludusMagna],
+            underConstruction: [{ cardEff: eCardEffect.forum }],
+            clientelles: [
+                eCardEffect.scriptorium,
+                eCardEffect.scriptorium,
+                eCardEffect.scriptorium,
+                eCardEffect.scriptorium,
+                eCardEffect.scriptorium,
+                eCardEffect.scriptorium
+            ]
+        });
+        gth.completeBuilding(eCardEffect.forum);
+        expect(component.gameEnded).toBe(true);
+    }));
+
     it('is testing FOUNDRY functionality', injector(srvs => {
         gth.configureState({
             underConstruction: [{ cardEff: eCardEffect.foundry }]
@@ -352,6 +464,33 @@ describe('Test whole application', () => {
 
     }));
 
+    it('is testing FOUNTAIN functionality', injector(srvs => {
+        gth.configureState({
+            completed: [eCardEffect.fountain],
+            handCards: [eCardEffect.dock],
+            clientelles: [eCardEffect.dock]
+        });
+
+        gth.clickOnHandCard(0);
+        gth.checkPrompt('[Fountain] Perform CRAFTSMAN from DECK?', true, false);
+        checkFountainPrompt();
+
+        th.click(gth.getElement(eSelector.fountain));
+        expect(srvs.pis.getPlayerState().underConstruction.length).toBe(1);
+
+        gth.checkPrompt('[Fountain] Perform CRAFTSMAN from DECK?', true, false);
+        checkFountainPrompt();
+
+        th.click(gth.getElement(eSelector.fountainYes));
+        expect(srvs.ps.handCards.length).toBe(1);
+    }));
+
+    function checkFountainPrompt() {
+        let promptText = gth.getElement(eSelector.fountainText);
+        expect(promptText.innerText).toBe('Add to hand?');
+        expect(gth.getElement(eSelector.fountainText)).not.toBeNull();
+    }
+
     it('is testing GARDEN functionality', injector(srvs => {
         gth.configureState({
             underConstruction: [{ cardEff: eCardEffect.garden }]
@@ -367,18 +506,6 @@ describe('Test whole application', () => {
         expect(activeItem.numActions).toBe(5, 'Number of PATRON actions should be 5');
 
         gth.checkNumAction(eWorkerType.patron, '5');
-    }));
-
-    it('is testing INSULA functionality', injector(srvs => {
-        gth.configureState({
-            underConstruction: [{ cardEff: eCardEffect.insula }]
-        });
-
-        let maxClients = srvs.pis.getPlayerState().maxClientelles;
-        expect(maxClients).toBe(2);
-
-        gth.completeBuilding(eCardEffect.insula);
-        expect(srvs.pis.getPlayerState().maxClientelles).toBe(5);
     }));
 
     it('is testing INSULA functionality', injector(srvs => {
@@ -437,14 +564,7 @@ describe('Test whole application', () => {
     function ludusMagnaLoop(handCard: eCardEffect, srvs: IServices) {
         gth.configureState({
             completed: [eCardEffect.ludusMagna],
-            clientelles: [
-                eCardEffect.academy,
-                eCardEffect.dock,
-                eCardEffect.latrine,
-                eCardEffect.amphitheatre,
-                eCardEffect.scriptorium,
-                eCardEffect.basilica
-            ],
+            clientelles: ALL_CLIENTS,
             handCards: [handCard],
         });
 
@@ -533,6 +653,30 @@ describe('Test whole application', () => {
 
     }));
 
+    it('is testing PRISON functionality', injector(srvs => {
+        gth.configureState({
+            underConstruction: [{ cardEff: eCardEffect.prison }],
+        });
+
+        gth.addPlayer("0", {
+            completed: [srvs.cfs.createCompletedFoundation(
+                srvs.cfs.createCard(eCardEffect.shrine),
+                eWorkerType.legionary,
+                []
+            )]
+        });
+
+        gth.completeBuilding(eCardEffect.prison);
+        gth.checkPrompt("Exchange 3 INFLUENCE for opponent's structure?", true, true);
+
+        let comp = th.getElement('.opponent-completed');
+        th.click(comp);
+
+        expect(srvs.pis.getPlayerState().completed.length).toBe(2);
+        expect(srvs.pis.getPlayerState().influence).toBe(2);
+        expect(srvs.pis.getPlayerState().maxHandSize).toBe(7);
+    }));
+
     it('is testing SCHOOL functionality', injector(srvs => {
         gth.configureState({
             underConstruction: [{ cardEff: eCardEffect.school }],
@@ -605,6 +749,37 @@ describe('Test whole application', () => {
         gth.completeBuilding(eCardEffect.shrine);
         expect(srvs.pis.getPlayerState().maxHandSize).toBe(7);
     }));
+
+    it('is testing STAIRWAY functionality', injector(srvs => {
+        stairwayFunction(srvs, eCardEffect.gate);
+    }));
+
+    function stairwayFunction(srvs: IServices, cardEff: eCardEffect) {
+        gth.configureState({
+            completed: [eCardEffect.stairway],
+            handCards: [eCardEffect.amphitheatre],
+            stockpile: [cardEff]
+        });
+
+        gth.addPlayer("0", {
+            completed: [srvs.cfs.createCompletedFoundation(
+                srvs.cfs.createCard(cardEff),
+                eWorkerType.legionary,
+                []
+            )]
+        });
+
+        gth.clickOnHandCard(0);
+        gth.checkPrompt("[Stairway] Add material to opponent's structure to make PUBLIC?", true, false);
+
+        let comp = th.getElement('.opponent-completed');
+        th.click(comp);
+        gth.clickOnStockpile(0);
+        
+        expect(srvs.gs.gameState.publicBuildings.length).toBe(1);
+    }
+
+    // Test for no stockpile available for STAIRWAY
 
     it('is testing STATUE functionality [WOOD]', injector(srvs => {
         statueLoop(eSelector.woodFoundation, eWorkerType.craftsman, srvs);
@@ -754,6 +929,44 @@ describe('Test whole application', () => {
         gth.clickOnHandCard(0);
     }
 
+    it('is testing TOWER site functionality', injector(srvs => {
+        gth.configureState({
+            completed: [eCardEffect.tower],
+            handCards: [
+                // Testing concrete
+                eCardEffect.dock,
+                eCardEffect.vomitorium,
+                // Testing wood
+                eCardEffect.dock,
+                eCardEffect.market,
+                // Testing rubble
+                eCardEffect.dock,
+                eCardEffect.latrine,
+                // Testing brick
+                eCardEffect.dock,
+                eCardEffect.gate,
+                // Testing stone
+                eCardEffect.dock,
+                eCardEffect.scriptorium,
+                // Testing marble
+                eCardEffect.dock,
+                eCardEffect.temple
+            ]
+        });
+
+        fixture.detectChanges();
+
+        for (let i = 0; i < 6; i++) {
+            srvs.gs.gameState.foundations[i].inTown = 0;
+            gth.clickOnHandCard(0);
+            gth.clickOnHandCard(0);
+            expect(srvs.ps.handCards.length).toBe(12 - (i * 2 + 2), "Hand size is wrong");
+            expect(srvs.pis.getPlayerState().underConstruction.length).toBe(i + 1, "Under Construction is wrong");
+            srvs.gs.gameState.foundations[i].inTown = 2;
+        }
+
+    }));
+
     it('is testing VILLA functionality', injector(srvs => {
         gth.configureState({
             underConstruction: [{ cardEff: eCardEffect.villa, materials: 0 }],
@@ -788,6 +1001,11 @@ describe('Test whole application', () => {
 
     // SPECIAL CASES
 
-    
+    // FORUM STAIRWAY COMBO
+
+    it('is testing STAIRWAY into FORUM', injector(srvs => {
+        stairwayFunction(srvs, eCardEffect.forum);
+        expect(component.gameEnded).toBe(true);
+    }));
 
 });

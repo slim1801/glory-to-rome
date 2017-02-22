@@ -179,10 +179,6 @@ export class GameService {
 
     foundationMap: Object = {};
 
-    foundationCost = (type: eWorkerType) => {
-        return this.foundationMap[type].inTown == 0 ? 2 : 1;
-    }
-
     noMoreInTownFoundations = () => {
         return _.every(this.gameState.foundations, foundation => {
             return foundation.inTown == 0

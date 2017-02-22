@@ -1,4 +1,4 @@
-import { forEach, remove } from 'lodash';
+import { forEach, remove, extend } from 'lodash';
 
 import { 
     TestBed,
@@ -28,7 +28,11 @@ export enum eSelector {
     brickFoundation,
     concreteFoundation,
     marbleFoundation,
-    stoneFoundation
+    stoneFoundation,
+
+    fountain,
+    fountainText,
+    fountainYes
 }
 
 export interface IServices {
@@ -148,6 +152,13 @@ export class GameTestHelper<T> {
                 return this.testHelper.getElement('.foundation-card:nth-of-type(5)');
             case eSelector.stoneFoundation:
                 return this.testHelper.getElement('.foundation-card:nth-of-type(6)');
+            
+            case eSelector.fountain:
+                return this.testHelper.getElement('.fountain-container .fountain-card');
+            case eSelector.fountainText:
+                return this.testHelper.getElement('.fountain-container .fountain-message .fountain-text');
+            case eSelector.fountainYes:
+                return this.testHelper.getElement('.fountain-container .fountain-message .yes-button');
         }
     }
 
@@ -172,7 +183,8 @@ export class GameTestHelper<T> {
 
     promptTextIs(text: string) {
         let prompt = this.getElement(eSelector.promptText);
-        expect(prompt.innerText).toBe(text);
+        if (prompt)
+            expect(prompt.innerText).toBe(text);
     }
 
     additionalPromptTextIs(text: string) {
@@ -252,8 +264,43 @@ export class GameTestHelper<T> {
         this.testHelper.click(uncoCards[index]);
     }
 
+    clickOnClientelles(index: number) {
+        let client = this.testHelper.getElements('.clientelle-card-container');
+        this.testHelper.click(client[index]);
+    }
+
     actionRoleIs(type: eWorkerType) {
         if (this.srvs.pis.getPlayerState().actionCard)
             expect(this.srvs.pis.getPlayerState().actionCard.role).toBe(type);
+    }
+
+    addPlayer(id: string, extendedProps?: any) {
+        this.srvs.gs.gameState.playerStates.push(extend({
+            player: {
+                id,
+                name: "Player 2"
+            },
+            completed: [],
+            stockpile: [],
+            underConstruction: [],
+            vault: [],
+            clientelles: [],
+            functionAvailable: [],
+            
+            influence: 2,
+            cardsInHand: 5,
+
+            maxHandSize: 5,
+            maxVault: 2,
+            maxClientelles: 2,
+
+            actionCard: null,
+            additionalActions: [],
+            jackCards: null,
+
+            loot: [],
+            hasLooted: false,
+            gloryToRome: false
+        }, extendedProps));
     }
 }

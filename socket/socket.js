@@ -146,6 +146,14 @@ module.exports = function() {
         state.startingHand = _.map(playerOrder, player => state.deck.splice(0,4));
         state.playerLead = playerOrder[0];
         state.jacks = 6 - playerOrder.length;
+
+        state.foundations = createFoundation();
+    }
+
+    function createFoundation() {
+        return [
+            
+        ]
     }
 
     newPlayerState = function(player) {

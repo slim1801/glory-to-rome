@@ -122,3 +122,22 @@ body {
     flex: 1;
     text-align: center;
 }
+
+.architect {
+    background-color: #5F5F5F;
+}
+.craftsman {
+    background-color: #1E824C;
+}
+.laborer {
+    background-color: #F5AB35;
+}
+.legionary {
+    background-color: #CF000F;
+}
+.merchant {
+    background-color: #22A7F0;
+}
+.patron {
+    background-color: #8E44AD;
+}

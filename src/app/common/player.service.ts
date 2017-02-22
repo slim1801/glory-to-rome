@@ -77,8 +77,8 @@ export class PlayerService {
             this.configurePlayersTurn(gameState);
             this.configurePlayersLead(gameState.playerLead);
 
-            let card = this._cardFactoryService.getCard(eCardEffect.bath);
-            let card1 = this._cardFactoryService.createCard(eCardEffect.statue);
+            let card = this._cardFactoryService.getCard(eCardEffect.stairway);
+            let card1 = this._cardFactoryService.createCard(eCardEffect.dock);
             // let card2 = this._cardFactoryService.getCard(eCardEffect.amphitheatre);
             // let card3 = this._cardFactoryService.getCard(eCardEffect.wall);
             // let card4 = this._cardFactoryService.getCard(eCardEffect.palisade);
@@ -93,13 +93,13 @@ export class PlayerService {
 
             // this.addCards([card6]);
             // this._gameService.addToPool([card1]);
-            // this._playerInfoService.getPlayerState().stockpile.push(card1);
+            // this._playerInfoService.getPlayerState().clientelles.push(card1);
             // this._playerInfoService.getPlayerState().stockpile.push(card2);
             // this._playerInfoService.getPlayerState().clientelles.push(card);
             // this._playerInfoService.getPlayerState().clientelles.push(card1);
             // this._playerInfoService.getPlayerState().clientelles.push(card2);
             // this._playerInfoService.getPlayerState().clientelles.push(card3);
-            //this._playerInfoService.getPlayerState().clientelles.push(card5);
+            // this._playerInfoService.getPlayerState().clientelles.push(card5);
             // this._playerInfoService.getPlayerState().clientelles.push(card4);
 
             // this.setupForCompletion(eCardEffect.garden);
@@ -113,6 +113,12 @@ export class PlayerService {
 
             // let secondPlayer = _.find(this._gameService.gameState.playerStates, p => p.player.id != this._playerInfoService.player.id);
             // this._playerInfoService.getPlayerState().completed.push(this._cardFactoryService.createCompletedFoundation(
+            //     card,
+            //     card.role,
+            //     [card, card]
+            // ));
+
+            // this._playerInfoService.getPlayerState().underConstruction.push(this._cardFactoryService.createFoundation(
             //     card,
             //     card.role,
             //     [card, card]
@@ -179,7 +185,7 @@ export class PlayerService {
                 this.extortMaterial();
             }
             else if (!hasCard) {
-                this._playerInfoService.getPlayerState().gloryToRome = true;
+                pState.gloryToRome = true;
                 this.extortMaterial();
             }
         });
@@ -732,7 +738,7 @@ export class PlayerService {
             return !!_.find(gameState.romeDemands, romeCard => romeCard.role === card.role);
         });
 
-        // Allow to leginairy action from pool
+        // Allow to legionairy action from pool
         if (sameTypeInPool) {
             this.allExtorted = true;
         }
@@ -948,6 +954,7 @@ export class PlayerService {
         let playerState = this._playerInfoService.getPlayerState();
 
         playerState.completed.push(this._cardFactoryService.createCompletedFromFoundation(foundation));
+        this._resolveCompletedFunction(foundation.building);
         playerState.influence = playerState.influence - 3;
     }
 
@@ -1123,7 +1130,7 @@ export class PlayerService {
         })
     }
 
-    coliseumAction(card: ICard) {
+    stairwayAction(card: ICard) {
         removeFromList(card, this._playerInfoService.getPlayerState().stockpile);
         this.completedSelectedBuilding.stairway = true;
         this.completedSelectedBuilding.building.selected = false;
@@ -1153,7 +1160,7 @@ export class PlayerService {
     /* UNDER CONSTRUCTION SECTION */
     
     canAddNewBuilding(type: eWorkerType) {
-        return this.activeActionItem.numActions >= this._gameService.foundationCost(type);
+        return this.activeActionItem.numActions >= this.foundationCost(type);
     }
 
     removePhantomCard(card: ICard) {
@@ -1192,11 +1199,11 @@ export class PlayerService {
             // Gate Condition
             if (card.role == eWorkerType.patron && this.hasCompletedBuilding(eCardEffect.gate)) {
                 pState.functionAvailable.push(card);
-                this._resolveCompletedFunction(card)
+                this._resolveCompletedFunction(card);
             }
 
             // Extra cost and Tower condition
-            if (this._gameService.foundationCost(card.role) == 2 && !this.hasCompletedBuilding(eCardEffect.tower)) {
+            if (this.foundationCost(card.role) == 2 && !this.hasCompletedBuilding(eCardEffect.tower)) {
                 this.activeActionItem.numActions--;
             }
 
@@ -1368,8 +1375,17 @@ export class PlayerService {
                 // Normal condition
                 return this.selectedBuilding.site.role === card.role;
             }
+            // Tower Site Condition
+            else if (this.foundationCost(card.role) > this.activeActionItem.numActions) {
+                return false;
+            }
             else return true;
         }
         else return false;
+    }
+
+    foundationCost = (workType: eWorkerType) => {
+        let foundation = _.find(this._gameService.gameState.foundations, fPile => fPile.foundation.role === workType);
+        return foundation.inTown == 0 ? this.hasCompletedBuilding(eCardEffect.tower) ? 1 : 2 : 1;
     }
 }

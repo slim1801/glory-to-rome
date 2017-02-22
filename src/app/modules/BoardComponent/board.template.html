@@ -59,6 +59,7 @@
                         <div class="completed-section">
                             <div class="card-content" #completedGroup>
                                 <div *ngFor="let comp of pState.completed; let i = index"
+                                     class="opponent-completed"
                                      (click)="completedBuildingClicked(pState, comp)">
                                     <card-image *ngIf="!comp.stairway"
                                                 [card]="comp.building"
@@ -80,7 +81,8 @@
                         <div class="stairway-section" *ngIf="hasPublicBuilding(pState)">
                             <div class="card-content" #stairway>
                                 <div *ngFor="let stair of pState.completed; let i = index">
-                                    <card-image *ngIf="stair.stairway"
+                                    <card-image class="public-building"
+                                                *ngIf="stair.stairway"
                                                 [card]="stair.building"
                                                 [size]="size"
 

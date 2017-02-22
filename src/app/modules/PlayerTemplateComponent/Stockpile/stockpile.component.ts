@@ -88,10 +88,10 @@ export class StockpileComponent {
     private _architectAction(card: ICard) {
         this._playerService.removeFromStockpile(card);
         // Stairway condition
-        if (this._playerService.activeActionTrigger === eCardEffect.stairway) {
-            this._playerService.coliseumAction(card);
-        }
-        this._playerService.addMaterialToConstruction(card);
+        if (this._playerService.activeActionTrigger === eCardEffect.stairway)
+            this._playerService.stairwayAction(card);
+        else
+            this._playerService.addMaterialToConstruction(card);
     }
 
     private _bridgeAction(card: ICard) {

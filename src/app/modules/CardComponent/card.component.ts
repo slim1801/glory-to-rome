@@ -143,7 +143,7 @@ export class CardComponent {
                 if (
                     player.activeActionItem &&
                     this.card.role != eWorkerType.jack &&
-                    this._gameService.foundationCost(this.card.role) <= player.activeActionItem.numActions
+                    this._playerService.foundationCost(this.card.role) <= player.activeActionItem.numActions
                 ) {
                     this._cardAction = mode === eWorkerType.legionary ? this._romeDemands : this._newBuildingClicked;
                 }
@@ -427,6 +427,7 @@ export class CardComponent {
                 if (role == eWorkerType.architect) {
                     // Clean up maybe
                     if (this._playerService.activeActionTrigger === eCardEffect.stairway) return false;
+                    if (this._playerService.cardCanInteractAsMaterial(this.card)) return true;
                     return !this._playerService.selectedBuilding;
                 }
 
