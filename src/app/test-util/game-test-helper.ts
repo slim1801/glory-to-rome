@@ -32,7 +32,11 @@ export enum eSelector {
 
     fountain,
     fountainText,
-    fountainYes
+    fountainYes,
+
+    thinkButton,
+    jackButton,
+    followButton
 }
 
 export interface IServices {
@@ -159,7 +163,23 @@ export class GameTestHelper<T> {
                 return this.testHelper.getElement('.fountain-container .fountain-message .fountain-text');
             case eSelector.fountainYes:
                 return this.testHelper.getElement('.fountain-container .fountain-message .yes-button');
+                
+            case eSelector.thinkButton:
+                return this.testHelper.getElement('.think-button-container');
+            case eSelector.jackButton:
+                return this.testHelper.getElement('.jack-button-container');
+            case eSelector.followButton:
+                return this.testHelper.getElement('.follow-button-container');
+            
         }
+    }
+
+    getHandCards() {
+        return this.testHelper.getElements('.card .card-sprite');
+    }
+
+    getStockpileCards() {
+        return this.testHelper.getElements('.stockpile-card-container .card-sprite');
     }
 
     completeBuilding(cardEff: eCardEffect) {
@@ -240,7 +260,7 @@ export class GameTestHelper<T> {
     }
 
     invokeAction(msg: string) {
-        this.srvs.ss.io.invoke('on turn end', this.srvs.gs.gameState);
+        this.srvs.ss.io.invoke(msg, this.srvs.gs.gameState);
         this.fixture.detectChanges();
     }
 

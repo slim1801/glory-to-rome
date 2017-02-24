@@ -36,7 +36,7 @@ export class BoardComponent {
     private setDialogue() {
         let gState = this._gameService.gameState;
         let romeDemands = gState.romeDemands;
-        if (gState.actionMode == eActionMode.resolveCardMode && romeDemands) {
+        if (gState.actionMode == eActionMode.resolveCardMode && romeDemands.length > 0) {
             if (!this._playerInfoService.isPlayersTurn) {
                 let strRes = _(romeDemands)
                             .map(card => mapMaterialName(card.role))

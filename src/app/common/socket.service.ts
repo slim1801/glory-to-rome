@@ -51,6 +51,10 @@ export class SocketService {
             this._gameService.gameState = data;
             this._onNext(this.gameStartedSubject, data);
         });
+        io.on("on all players chosen", data => {
+            this._onNext(this.allPlayersChosenSubject, data);
+        });
+
         io.on("on card played", data => {
             this._onNext(this.cardPlayedSubject, data);
         });
@@ -97,9 +101,7 @@ export class SocketService {
         })
     }
 
-    cardPlayed = (card: ICard, mode: eWorkerType) => {
-        this._gameService.gameState.mode = mode;
-
+    cardPlayed = (card: ICard) => {
         this.io.emit("card played", {
             roomID: this.roomID,
             card,
@@ -147,6 +149,7 @@ export class SocketService {
     extortMaterial = () => {
         let pState = this._playerInfoService.getPlayerState();
         pState.hasLooted = true;
+        this._gameService.gameState.legionaryStage = eLegionaryStage.takeFromPool;
 
         _.forEach(pState.loot, card => {
             card.selected = false;
@@ -176,6 +179,11 @@ export class SocketService {
     private gameStartedSubject = new Subject<IGameState>();
     onGameStarted = () => {
         return this.gameStartedSubject.asObservable();
+    }
+
+    private allPlayersChosenSubject = new Subject<IGameState>();
+    onAllPlayersChosen = () => {
+        return this.allPlayersChosenSubject.asObservable();
     }
 
     private cardPlayedSubject = new Subject<IGameState>();

@@ -27,7 +27,6 @@ export class PlayerTemplateComponent {
 
     ) {
         this._gameMechanicsService.onActionEnd().subscribe(() => {
-            this.currCompleted = null;
             this.selected = false;
         });
     }
@@ -38,8 +37,16 @@ export class PlayerTemplateComponent {
 
     yesAction = null;
     noAction = null;
-    currCompleted: eCardEffect = null;
     selected: boolean = false;
+
+    actionMessageEnabled() {
+        return this._gameService.gameState.actionMode === eActionMode.resolveCardMode &&
+                this._playerInfoService.isPlayersTurn
+    }
+
+    actionMessageClicked() {
+        this._playerService.actionFinished();
+    }
 
     message() {
         if (!this._playerService.resolvingCard) {
@@ -52,7 +59,7 @@ export class PlayerTemplateComponent {
 
         if (
             this._playerInfoService.isPlayersTurn &&
-            this._gameMechanicsService.getMode() == eWorkerType.legionary &&
+            this._gameService.gameState.mode == eWorkerType.legionary &&
             this._gameService.gameState.legionaryStage === eLegionaryStage.declare &&
             (this._playerService.actionPerformTrigger !== eCardEffect.bridge &&
                 this._playerService.actionPerformTrigger !== eCardEffect.coliseum)
@@ -74,7 +81,6 @@ export class PlayerTemplateComponent {
         }
         // Atrium trigger
         else if (this._playerService.actionPerformTrigger === eCardEffect.atrium) {
-            this.currCompleted = eCardEffect.atrium;
             this.yesAction = this._atriumYesAction;
             this.noAction = null;
             return `[Atrium] Perform MERCHANT action from DECK?`;
@@ -149,7 +155,6 @@ export class PlayerTemplateComponent {
         }
         // Senate trigger
         else if (this._playerService.actionFinishTrigger === eCardEffect.senate) {
-            this.currCompleted = eCardEffect.senate;
             this.yesAction = this._senateYesAction;
             this.noAction = this.noTurnFinish;
             return `[Senate] Take opponent's JACK's`;
@@ -167,7 +172,6 @@ export class PlayerTemplateComponent {
         }
         // Statue trigger
         else if (this._playerService.actionPerformTrigger === eCardEffect.statue) {
-            this.currCompleted = eCardEffect.statue;
             this.yesAction = null;
             this.noAction = null;
             return `Select a foundation to build your STATUE`;
@@ -182,7 +186,6 @@ export class PlayerTemplateComponent {
         else if (this._playerService.actionPerformTrigger == eCardEffect.vomitorium) {
             this.noAction = this.noThink;
             this.yesAction = this._vomitoriumAction;
-            this.currCompleted = eCardEffect.vomitorium;
             return `[Vomitorium] Discard all cards to POOL before THINKER action?`
         }
     }
@@ -191,10 +194,9 @@ export class PlayerTemplateComponent {
         let perfTrig = this._playerService.actionPerformTrigger;
         let finTrig = this._playerService.actionFinishTrigger;
 
-        return  this.currCompleted == eCardEffect.villa ||
-                finTrig == eCardEffect.academy || 
+        return  finTrig == eCardEffect.academy || 
                 perfTrig == eCardEffect.amphitheatre || 
-                this.currCompleted == eCardEffect.atrium || 
+                perfTrig == eCardEffect.atrium || 
                 perfTrig == eCardEffect.bar ||
                 perfTrig == eCardEffect.bath ||
                 perfTrig == eCardEffect.bridge ||
@@ -206,11 +208,11 @@ export class PlayerTemplateComponent {
                 perfTrig == eCardEffect.palace ||
                 perfTrig == eCardEffect.prison ||
                 perfTrig == eCardEffect.school ||
-                this.currCompleted == eCardEffect.senate ||
+                finTrig == eCardEffect.senate ||
                 finTrig == eCardEffect.sewer ||
                 perfTrig == eCardEffect.stairway ||
                 perfTrig == eCardEffect.villa ||
-                this.currCompleted == eCardEffect.vomitorium;
+                perfTrig == eCardEffect.vomitorium;
     }
 
     yesResolveAction() {
@@ -227,9 +229,7 @@ export class PlayerTemplateComponent {
         let perfTrig = this._playerService.actionPerformTrigger;
         let finTrig = this._playerService.actionFinishTrigger;
 
-        return  this.currCompleted == eCardEffect.garden ||
-                this.currCompleted == eCardEffect.villa ||
-                finTrig == eCardEffect.academy ||
+        return  finTrig == eCardEffect.academy ||
                 perfTrig == eCardEffect.amphitheatre ||
                 perfTrig == eCardEffect.bath ||
                 perfTrig == eCardEffect.bridge ||
@@ -240,10 +240,10 @@ export class PlayerTemplateComponent {
                 (perfTrig == eCardEffect.palace && this._playerService.resolvingCard) ||
                 perfTrig == eCardEffect.prison ||
                 perfTrig == eCardEffect.school ||
-                this.currCompleted == eCardEffect.senate ||
+                finTrig == eCardEffect.senate ||
                 finTrig == eCardEffect.sewer ||
                 perfTrig == eCardEffect.villa ||
-                this.currCompleted == eCardEffect.vomitorium;
+                perfTrig == eCardEffect.vomitorium;
     }
 
     noActionFinish() {
@@ -265,7 +265,6 @@ export class PlayerTemplateComponent {
     }
 
     noClicked() {
-        this.currCompleted = null;
         this.noAction && this.noAction();
     }
 
@@ -456,6 +455,7 @@ export class PlayerTemplateComponent {
 
     // SENATE
     private _senateYesAction() {
+        this._playerService.actionFinished = null;
         this._playerService.takeOpponentsJacks();
         this._playerService.turnFinished();
     }

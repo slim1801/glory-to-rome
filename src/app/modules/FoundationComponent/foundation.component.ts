@@ -13,36 +13,34 @@ import { PlayerService } from '../../common/player.service';
 @Component({
     selector: 'foundation-component',
     template: `
-        <div class="foundation-container">
-            <div
-                class="foundation-card"
-                *ngFor="let pile of _gameService.gameState.foundations; let i = index"
-                (click)="onFoundationClick(pile)">
-                
-                    <div
-                        class="out-of-town-image"
-                        *ngIf="pile.inTown == 0"
-                        [ngStyle]="outOfTownStyle">
-                        <out-of-town-component
-                            [role]="pile.foundation.role">
-                        </out-of-town-component>
-                    </div>
+        <div
+            class="foundation-card"
+            *ngFor="let pile of _gameService.gameState.foundations; let i = index"
+            (click)="onFoundationClick(pile)">
 
-                    <card-image *ngIf="pile.inTown > 0"
-                                [card]="pile.foundation"
-                                [size]="size"
-                                [customSize]="customSize"
-                                [interactable]="enableFoundation()">
-                    </card-image>
+                <div
+                    class="out-of-town-image"
+                    *ngIf="pile.inTown == 0"
+                    [ngStyle]="outOfTownStyle">
+                    <out-of-town-component
+                        [role]="pile.foundation.role">
+                    </out-of-town-component>
+                </div>
+            
+                <div class="in-town-count" *ngIf="pile.inTown > 0">
+                    {{pile.inTown}}
+                </div>
 
-                    <div class="in-town-count" *ngIf="pile.inTown > 0">
-                        {{pile.inTown}}
-                    </div>
+                <div class="out-town-count" *ngIf="pile.inTown == 0">
+                    {{pile.outOfTown}}
+                </div>
 
-                    <div class="out-town-count" *ngIf="pile.inTown == 0">
-                        {{pile.outOfTown}}
-                    </div>
-            </div>
+                <card-image *ngIf="pile.inTown > 0"
+                            [card]="pile.foundation"
+                            [size]="size"
+                            [customSize]="customSize"
+                            [interactable]="enableFoundation()">
+                </card-image>
         </div>
     `,
     styleUrls: ['./foundation.styles.css']

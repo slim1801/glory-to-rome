@@ -11,6 +11,7 @@ import { UnderConstructionComponent } from './UnderConstruction/under.constructi
 import { ClientelleComponent } from './Clientelles/clientelles.component';
 import { CompletedComponent } from './Completed/completed.component';
 import { DetailTabComponent } from './DetailTab/detail.tab.component';
+import { FoundationModule } from '../FoundationComponent/foundation.module';
 import { SummaryComponent, RoleBlockComponent } from './Summary/summary.component';
 import { VaultComponent } from './Vault/vault.component';
 
@@ -43,7 +44,8 @@ import { PoolModule } from '../PoolComponent/pool.module';
         PoolModule,
 
         ControlModule,
-        CardModule
+        CardModule,
+        FoundationModule
     ],
     exports: [
         PlayerTemplateComponent,

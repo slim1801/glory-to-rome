@@ -4,6 +4,12 @@
 
         <!-- MESSAGE SECTION -->
         <div class="message-section">
+            <div class="action-card-message" *ngIf="actionMessageEnabled()">
+                <span class="action-card-message-text">Done with actions?</span>
+                <button class="action-end-button"
+                        type="button"
+                        (click)="actionMessageClicked()">Yes</button>
+            </div>
             <div class="message-content" *ngIf="!romeIsDemanding()">
                 <div class="message-text">{{message()}}</div>
                 <div class="message-action" *ngIf="message()" style="margin:5px;">

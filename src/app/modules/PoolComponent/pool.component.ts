@@ -72,7 +72,7 @@ export class PoolComponent {
     // }
 
     private _archwayCondition() {
-        return this._gameMechanicsService.getMode() == eWorkerType.architect &&
+        return this._gameService.gameState.mode == eWorkerType.architect &&
                 this._playerService.hasCompletedBuilding(eCardEffect.archway);
     }
 
@@ -82,7 +82,10 @@ export class PoolComponent {
 
     private checkCardsInPool() {
         // If no more in pool, end action immediately
-        if (this._gameService.gameState.pool.length == 0) {
+        if (
+            this._playerService.activeActionItem && 
+            this._gameService.gameState.pool.length == 0
+        ) {
             this._playerService.activeActionItem.numActions = 1;
         }
     }
@@ -161,7 +164,7 @@ export class PoolComponent {
 
     cardCanInteract = (card: ICard) => {
         if (!this._playerInfoService.isPlayersTurn) return false;
-        let mode = this._gameMechanicsService.getMode();
+        let mode = this._gameService.gameState.mode;
 
         if (this._playerService.resolvingCard) return false;
 

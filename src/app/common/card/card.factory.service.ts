@@ -60,7 +60,7 @@ export class CardFactoryService {
     getCardArray = (): ICard[] => _.assign(this.cardArray);
     getCard = (id: eCardEffect): ICard => this.cardArray[id];
     getCardByName = (title: string) => this.cardDictionary[title];
-    getJack = (): ICard => _.clone(this.jackCard);
+    getJack = (): ICard => new Card(cardConfig.jack);
 
     createCard(cardID: eCardEffect) {
         return new Card(this.cards[cardID]);

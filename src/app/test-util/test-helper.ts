@@ -18,7 +18,7 @@ export class TestHelper<T> {
         return this.fixture.debugElement.nativeElement.querySelector(selector);
     }
 
-    getElements(selector: string): HTMLElement {
+    getElements(selector: string): HTMLElement[] {
         return this.fixture.debugElement.nativeElement.querySelectorAll(selector);
     }
 

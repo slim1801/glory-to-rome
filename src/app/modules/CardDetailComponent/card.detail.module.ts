@@ -7,7 +7,6 @@ import { UserStatsModule } from '../UserStatsComponent/user.stats.module';
 
 import { CardDetailComponent }   from './card.detail.component';
 import { CardDetailService } from './card.detail.service';
-import { FoundationModule } from '../FoundationComponent/foundation.module';
 
 @NgModule({
   declarations: [ CardDetailComponent ],
@@ -20,7 +19,6 @@ import { FoundationModule } from '../FoundationComponent/foundation.module';
       HttpModule,
 
       CommonModule,
-      FoundationModule,
       UserStatsModule
   ],
   providers: [

@@ -11,12 +11,24 @@ import { GameMechanicsService } from '../../common/game.mechanics.service';
 @Component({
     selector: 'user-stats-component',
     template: `
-        <div class="user-label">Deck: {{_gameService.gameState.deck.length}}</div>
-        <div class="user-label">Vault ({{_playerInfoService.getPlayerState().maxVault}}): {{_playerInfoService.getPlayerState().vault.length}}</div>
-        <div class="user-label">Influence: {{_playerInfoService.getPlayerState().influence}}</div>
-        <div class="user-label">Max Hand Size: {{_playerInfoService.getPlayerState().maxHandSize}}</div>
+        <div class="user-stats-container">
+            <div class="user-stats-col">
+                <div class="user-label">Deck: {{_gameService.gameState.deck.length}}</div>
+                <div class="user-label">Hand Size: {{_playerInfoService.getPlayerState().maxHandSize}}</div>
+            </div>
+            <div class="user-stats-col">
+                <div class="user-label">Vault ({{_playerInfoService.getPlayerState().maxVault}}): {{_playerInfoService.getPlayerState().vault.length}}</div>
+                <div class="user-label">Influence: {{_playerInfoService.getPlayerState().influence}}</div>
+            </div>
+        </div>
     `,
     styles: [`
+        .user-stats-container {
+            display: flex;
+        }
+        .user-stats-col {
+            flex: 1;
+        }
         .user-label {
             font-weight: bold;
         }

@@ -65,10 +65,11 @@
 .message-section {
     width: 170px;
     flex: 1;
+    display: flex;
+    flex-flow: column;
 }
 .message-content {
-    height: 100%;
-    width: 100%;
+    flex: 1;
 
     font-size: 13px;
     font-weight: bold;
@@ -153,4 +154,9 @@ i {
     flex-flow: column;
     justify-content: center;
     align-items: center;
+}
+
+.action-card-message-text {
+    font-weight: bold;
+    margin-right: 5px;
 }

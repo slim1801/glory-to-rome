@@ -59,7 +59,7 @@ export class CardComponent {
         let game = this._gameMechanicsService;
         let player = this._playerService;
 
-        game.onCardPerform().subscribe(this._enableActions);
+        this._socketService.onCardPlayed().subscribe(this._enableActions);
         player.onActionFinished().subscribe(this._enableActions);
 
         game.onPlayCardsAsJack().subscribe(types => {
@@ -82,7 +82,7 @@ export class CardComponent {
         });
 
         player.onBuildingSelected().subscribe(() => {
-            let mode = this._gameMechanicsService.getMode();
+            let mode = this._gameService.gameState.mode;
 
             if (mode == eWorkerType.craftsman) {
                 if (this._playerService.selectedBuilding == null) {
@@ -133,7 +133,7 @@ export class CardComponent {
 
             let player = this._playerService;
 
-            let mode = this._gameMechanicsService.getMode();
+            let mode = this._gameService.gameState.mode;
             // Craftsman, Architect and Legionary actions
             if (
                 mode == eWorkerType.craftsman ||
@@ -168,10 +168,10 @@ export class CardComponent {
         if (!this.modeEnable()) return;
         this._hoverState = "active";
 
-        let role = this._gameMechanicsService.getMode();
+        let role = this._gameService.gameState.mode;
         let player = this._playerService;
 
-        if (role == eWorkerType.craftsman) {
+        if (role == eWorkerType.craftsman && this.card.role != eWorkerType.jack) {
             if (player.selectedBuilding) {
                 player.cardIsHoveredAddMaterial(this.card);
             }
@@ -188,7 +188,7 @@ export class CardComponent {
     onMouseLeave(event: MouseEvent) {
         this._hoverState = "dormant";
 
-        let mode = this._gameMechanicsService.getMode();
+        let mode = this._gameService.gameState.mode;
         if (mode == eWorkerType.craftsman || mode == eWorkerType.architect) {
 
             if (this.card.role != eWorkerType.jack)
@@ -198,7 +198,7 @@ export class CardComponent {
 
     optionClicked = (type: eWorkerType) => {
         this.card.setMode(type);
-        this._gameMechanicsService.setMode(type);
+        this._gameService.gameState.mode = type;
         this._playerService.playCard(this.card);
     }
 
@@ -379,7 +379,8 @@ export class CardComponent {
                 
                 // On following activate cards
                 if (this._playerInfoService.isFollowing) {
-                    if (this.card.role == eWorkerType.jack) {
+                    if (this.card.role == eWorkerType.jack ||
+                        this.card.role == gState.mode) {
                         return true;
                     }
                     return false;

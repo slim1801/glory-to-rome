@@ -1,4 +1,4 @@
-import { remove, forEach, find } from 'lodash';
+import { remove, forEach, find, filter, concat } from 'lodash';
 
 import {
     inject,
@@ -90,6 +90,79 @@ describe('Test whole application', () => {
             callback(servs);
         })
     }
+
+    // BASIC FUNCTIONALITY
+
+    it('tests following functionality', injector(srvs => {
+        gth.configureState({
+            handCards: ALL_CLIENTS
+        });
+        srvs.ps.handCards.push(srvs.cfs.getJack());
+        fixture.detectChanges();
+
+        srvs.pis.saveActionCardToPlayerState(srvs.cfs.createCard(eCardEffect.dock));
+        srvs.gs.gameState.mode = eWorkerType.craftsman;
+        srvs.pis.isPlayersLead = false;
+
+        debugger;
+        gth.invokeAction('on card played');
+
+        th.click(gth.getElement(eSelector.followButton));
+        expect(srvs.pis.isFollowing).toBe(true);
+
+        let handCards = gth.getHandCards();
+        expect(handCards[0].classList.contains('inactive')).toBe(true);
+        expect(handCards[1].classList.contains('interactable')).toBe(true);
+        expect(handCards[2].classList.contains('inactive')).toBe(true);
+        expect(handCards[3].classList.contains('inactive')).toBe(true);
+        expect(handCards[4].classList.contains('inactive')).toBe(true);
+        expect(handCards[5].classList.contains('inactive')).toBe(true);
+        expect(handCards[6].classList.contains('interactable')).toBe(true);
+    }));
+
+    it('tests adding material to buildings when CRAFTSMAN', injector(srvs => {
+        let handCards = concat([eCardEffect.dock], ALL_CLIENTS);
+        gth.configureState({
+            underConstruction: [{ cardEff: eCardEffect.dock }],
+            handCards
+        });
+
+        srvs.ps.handCards.push(srvs.cfs.getJack());
+        fixture.detectChanges();
+
+        gth.clickOnHandCard(0);
+        gth.clickOnUnderConstruction(0);
+
+        let hCards = gth.getHandCards();
+        expect(hCards[0].classList.contains('inactive')).toBe(true);
+        expect(hCards[1].classList.contains('interactable')).toBe(true);
+        expect(hCards[2].classList.contains('inactive')).toBe(true);
+        expect(hCards[3].classList.contains('inactive')).toBe(true);
+        expect(hCards[4].classList.contains('inactive')).toBe(true);
+        expect(hCards[5].classList.contains('inactive')).toBe(true);
+        expect(hCards[6].classList.contains('inactive')).toBe(true);
+    }));
+
+    it('tests adding material to buildings when ARCHITECT', injector(srvs => {
+        gth.configureState({
+            underConstruction: [{ cardEff: eCardEffect.dock }],
+            handCards: [eCardEffect.amphitheatre],
+            stockpile: ALL_CLIENTS
+        });
+
+        gth.clickOnHandCard(0);
+        gth.clickOnUnderConstruction(0);
+
+        let spCards = gth.getStockpileCards();
+        expect(spCards[0].classList.contains('interactable')).toBe(false);
+        expect(spCards[1].classList.contains('interactable')).toBe(true);
+        expect(spCards[2].classList.contains('interactable')).toBe(false);
+        expect(spCards[3].classList.contains('interactable')).toBe(false);
+        expect(spCards[4].classList.contains('interactable')).toBe(false);
+        expect(spCards[5].classList.contains('interactable')).toBe(false);
+    }));
+
+    // CARD EFFECTS
 
     it('is testing ACADEMY functionality', injector(srvs => {
         gth.configureState({
@@ -267,7 +340,7 @@ describe('Test whole application', () => {
 
     it('is testing BRIDGE functionality', injector(srvs => {
         gth.configureState({
-            completed: [eCardEffect.bridge],
+            completed: [eCardEffect.bridge, eCardEffect.palisade],
             stockpile: [eCardEffect.latrine],
             handCards: [
                 eCardEffect.gate,
@@ -298,7 +371,7 @@ describe('Test whole application', () => {
         // After action is finished
         expect(srvs.gs.gameState.pool.length).toBe(1);
     }));
-
+    
     it('is testing CATACOMB functionality', injector(srvs => {
         gth.configureState({
             underConstruction: [{ cardEff: eCardEffect.catacomb }]
@@ -508,6 +581,18 @@ describe('Test whole application', () => {
         gth.checkNumAction(eWorkerType.patron, '5');
     }));
 
+    it('is testing GATE functionality', injector(srvs => {
+        gth.configureState({
+            underConstruction: [
+                { cardEff: eCardEffect.gate },
+                { cardEff: eCardEffect.temple }
+            ]
+        });
+
+        gth.completeBuilding(eCardEffect.gate);
+        expect(srvs.pis.getPlayerState().maxHandSize).toBe(9);
+    }));
+
     it('is testing INSULA functionality', injector(srvs => {
         gth.configureState({
             underConstruction: [{ cardEff: eCardEffect.insula }]
@@ -653,9 +738,24 @@ describe('Test whole application', () => {
 
     }));
 
+    it('is testing PALISADES functionality', injector(srvs => {
+        gth.configureState({
+            completed: [eCardEffect.palisade],
+            handCards: [
+                eCardEffect.gate,
+                eCardEffect.latrine
+            ]
+        });
+
+        spyOn(srvs.ps, 'turnFinished');
+        gth.clickOnHandCard(0);
+        gth.clickOnHandCard(0);
+        expect(srvs.ps.turnFinished).toHaveBeenCalled();
+    }));
+
     it('is testing PRISON functionality', injector(srvs => {
         gth.configureState({
-            underConstruction: [{ cardEff: eCardEffect.prison }],
+            underConstruction: [{ cardEff: eCardEffect.prison }]
         });
 
         gth.addPlayer("0", {
@@ -722,6 +822,30 @@ describe('Test whole application', () => {
         
         expect(srvs.pis.getPlayerState().completed.length).toBe(index + 2);
     }
+
+    it('is testing SENATE functionality', injector(srvs => {
+        gth.configureState({
+            completed: [eCardEffect.senate],
+            handCards: []
+        });
+        let jackCard = srvs.cfs.getJack();
+        jackCard.setMode(eWorkerType.craftsman);
+
+        srvs.pis.getPlayerState().actionCard = jackCard;
+
+        let jackCard2 = srvs.cfs.getJack();
+        jackCard2.setMode(eWorkerType.craftsman);
+
+        gth.addPlayer("0", {
+            actionCard: jackCard2
+        });
+
+        gth.invokeAction('on turn end');
+        gth.checkPrompt("[Senate] Take opponent's JACK's", true, true);
+
+        let jacksInHand = filter(srvs.ps.handCards, handCard => handCard.role == eWorkerType.jack);
+        expect(jacksInHand.length).toBe(1);
+    }));
 
     it('is testing SEWER functionality', injector(srvs => {
         gth.configureState({
@@ -999,6 +1123,30 @@ describe('Test whole application', () => {
         expect(srvs.ps.handCards.length).toBe(5);
     }));
 
+    it('is testing WALL functionality', injector(srvs => {
+        gth.configureState({
+            completed: [eCardEffect.wall],
+            handCards: [
+                eCardEffect.gate,
+                eCardEffect.latrine
+            ]
+        });
+
+        spyOn(srvs.ps, 'turnFinished');
+        gth.clickOnHandCard(0);
+        gth.clickOnHandCard(0);
+        expect(srvs.ps.turnFinished).toHaveBeenCalled();
+    }));
+
+    it('is testing WALL game end functionality', injector(srvs => {
+        gth.configureState({
+            completed: [eCardEffect.wall],
+            stockpile: ALL_CLIENTS
+        });
+        gth.invokeAction('game ended');
+        expect(component.endGameResult[0].wallBonus).toBe(3);
+    }));
+
     // SPECIAL CASES
 
     // FORUM STAIRWAY COMBO
@@ -1008,4 +1156,15 @@ describe('Test whole application', () => {
         expect(component.gameEnded).toBe(true);
     }));
 
+    it('is testing GATE into FORUM', injector(srvs => {
+        gth.configureState({
+            underConstruction: [
+                { cardEff: eCardEffect.gate },
+                { cardEff: eCardEffect.forum }
+            ],
+            clientelles: ALL_CLIENTS
+        });
+        gth.completeBuilding(eCardEffect.gate);
+        expect(component.gameEnded).toBe(true);
+    }));
 });

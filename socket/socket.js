@@ -152,7 +152,7 @@ module.exports = function() {
 
     function createFoundation() {
         return [
-            
+
         ]
     }
 
@@ -206,12 +206,21 @@ module.exports = function() {
             state.actions.push(eActions.playCard);
         }
 
+        let prevActionMode = state.actionMode;
         incrementPlayerTurn(state);
 
         let res = _.extend(state, {
             actionMode: state.actionMode,
             mode: state.actionMode == eActionMode.turnEnd ? null : state.mode
         });
+        
+        if (
+            prevActionMode === eActionMode.actionCardMode &&
+            state.actionMode === eActionMode.resolveAction
+        ) {
+            socket.emit("on all players chosen", res);
+            socket.to(params.roomID).emit("on all players chosen", res);
+        }
 
         if (state.actionMode == eActionMode.turnEnd) {
             socket.emit("on turn end", state);
@@ -331,6 +340,10 @@ module.exports = function() {
 
             incrementPlayerTurn(state);
             state.actions.push(eActions.think);
+            if (state.playerTurn === 0) {
+                socket.emit("on all players chosen", state);
+                socket.to(params.roomID).emit("on all players chosen", state);
+            }
             socket.to(params.roomID).emit("on card played", state);
         }
     }

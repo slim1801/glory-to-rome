@@ -6,7 +6,7 @@ import { ICard, IFoundation, Card, eCardSize, eCardEffect, eWorkerType } from '.
 
 import { CardFactoryService } from '../../../common/card/card.factory.service';
 import { GameMechanicsService } from '../../../common/game.mechanics.service';
-import { GameService, removeFromList } from '../../../common/game.service';
+import { GameService, removeFromList, eActionMode } from '../../../common/game.service';
 import { PlayerService } from '../../../common/player.service';
 import { PlayerInfoService } from '../../../common/player.info.service';
 
@@ -161,9 +161,10 @@ export class UnderConstructionComponent implements AfterContentInit {
 
     checkInteraction(foundation: IFoundation) {
         if (!this._playerInfoService.isPlayersTurn) return false;
+        if (this._gameService.gameState.actionMode !== eActionMode.resolveCardMode) return false;
 
         // Check if craftsman or architect mode
-        let mode = this._gameMechanicsService.getMode();
+        let mode = this._gameService.gameState.mode;
         if (mode != eWorkerType.architect && mode != eWorkerType.craftsman) return false;
 
         if (foundation.building.phantom || mode == null) return false;
@@ -196,7 +197,7 @@ export class UnderConstructionComponent implements AfterContentInit {
         }
 
         // Statue Condition
-        if (foundation.site !== undefined && this._playerService.statueCondition(foundation.site)) {
+        if (foundation.site !== undefined && this._playerService.statueCondition(foundation)) {
             return true;
         }
 
@@ -212,7 +213,7 @@ export class UnderConstructionComponent implements AfterContentInit {
     }
 
     private _canFilter(foundation: IFoundation) {
-        let mode = this._gameMechanicsService.getMode();
+        let mode = this._gameService.gameState.mode;
         if (mode == eWorkerType.craftsman) {
             return !!_.find(this._playerService.handCards, card => {
                 return card.role == foundation.building.role && !card.phantom;

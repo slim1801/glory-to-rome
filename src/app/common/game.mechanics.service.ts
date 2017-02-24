@@ -15,7 +15,6 @@ export class GameMechanicsService {
     private roleMap;
 
     activeCard: ICard = new Card();
-    private mode: eWorkerType;
     private actionMode: eActionMode;
 
     // When other players lead
@@ -40,10 +39,6 @@ export class GameMechanicsService {
     }
 
     private _initListeners() {
-        this._gameService.onAllPlayersChosen().subscribe(card => {
-            this.performSubject.next();
-        })
-
         let skt = this._socketService;
 
         skt.onGameStarted().subscribe(gameState => {
@@ -58,10 +53,6 @@ export class GameMechanicsService {
             if (gameState.playerOrder[gameState.playerTurn].id == this._playerInfoService.player.id) {
                 this._playerInfoService.isPlayersTurn = true;
             }
-
-            if (gameState.actionMode == eActionMode.resolveCardMode) {
-                this.performSubject.next();
-            }
             else if (gameState.actionMode == eActionMode.turnEndMode) {
                 this.actionEnd();
             }
@@ -70,13 +61,7 @@ export class GameMechanicsService {
 
     getActionMode = () => this.actionMode;
 
-    getMode = () => this.mode;
-
     getPlayedCard = () => this.playedCard;
-
-    setMode = (type: eWorkerType) => {
-        this.mode = type;
-    }
 
     changeActiveCard = (card: ICard) => {
         this.activeCard.changeValues(card);
@@ -118,7 +103,7 @@ export class GameMechanicsService {
     private playCardsAsJackSubject = new Subject<eWorkerType[]>();
     playCardsAsJack = (types: eWorkerType[], type: eWorkerType) => {
         this.activeCard.changeValues(this._cardFactoryService.getJack());
-        this.mode = type;
+        this._gameService.gameState.mode = type;
         this.playCardsAsJackSubject.next(types);
     }
 
@@ -127,27 +112,13 @@ export class GameMechanicsService {
     }
 
     private cardsAsJackPlayedSubject = new Subject<ICard[]>();
-    cardsPlayedAsJack = (cards: ICard[]) => {
-        this.cardsAsJackPlayedSubject.next(cards);
-        this.roleMap[this.mode](this.activeCard, this.mode);
-    }
-
     onCardsPlayedAsJack = () => {
         return this.cardsAsJackPlayedSubject.asObservable();
     }
 
-    cardPerform() {
-        this.performSubject.next();
-    }
-
-    private performSubject = new Subject<void>();
-    onCardPerform() {
-        return this.performSubject.asObservable();
-    }
-
     private actionEndSubject = new Subject<ICard>();
     actionEnd() {
-        this.mode = null;
+        this._gameService.gameState.mode = null;
         this.actionEndSubject.next(_.cloneDeep(this.activeCard));
         this.activeCard.changeValues(new Card);
     }

@@ -72,24 +72,18 @@ export class GameService {
     private _init() {
         this.deckList = this._cardFactoryService.getCardArray();
     }
-
-    private playerActionSubject = new Subject<ICard>();
+    
     playerHasActioned(card: ICard) {
         this.playedCards.push(card);
 
         // TODO: Integrate with multiplayer
         if (this.playedCards.length == 1) {
             this.playedCards.splice(0, this.playedCards.length);
-            this.playerActionSubject.next(card);
         }
     }
 
     updateGameState() {
         this._playerInfoService.updatePlayerState(this.gameState);
-    }
-
-    onAllPlayersChosen() {
-        return this.playerActionSubject.asObservable();
     }
 
     romeDemands(card: ICard) {

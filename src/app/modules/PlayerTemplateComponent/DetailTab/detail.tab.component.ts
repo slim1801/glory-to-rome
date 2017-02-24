@@ -12,17 +12,22 @@ export interface IDetailTab {
     selector: 'detail-tab',
     template: `
         <div class="detail-tab-container">
-            <div class="completed-tab">
-                <div class="tab-header"><i class="fa fa-university"></i>Completed</div>
-                <completed-component></completed-component>
+            <div class="detail-tab-col-left">
+                <div class="completed-tab">
+                    <div class="tab-header"><i class="fa fa-university"></i>Completed</div>
+                    <completed-component></completed-component>
+                </div>
+                <div class="stockpile-tab">
+                    <div class="tab-header"><i class="fa fa-bars"></i>Stockpile</div>
+                    <stockpile-component></stockpile-component>
+                </div>
+                <div class="under-construction-tab">
+                    <div class="tab-header"><i class="fa fa-gavel"></i>Under Construction</div>
+                    <under-construction-component></under-construction-component>
+                </div>
             </div>
-            <div class="stockpile-tab">
-                <div class="tab-header"><i class="fa fa-bars"></i>Stockpile</div>
-                <stockpile-component></stockpile-component>
-            </div>
-            <div class="under-construction-tab">
-                <div class="tab-header"><i class="fa fa-gavel"></i>Under Construction</div>
-                <under-construction-component></under-construction-component>
+            <div class="detail-tab-col-right">
+                <foundation-component></foundation-component>
             </div>
         </div>
     `,
@@ -31,8 +36,13 @@ export interface IDetailTab {
             height: 100%;
             padding: 5px;
             display: flex;
-            flex-flow: column;
             background-color: white;
+        }
+        .detail-tab-col-left {
+            flex-flow: column;
+            flex: 1;
+            display: flex;
+            flex-flow: column;
         }
         .tab-header {
             font-weight: bold;

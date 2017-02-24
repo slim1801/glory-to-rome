@@ -1,12 +1,14 @@
+import { findLastIndex } from 'lodash';
 import { Component } from '@angular/core';
 
 import { ICard, Card, eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
 
 import { PlayerService } from '../../common/player.service';
 import { GameMechanicsService } from '../../common/game.mechanics.service';
-import { GameService } from '../../common/game.service'
+import { GameService, eActions } from '../../common/game.service'
 import { CardFactoryService } from '../../common/card/card.factory.service';
 import { PlayerInfoService } from '../../common/player.info.service';
+import { SocketService } from '../../common/socket.service';
 
 @Component({
     selector: 'action-card-component',
@@ -26,7 +28,8 @@ export class ActionCardComponent {
         private _playerService: PlayerService, 
         private _gameMechanicsService: GameMechanicsService,
         private _gameService: GameService,
-        private _playerInfoService: PlayerInfoService
+        private _playerInfoService: PlayerInfoService,
+        private _socketService: SocketService
     ) {
         this.width = this._cardFactoryService.getCardWidth(eCardSize.medium) + 'px';
         this._initListeners();
@@ -36,8 +39,12 @@ export class ActionCardComponent {
         let game = this._gameMechanicsService;
         let player = this._playerService;
 
-        game.onCardPerform().subscribe(() => {
-            let mode = game.getMode();
+        this._socketService.onAllPlayersChosen().subscribe(() => {
+            let gState = this._gameService.gameState;
+            let index = findLastIndex(gState.playerOrder, player => player.id == this._playerInfoService.player.id);
+            if (this._gameService.gameState.actions[index] === eActions.think) return;
+
+            let mode = gState.mode;
 
             player.activeActionItem = {
                 numActions: 0,

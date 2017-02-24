@@ -61,9 +61,10 @@ export class StockpileComponent {
 
     private _initListeners() {
         let game = this._gameMechanicsService;
+        let skt = this._socketService;
         
-        game.onCardPerform().subscribe(() => {
-            let mode = game.getMode();
+        skt.onCardPlayed().subscribe(() => {
+            let mode = this._gameService.gameState.mode;
             if (mode == eWorkerType.merchant) {
                 this._cardAction = this._mechantAction;
             }
@@ -72,7 +73,7 @@ export class StockpileComponent {
             }
         });
 
-        this._socketService.onRomeDemands().subscribe(gameState => {
+        skt.onRomeDemands().subscribe(gameState => {
             this._cardAction = this._bridgeAction;
         });
     }
@@ -125,10 +126,10 @@ export class StockpileComponent {
             return true;
         }
 
-        if (this._gameMechanicsService.getMode() == eWorkerType.merchant) {
+        if (this._gameService.gameState.mode == eWorkerType.merchant) {
             return true;
         }
-        else if (this._gameMechanicsService.getMode() == eWorkerType.architect) {
+        else if (this._gameService.gameState.mode == eWorkerType.architect) {
             if (ps.completedSelectedBuilding) {
                 return ps.completedSelectedBuilding.building.role === card.role;
             }
@@ -140,7 +141,7 @@ export class StockpileComponent {
     }
 
     onMouseOver = (card: ICard) => {
-        if (this._gameMechanicsService.getMode() == eWorkerType.architect) {
+        if (this._gameService.gameState.mode == eWorkerType.architect) {
             let player = this._playerService;
             if (player.roadCondition()) {
                 player.cardIsHoveredAddMaterial(card);
