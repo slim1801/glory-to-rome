@@ -140,4 +140,15 @@ export class CardFactoryService {
             case eWorkerType.patron: return 'patron';
         }
     }
+
+    getTextColor(type: eWorkerType) {
+        switch(type) {
+            case eWorkerType.architect: return 'architect-text';
+            case eWorkerType.craftsman: return 'craftsman-text';
+            case eWorkerType.laborer: return 'laborer-text';
+            case eWorkerType.legionary: return 'legionary-text';
+            case eWorkerType.merchant: return 'merchant-text';
+            case eWorkerType.patron: return 'patron-text';
+        }
+    }
 }

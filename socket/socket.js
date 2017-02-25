@@ -21,6 +21,8 @@ module.exports = function() {
         socket.on("think", function(params) { this.think(params, socket) }.bind(this) );
         socket.on("rome demands", function(params) { this.emitState(params, socket, 'on rome demands') }.bind(this) );
         socket.on("extort material", function(params) { this.emitState(params, socket, 'on extort material') }.bind(this) );
+        socket.on("send message", function(params) { this.sendMessage(params, socket) }.bind(this) );
+        socket.on("player chat", function(params) { this.playerChat(params, socket) }.bind(this) );
         socket.on("turn end", function(params) { this.turnEnd(params, socket) }.bind(this) );
         socket.on("end game", function(params) { this.emitAll(params, socket, 'game ended') }.bind(this) );
     }.bind(this);
@@ -368,6 +370,14 @@ module.exports = function() {
                 }
             }
         }
+    }
+
+    sendMessage = function(params, socket) {
+        socket.to(params.roomID).emit("receive message", params.message);
+    }
+
+    playerChat = function(params, socket) {
+        socket.to(params.roomID).emit("on player chat", params.text);
     }
 
     return this;

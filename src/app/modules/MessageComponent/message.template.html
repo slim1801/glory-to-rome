@@ -1,0 +1,30 @@
+<div class="message-outer-cont">
+    <div class="message-container">
+        <div class="message-log" #scrollContainer>
+            <div *ngFor="let message of _messageService.messages; let i = index">
+                <div [ngSwitch]="message.type">
+                    <div class="message-body" *ngSwitchCase="eMessageType.player">
+                        <div class="message-header"
+                            *ngIf="showPlayerName(i, message)">{{message.player.name}}</div>
+                        <div *ngFor="let block of message.textBlocks">{{block.text}}</div>
+                    </div>
+
+                    <div class="message-body" *ngSwitchCase="eMessageType.custom">
+                        <span *ngFor="let block of message.textBlocks">
+                            <span *ngIf="_messageService.isType(block) === 'player'"
+                                  style="font-weight: bold">{{block.player.name}}</span>
+                            <span *ngIf="_messageService.isType(block) === 'card'"
+                                  [ngClass]="_cardFactoryService.getTextColor(block.card.mode)"
+                                  style="font-weight: bold">{{block.card.title}}</span>
+                            <span *ngIf="_messageService.isType(block) === 'text'">{{block.text}}</span> </span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="message-input-container">
+        <input class="message-input" type="text" (keypress)="enterPressed($event)" #messageInput />
+        <button class="message-button" (click)="messageClicked(messageInput)">Enter</button>
+    </div>
+</div>

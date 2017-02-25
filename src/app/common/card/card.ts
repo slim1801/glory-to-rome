@@ -157,6 +157,9 @@ export class Card implements ICard {
             this.y = data.y;
             this.count = data.count;
             this.asset = data.asset;
+            
+            if (data.role != eWorkerType.jack)
+                this.mode = data.role;
         }
         this.uid =  Math.random().toString(36).substring(7);
     }

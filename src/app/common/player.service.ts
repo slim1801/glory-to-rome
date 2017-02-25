@@ -11,6 +11,7 @@ import { GameService, IGameState, eLegionaryStage, eActionMode, removeFromList }
 import { CardFactoryService } from './card/card.factory.service';
 import { SocketService  } from './socket.service';
 import { PlayerInfoService, IPlayer, IPlayerState } from './player.info.service';
+import { MessageService, eMessageType } from './message.service';
 
 export interface IActionItem {
     numActions: number;
@@ -36,7 +37,8 @@ export class PlayerService {
         @Inject(GameMechanicsService) private _gameMechanicsService: GameMechanicsService,
         @Inject(GameService) private _gameService: GameService,
         @Inject(PlayerInfoService) private _playerInfoService: PlayerInfoService,
-        @Inject(SocketService) private _socketService: SocketService
+        @Inject(SocketService) private _socketService: SocketService,
+        @Inject(MessageService) private _messageService: MessageService
     ) {
         this._initListeners();
     }
@@ -354,6 +356,9 @@ export class PlayerService {
             }
 
             this._playerInfoService.isPlayersTurn = false;
+            if (this._playerInfoService.isPlayersLead) {
+                this._messageService.addLeadMessage(card);
+            }
             this._socketService.cardPlayed(card);
         }
     }
@@ -447,6 +452,9 @@ export class PlayerService {
         this.actionFinishTrigger = null;
         this.think();
         this._playerInfoService.isPlayersTurn = false;
+
+        this._messageService.addTextMessage("THINKS");
+
         this._socketService.think();
     }
 
@@ -907,6 +915,8 @@ export class PlayerService {
             this._cardFactoryService.createCompletedFromFoundation(foundation)
         );
 
+        this._messageService.addCompletedMessage(foundation.building);
+
         let inf = this.getInfluence(foundation);
         pState.influence += inf;
         pState.maxVault += inf;
@@ -1213,6 +1223,7 @@ export class PlayerService {
                 this._endGame();
             }
             else {
+                this._messageService.addUnderConstructionMessage(card);
                 this.decrementActions();
             }
         }
@@ -1252,7 +1263,9 @@ export class PlayerService {
         _.remove(foundation.materials, c => c.phantom);
 
         foundation.materials.push(card);
-        
+
+        this._messageService.addMaterialMessage(card, foundation.building);
+
         // Villa condition
         if (
             foundation.building.id == eCardEffect.villa &&

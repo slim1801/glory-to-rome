@@ -6,6 +6,7 @@ import { Subject } from 'rxjs/Subject';
 import { ICard, eWorkerType, IFoundationPile } from './card/card';
 import { GameService, IGameState, eLegionaryStage } from './game.service';
 import { PlayerInfoService, IPlayer, IPlayerState } from './player.info.service';
+import { IMessage } from './message.service';
 
 const io = require('socket.io-client');
 
@@ -69,6 +70,12 @@ export class SocketService {
         });
         io.on("on extort material", data => {
             this._onNext(this.extortMaterialSubject, data);
+        });
+        io.on("receive message", (message: IMessage ) => {
+            this.receiveMessageSubject.next(message);
+        });
+        io.on("on player chat", (text: string ) => {
+            this.playerChatSubject.next(text);
         });
         io.on("game ended", data => {
             this._onNext(this.gameEndedSubject, data);
@@ -161,6 +168,20 @@ export class SocketService {
         })
     }
 
+    sendMessage(message: IMessage) {
+        this.io.emit("send message", {
+            roomID: this.roomID,
+            message
+        })
+    }
+
+    sendPlayerChat(text: string) {
+        this.io.emit("player chat", {
+            roomID: this.roomID,
+            text
+        })
+    }
+
     private roomCreatedSubject = new Subject<IRoom>();
     onRoomCreated = () => {
         return this.roomCreatedSubject.asObservable();
@@ -214,5 +235,15 @@ export class SocketService {
     private gameEndedSubject = new Subject<IGameState>();
     onGameEnded = () => {
         return this.gameEndedSubject.asObservable();
+    }
+
+    private receiveMessageSubject = new Subject<IMessage>();
+    onReceiveMessage = () => {
+        return this.receiveMessageSubject.asObservable();
+    }
+
+    private playerChatSubject = new Subject<string>();
+    onPlayerChat = () => {
+        return this.playerChatSubject.asObservable();
     }
 }

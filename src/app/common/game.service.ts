@@ -72,7 +72,7 @@ export class GameService {
     private _init() {
         this.deckList = this._cardFactoryService.getCardArray();
     }
-    
+
     playerHasActioned(card: ICard) {
         this.playedCards.push(card);
 
@@ -125,7 +125,7 @@ export class GameService {
         _.forEach(cards, card => {
             let count = card.count;
             for (let i = 0; i < count; i++) {
-                deck.push(new Card(card));
+                deck.push(this._cardFactoryService.createCard(card.id));
             }
         });
         return _.shuffle(deck);

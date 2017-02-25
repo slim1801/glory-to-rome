@@ -421,6 +421,7 @@ export class CardComponent {
 
                 // Craftsman conditions
                 if (role == eWorkerType.craftsman) {
+                    if (!this._playerService.selectedBuilding) return true;
                     return this._playerService.cardCanInteractAsMaterial(this.card);
                 }
 

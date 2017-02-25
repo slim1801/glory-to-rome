@@ -11,6 +11,7 @@ import { GameMechanicsService } from './game.mechanics.service';
 import { PlayerInfoService } from './player.info.service';
 import { PlayerService } from './player.service';
 import { GameService } from './game.service';
+import { MessageService } from './message.service';
 import { SocketService } from './socket.service';
 
 @NgModule({
@@ -34,7 +35,8 @@ import { SocketService } from './socket.service';
     PlayerInfoService,
     PlayerService,
     SocketService,
-    GameService
+    GameService,
+    MessageService
   ]
 })
 export class CommonModule { }

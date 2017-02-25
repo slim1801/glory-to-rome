@@ -8,6 +8,7 @@ import { GameService, eActionMode } from '../../common/game.service';
 import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
 import { SocketService } from '../../common/socket.service';
+import { MessageService } from '../../common/message.service';
 
 @Component({
     selector: 'control-component',
@@ -23,7 +24,8 @@ export class ControlComponent {
         private _gameService: GameService,
         private _playerService: PlayerService,
         private _playerInfoService: PlayerInfoService,
-        private _socketService: SocketService
+        private _socketService: SocketService,
+        private _messageService: MessageService
     ) {
         this.cardsAsJackDisable = this._playerService.canPlayCardsAsJack
         this._initListeners();
@@ -78,6 +80,8 @@ export class ControlComponent {
 
         this._playerService.addCards(this._gameService.drawJack());
         this._playerInfoService.isPlayersTurn = false;
+
+        this._messageService.addTextMessage("draws a JACK");
         this._socketService.think();
     }
 
@@ -142,6 +146,7 @@ export class ControlComponent {
     follow = () => {
         if (!this.enableFollow()) return;
         this._playerInfoService.isFollowing = true;
+        this._messageService.addTextMessage("is FOLLOWING");
     }
 
     showFollow = () => {
@@ -154,7 +159,9 @@ export class ControlComponent {
     }
 
     canFollow = () => {
-        return find(this._playerService.handCards, card => card.role == eWorkerType.jack);
+        return find(this._playerService.handCards, card => 
+            card.role == eWorkerType.jack || card.mode == this._gameService.gameState.mode
+        );
     }
 
     private _enableInActionMode() {

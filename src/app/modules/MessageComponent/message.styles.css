@@ -1,0 +1,46 @@
+.message-outer-cont {
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+}
+
+.message-container {
+    padding: 15px 0px;
+    flex: 1;
+    position: relative;
+}
+
+.message-log {
+    position: absolute;
+    bottom: 10px;
+    right: 0px;
+    left: 0px;
+    overflow-y: scroll;
+    max-height: 90%;
+}
+
+.messages {
+    bottom: 0;
+    position: absolute;
+}
+
+.message-input-container {
+    display: flex;
+    padding-bottom: 10px;
+}
+
+.message-input {
+    flex: 1;
+}
+
+.message-button {
+    width: 50px;
+}
+
+.message-header {
+    font-weight: bold;
+}
+
+.message-body {
+    padding: 5px 0px;
+}
