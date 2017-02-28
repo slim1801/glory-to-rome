@@ -25,6 +25,9 @@ module.exports = function() {
         socket.on("player chat", function(params) { this.playerChat(params, socket) }.bind(this) );
         socket.on("turn end", function(params) { this.turnEnd(params, socket) }.bind(this) );
         socket.on("end game", function(params) { this.emitAll(params, socket, 'game ended') }.bind(this) );
+
+        // DISCONNECT
+        socket.on('disconnect', function(params) { this.onDisconnect(params, socket) }.bind(this));
     }.bind(this);
 
     this.createRoom = function(params, socket) {
@@ -108,7 +111,7 @@ module.exports = function() {
     /* Game State functions */
 
     cards = cardConfig.cards;
-
+    
     initGameState = function(room) {
         let state = gameStates[room.id] = {};
 
@@ -378,6 +381,10 @@ module.exports = function() {
 
     playerChat = function(params, socket) {
         socket.to(params.roomID).emit("on player chat", params.text);
+    }
+
+    onDisconnect = function(params, socket) {
+        // this.leaveRoom(params, socket);
     }
 
     return this;

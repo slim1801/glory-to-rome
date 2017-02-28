@@ -8,7 +8,8 @@ module.exports = function (server) {
     // On someone connected
     io.on('connection', function(socket) {
         console.log('User connected');
-        socket.emit('connected');
+        socket.emit('connected', { uid: socket.handshake.session.uid });
+        console.log("SESSION ID: ", socket.handshake.session.uid);
         socketIO.listen(socket);
     }.bind(this));
 

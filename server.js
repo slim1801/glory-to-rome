@@ -2,20 +2,33 @@ var http = require('http');
 
 var webpackMiddleware = require("webpack-dev-middleware");
 var webpack = require('webpack');
-var express = require('express');
 var path = require('path');
 var fs = require('fs');
+
+var express = require('express');
+var cookieParser = require('cookie-parser');
+var expressSession = require('express-session');
+var sessionStore = require('session-file-store')(expressSession);
+
+var session = expressSession({
+    store: new sessionStore({path: '/sessions'}),
+    secret: 'pass',
+    resave: true,
+    saveUninitialized: true
+});
+
 // Get webpack configuration
 var config = require('./webpack.dev.config');
 
 // Config our server
 var app = express();
+app.use(session);
 
 var router = express.Router();
 
 // Set webpack as out compiler
 var compiler = webpack(config);
-
+// Setup session
 app.use(
     webpackMiddleware(compiler, {
         noInfo: true,
@@ -30,6 +43,11 @@ var index = fs.readFileSync('./index.html', {
 var str = index;
 
 app.get('*', function(req, res) {
+    if (
+        req.session.uid
+        || true
+    )
+        req.session.uid = Math.random().toString(36).substring(7);
     res.status(200).send(str);
 });
 
@@ -51,6 +69,9 @@ var port = process.env.PORT || '3000';
 var server = http.createServer(app);
 
 var io = require('./socket/roomSocket')(server).io;
+io.use(function(socket, next) {
+    session(socket.handshake, {}, next);
+});
 
 server.listen(port, (err) => {
     if (err) {

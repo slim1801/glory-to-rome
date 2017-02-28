@@ -38,7 +38,7 @@ export interface IPlayerState {
 export class PlayerInfoService {
 
     player: IPlayer = {
-        id: Math.random().toString(36).substring(7),
+        id: null,
         name: "Player1"
     };
 
