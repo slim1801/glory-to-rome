@@ -119,17 +119,6 @@ export enum eCardEffect {
     wood
 }
 
-export function mapMaterialName(type: eWorkerType) {
-    switch(type) {
-        case eWorkerType.architect: return "Concrete";
-        case eWorkerType.craftsman: return "Wood";
-        case eWorkerType.laborer: return "Rubble";
-        case eWorkerType.legionary: return "Brick";
-        case eWorkerType.merchant: return "Stone";
-        case eWorkerType.patron: return "Marble";
-    }
-}
-
 export class Card implements ICard {
 
     uid: string;
@@ -147,6 +136,25 @@ export class Card implements ICard {
     selected = false;
 
     constructor(data?: ICardData) {
+        this.assignData(data);
+        this.uid =  Math.random().toString(36).substring(7);
+    }
+
+    changeValues(data: ICard) {
+        if (data == null) return;
+        this.assignData(data);
+
+    }
+
+    setPhantom(val: boolean) {
+        this.phantom = val;
+    }
+
+    setMode(wType: eWorkerType) {
+        this.mode = wType;
+    }
+
+    private assignData(data?: ICardData) {
         if (data) {
             this.id = data.id;
             this.title = data.title;
@@ -157,23 +165,9 @@ export class Card implements ICard {
             this.y = data.y;
             this.count = data.count;
             this.asset = data.asset;
-            
+
             if (data.role != eWorkerType.jack)
                 this.mode = data.role;
         }
-        this.uid =  Math.random().toString(36).substring(7);
-    }
-
-    changeValues(data: ICard) {
-        if (data == null) return;
-        _.assign(this, data);
-    }
-
-    setPhantom(val: boolean) {
-        this.phantom = val;
-    }
-
-    setMode(wType: eWorkerType) {
-        this.mode = wType;
     }
 }

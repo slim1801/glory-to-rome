@@ -18,6 +18,7 @@ import { GameService, eActionMode, eLegionaryStage, removeFromList } from '../..
 import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
 import { SocketService } from '../../common/socket.service';
+import { MessageService } from '../../common/message.service';
 
 @Component({
     selector: 'card-component',
@@ -47,7 +48,8 @@ export class CardComponent {
         private _gameService: GameService,
         private _playerService: PlayerService,
         private _playerInfoService: PlayerInfoService,
-        private _socketService: SocketService
+        private _socketService: SocketService,
+        private _messageService: MessageService
     ) {
         this.height = (this._cardFactoryService.getCardHeight(eCardSize.large) / 2) + 'px';
         this.width = this._cardFactoryService.getCardWidth(eCardSize.large) + 'px';
@@ -196,9 +198,9 @@ export class CardComponent {
         }
     }
 
-    optionClicked = (type: eWorkerType) => {
-        this.card.setMode(type);
-        this._gameService.gameState.mode = type;
+    optionClicked = (wType: eWorkerType) => {
+        this.card.setMode(wType);
+        this._gameService.gameState.mode = wType;
         this._playerService.playCard(this.card);
     }
 
@@ -303,6 +305,7 @@ export class CardComponent {
 
     private _discardToPool() {
         this._playerService.removeFromHand(this.card);
+        this._messageService.discardMessage([this.card]);
         
         if (this.card.role == eWorkerType.jack) {
             this._gameService.addJack();

@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import { Component } from '@angular/core';
 
-import { ICard, ICompletedFoundation, eCardSize, eCardEffect, eWorkerType, mapMaterialName } from '../../common/card/card';
+import { ICard, ICompletedFoundation, eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
 
 import { GameService, IGameState, eActionMode } from '../../common/game.service';
 import { CardFactoryService } from '../../common/card/card.factory.service';
@@ -39,7 +39,7 @@ export class BoardComponent {
         if (gState.actionMode == eActionMode.resolveCardMode && romeDemands.length > 0) {
             if (!this._playerInfoService.isPlayersTurn) {
                 let strRes = _(romeDemands)
-                            .map(card => mapMaterialName(card.role))
+                            .map(card => this._cardFactoryService.mapMaterialName(card.role))
                             .join(", ");
 
                 return `Rome Demands "${strRes}"`;

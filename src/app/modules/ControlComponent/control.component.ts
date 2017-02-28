@@ -90,15 +90,14 @@ export class ControlComponent {
         if (
             !this.enableThreeJack() ||
             this._playerService.canPlayCardsAsJack().length == 0
-        )
-        return;
+        ) return;
 
-        this.jackMenuVisible = true;
+        this.jackMenuVisible = !this.jackMenuVisible;
     }
 
-    optionClicked = (type: eWorkerType) => {
+    optionClicked = (wType: eWorkerType) => {
         this.jackMenuVisible = false;
-        this._playerService.playCardsAsJack(type);
+        this._playerService.playCardsAsJack(wType);
     }
 
     /* THINK SECTION */

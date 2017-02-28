@@ -1,3 +1,4 @@
+import { map } from 'lodash';
 import { Injectable, Inject } from '@angular/core';
 import { Subject } from 'rxjs';
 
@@ -161,6 +162,90 @@ export class MessageService {
                 }},
             ]
         };
+        this.addMessage(msg);
+    }
+
+    addClientelleMessage(card: ICard) {
+        let msg = {
+            type: eMessageType.custom,
+            textBlocks: [
+                { player: this._playerInfoService.player },
+                { text: "adds" },
+                { card: {
+                    title: this._cardFactoryService.getRoleFromType(card.mode).toUpperCase(),
+                    mode: card.mode
+                }},
+                { text: "into clientelles" }
+            ]
+        };
+        this.addMessage(msg);
+    }
+
+    addStockpileMessage(card: ICard) {
+        let msg = {
+            type: eMessageType.custom,
+            textBlocks: [
+                { player: this._playerInfoService.player },
+                { text: "adds" },
+                { card: {
+                    title: this._cardFactoryService.mapMaterialName(card.mode).toUpperCase(),
+                    mode: card.mode
+                }},
+                { text: "to stockpile" }
+            ]
+        };
+        this.addMessage(msg);
+    }
+
+    romeDemandsMessage(cards: ICard[]) {
+        let msg = {
+            type: eMessageType.custom,
+            textBlocks: [
+                { player: this._playerInfoService.player },
+                { text: "demands" },
+                ...map(cards, card => ({
+                    card: {
+                        title: this._cardFactoryService.mapMaterialName(card.mode).toUpperCase(),
+                        mode: card.mode
+                    }
+                }))
+            ]
+        };
+        this.addMessage(msg);
+    }
+
+    discardMessage(cards: ICard[]) {
+        let msg = {
+            type: eMessageType.custom,
+            textBlocks: [
+                { player: this._playerInfoService.player },
+                { text: "discards" },
+                ...map(cards, card => ({
+                    card: {
+                        title: card.title.toUpperCase(),
+                        mode: card.mode
+                    }
+                })),
+                { text: "into pool" }
+            ]
+        };
+        this.addMessage(msg);
+    }
+
+    petitionMessage(cards: ICard[]) {
+        let msg = {
+            type: eMessageType.custom,
+            textBlocks: [
+                { player: this._playerInfoService.player },
+                { text: "petitions" },
+                ...map(cards, card => ({
+                    card: {
+                        title: card.title.toUpperCase(),
+                        mode: card.mode
+                    }
+                }))
+            ]
+        }
         this.addMessage(msg);
     }
 

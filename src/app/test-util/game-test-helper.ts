@@ -36,7 +36,15 @@ export enum eSelector {
 
     thinkButton,
     jackButton,
-    followButton
+    petitionButton,
+    followButton,
+
+    architectOption,
+    craftsmanOption,
+    laborerOption,
+    legionaryOption,
+    merchantOption,
+    patronOption
 }
 
 export interface IServices {
@@ -170,6 +178,21 @@ export class GameTestHelper<T> {
                 return this.testHelper.getElement('.jack-button-container');
             case eSelector.followButton:
                 return this.testHelper.getElement('.follow-button-container');
+            case eSelector.petitionButton:
+                return this.testHelper.getElement('.three-card-jack-container');
+            
+            case eSelector.architectOption:
+                return this.testHelper.getElement('.architect-option');
+            case eSelector.craftsmanOption:
+                return this.testHelper.getElement('.craftsman-option');
+            case eSelector.laborerOption:
+                return this.testHelper.getElement('.laborer-option');
+            case eSelector.legionaryOption:
+                return this.testHelper.getElement('.legionary-option');
+            case eSelector.merchantOption:
+                return this.testHelper.getElement('.merchant-option');
+            case eSelector.patronOption:
+                return this.testHelper.getElement('.patron-option');
             
         }
     }

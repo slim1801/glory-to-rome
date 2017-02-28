@@ -234,6 +234,7 @@ export class PlayerService {
     }
 
     discardHand = () => {
+        this._messageService.discardMessage(this.handCards);
         _.forEach(this.handCards, card => {
             if (card.role == eWorkerType.jack) {
                 this._gameService.addJack();
@@ -271,7 +272,7 @@ export class PlayerService {
         return this._hasNumCards(3);
     }
 
-    typesForJack = null;
+    typesForJack: eWorkerType[] = null;
     jackTypeSelected: eWorkerType = null;
 
     takeOpponentsJacks() {
@@ -304,7 +305,10 @@ export class PlayerService {
         jackCards.push(card);
         if (jackCards.length == this.cardsToPlayJack) {
 
+            this._messageService.petitionMessage(jackCards);
+
             _.forEach(jackCards, card => {
+                card.selected = false;
                 _.remove(this.handCards, card);
             });
 
@@ -692,6 +696,7 @@ export class PlayerService {
             this.resolvingCard = true;
         }
         else {
+            this._messageService.romeDemandsMessage(this._gameService.gameState.romeDemands);
             this._socketService.romeDemands();
         }
     }
@@ -866,6 +871,7 @@ export class PlayerService {
     addToClientelles(card: ICard) {
         let clients = this._playerInfoService.getPlayerState().clientelles;
         clients.push(card);
+        this._messageService.addClientelleMessage(card);
         
         // Forum Condition
         if (this.forumCondition(this._playerInfoService.getPlayerState())) {
@@ -1116,6 +1122,7 @@ export class PlayerService {
 
     addToStockpile(card: ICard) {
         this._playerInfoService.getPlayerState().stockpile.push(card);
+        this._messageService.addStockpileMessage(card);
     }
 
     removeFromStockpile(card: ICard) {
@@ -1159,6 +1166,10 @@ export class PlayerService {
         _.forEach(cards, card => {
             this._playerInfoService.getPlayerState().vault.push(card);
         });
+        this._messageService.addCustomMessage([
+            { player: this._playerInfoService.player },
+            { text: "adds a card into their VAULT" }
+        ]);
     }
 
     canTakeFromVault() {

@@ -104,7 +104,6 @@ describe('Test whole application', () => {
         srvs.gs.gameState.mode = eWorkerType.craftsman;
         srvs.pis.isPlayersLead = false;
 
-        debugger;
         gth.invokeAction('on card played');
 
         th.click(gth.getElement(eSelector.followButton));
@@ -162,6 +161,36 @@ describe('Test whole application', () => {
         expect(spCards[5].classList.contains('interactable')).toBe(false);
     }));
 
+    it('tests petitioning', injector(srvs => {
+        let handCards = concat([eCardEffect.academy, eCardEffect.academy], ALL_CLIENTS);
+        gth.configureState({
+            handCards,
+            pool: []
+        });
+
+        srvs.ps.playCardsAsJack(eWorkerType.craftsman);
+        fixture.detectChanges();
+
+        let hCards = gth.getHandCards();
+        expect(hCards[0].classList.contains('interactable')).toBe(true);
+        expect(hCards[1].classList.contains('interactable')).toBe(true);
+        expect(hCards[2].classList.contains('interactable')).toBe(true);
+        expect(hCards[3].classList.contains('inactive')).toBe(true);
+        expect(hCards[4].classList.contains('inactive')).toBe(true);
+        expect(hCards[5].classList.contains('inactive')).toBe(true);
+        expect(hCards[6].classList.contains('inactive')).toBe(true);
+        expect(hCards[7].classList.contains('inactive')).toBe(true);
+
+        // Select cards
+        gth.clickOnHandCard(0);
+        gth.clickOnHandCard(1);
+        gth.clickOnHandCard(2);
+
+        // Perform craftsman action
+        gth.clickOnHandCard(0);
+        expect(srvs.gs.gameState.pool.length).toBe(3);
+    }));
+
     // CARD EFFECTS
 
     it('is testing ACADEMY functionality', injector(srvs => {
@@ -197,7 +226,7 @@ describe('Test whole application', () => {
         gth.configureState({
             underConstruction: [{ cardEff: eCardEffect.aqueduct }],
             handCards: [eCardEffect.amphitheatre, eCardEffect.basilica],
-            pool: [eCardEffect.brick]
+            pool: [eCardEffect.bridge]
         });
 
         gth.completeBuilding(eCardEffect.aqueduct);

@@ -17,6 +17,7 @@
     left: 0px;
     overflow-y: scroll;
     max-height: 90%;
+    font-size: 12px;
 }
 
 .messages {
@@ -42,5 +43,5 @@
 }
 
 .message-body {
-    padding: 5px 0px;
+    padding: 2px 0px;
 }

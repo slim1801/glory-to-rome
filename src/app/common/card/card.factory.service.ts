@@ -151,4 +151,15 @@ export class CardFactoryService {
             case eWorkerType.patron: return 'patron-text';
         }
     }
+
+    mapMaterialName(wType: eWorkerType) {
+        switch(wType) {
+            case eWorkerType.architect: return "Concrete";
+            case eWorkerType.craftsman: return "Wood";
+            case eWorkerType.laborer: return "Rubble";
+            case eWorkerType.legionary: return "Brick";
+            case eWorkerType.merchant: return "Stone";
+            case eWorkerType.patron: return "Marble";
+        }
+    }
 }
