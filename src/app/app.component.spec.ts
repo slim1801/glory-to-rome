@@ -11,10 +11,10 @@ import { eCardEffect, eWorkerType, ICard } from './common/card/card';
 import { AppImports } from './app.module';
 import { AppComponent } from './app.component';
 import { TestHelper } from './test-util/test-helper';
-import { GameTestHelper, IServices, eSelector } from './test-util/game-test-helper';
+import { GameTestHelper, IServices, eSelector, eInteractable } from './test-util/game-test-helper';
 
 import { CardFactoryService } from './common/card/card.factory.service';
-import { GameService } from './common/game.service';
+import { GameService, eActionMode } from './common/game.service';
 import { PlayerInfoService } from './common/player.info.service';
 import { PlayerService } from './common/player.service';
 
@@ -110,13 +110,15 @@ describe('Test whole application', () => {
         expect(srvs.pis.isFollowing).toBe(true);
 
         let handCards = gth.getHandCards();
-        expect(handCards[0].classList.contains('inactive')).toBe(true);
-        expect(handCards[1].classList.contains('interactable')).toBe(true);
-        expect(handCards[2].classList.contains('inactive')).toBe(true);
-        expect(handCards[3].classList.contains('inactive')).toBe(true);
-        expect(handCards[4].classList.contains('inactive')).toBe(true);
-        expect(handCards[5].classList.contains('inactive')).toBe(true);
-        expect(handCards[6].classList.contains('interactable')).toBe(true);
+        gth.checkInteraction(handCards, [
+            eInteractable.inactive,
+            eInteractable.interactable,
+            eInteractable.inactive,
+            eInteractable.inactive,
+            eInteractable.inactive,
+            eInteractable.inactive,
+            eInteractable.interactable
+        ]);
     }));
 
     it('tests adding material to buildings when CRAFTSMAN', injector(srvs => {
@@ -133,13 +135,15 @@ describe('Test whole application', () => {
         gth.clickOnUnderConstruction(0);
 
         let hCards = gth.getHandCards();
-        expect(hCards[0].classList.contains('inactive')).toBe(true);
-        expect(hCards[1].classList.contains('interactable')).toBe(true);
-        expect(hCards[2].classList.contains('inactive')).toBe(true);
-        expect(hCards[3].classList.contains('inactive')).toBe(true);
-        expect(hCards[4].classList.contains('inactive')).toBe(true);
-        expect(hCards[5].classList.contains('inactive')).toBe(true);
-        expect(hCards[6].classList.contains('inactive')).toBe(true);
+        gth.checkInteraction(hCards, [
+            eInteractable.inactive,
+            eInteractable.interactable,
+            eInteractable.inactive,
+            eInteractable.inactive,
+            eInteractable.inactive,
+            eInteractable.inactive,
+            eInteractable.inactive
+        ]);
     }));
 
     it('tests adding material to buildings when ARCHITECT', injector(srvs => {
@@ -153,12 +157,14 @@ describe('Test whole application', () => {
         gth.clickOnUnderConstruction(0);
 
         let spCards = gth.getStockpileCards();
-        expect(spCards[0].classList.contains('interactable')).toBe(false);
-        expect(spCards[1].classList.contains('interactable')).toBe(true);
-        expect(spCards[2].classList.contains('interactable')).toBe(false);
-        expect(spCards[3].classList.contains('interactable')).toBe(false);
-        expect(spCards[4].classList.contains('interactable')).toBe(false);
-        expect(spCards[5].classList.contains('interactable')).toBe(false);
+        gth.checkInteraction(spCards, [
+            eInteractable.noninteractable,
+            eInteractable.interactable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable
+        ]);
     }));
 
     it('tests petitioning', injector(srvs => {
@@ -172,14 +178,16 @@ describe('Test whole application', () => {
         fixture.detectChanges();
 
         let hCards = gth.getHandCards();
-        expect(hCards[0].classList.contains('interactable')).toBe(true);
-        expect(hCards[1].classList.contains('interactable')).toBe(true);
-        expect(hCards[2].classList.contains('interactable')).toBe(true);
-        expect(hCards[3].classList.contains('inactive')).toBe(true);
-        expect(hCards[4].classList.contains('inactive')).toBe(true);
-        expect(hCards[5].classList.contains('inactive')).toBe(true);
-        expect(hCards[6].classList.contains('inactive')).toBe(true);
-        expect(hCards[7].classList.contains('inactive')).toBe(true);
+        gth.checkInteraction(hCards, [
+            eInteractable.interactable,
+            eInteractable.interactable,
+            eInteractable.interactable,
+            eInteractable.inactive,
+            eInteractable.inactive,
+            eInteractable.inactive,
+            eInteractable.inactive,
+            eInteractable.inactive
+        ]);
 
         // Select cards
         gth.clickOnHandCard(0);
@@ -189,6 +197,46 @@ describe('Test whole application', () => {
         // Perform craftsman action
         gth.clickOnHandCard(0);
         expect(srvs.gs.gameState.pool.length).toBe(3);
+    }));
+
+    it('tests maximum clientelles', injector(srvs => {
+        gth.configureState({
+            handCards: [eCardEffect.basilica],
+            clientelles: [eCardEffect.academy, eCardEffect.academy],
+            pool: ALL_CLIENTS
+        });
+        
+        gth.clickOnHandCard(0);
+
+        let pCards = gth.getPoolCards();
+        gth.checkInteraction(pCards, [
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable
+        ]);
+    }));
+
+    it('tests maximum vault', injector(srvs => {
+        gth.configureState({
+            handCards: [eCardEffect.scriptorium],
+            vault: [eCardEffect.academy, eCardEffect.academy],
+            stockpile: ALL_CLIENTS
+        });
+        
+        gth.clickOnHandCard(0);
+
+        let spCards = gth.getStockpileCards();
+        gth.checkInteraction(spCards, [
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable
+        ]);
     }));
 
     // CARD EFFECTS
@@ -340,6 +388,9 @@ describe('Test whole application', () => {
 
     it('is testing BATH functionality [PATRON]', injector(srvs => {
         bathLoop([eCardEffect.basilica, eCardEffect.insula, eCardEffect.dock], eWorkerType.patron, srvs);
+
+        srvs.pis.getPlayerState().maxClientelles = 3;
+        fixture.detectChanges();
 
         gth.clickOnPool(0);
         gth.checkPrompt('[Bath] Perform LABORER action?', true, true);
@@ -776,10 +827,9 @@ describe('Test whole application', () => {
             ]
         });
 
-        spyOn(srvs.ps, 'turnFinished');
         gth.clickOnHandCard(0);
         gth.clickOnHandCard(0);
-        expect(srvs.ps.turnFinished).toHaveBeenCalled();
+        expect(srvs.gs.gameState.actionMode).toBe(eActionMode.actionCardMode);
     }));
 
     it('is testing PRISON functionality', injector(srvs => {

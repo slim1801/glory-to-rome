@@ -17,8 +17,6 @@ import { MessageService } from '../../common/message.service';
 })
 export class ControlComponent {
 
-    private cardsAsJackDisable;
-
     constructor(
         private _gameMechanicsService: GameMechanicsService,
         private _gameService: GameService,
@@ -27,7 +25,6 @@ export class ControlComponent {
         private _socketService: SocketService,
         private _messageService: MessageService
     ) {
-        this.cardsAsJackDisable = this._playerService.canPlayCardsAsJack
         this._initListeners();
     }
 
@@ -120,6 +117,7 @@ export class ControlComponent {
     }
 
     enableJack = () => {
+        if (this._gameService.gameState.jacks == 0) return false;
         if (this._playerService.actionFinishTrigger || this._playerService.actionPerformTrigger) return false;
         if (this._enableInActionMode())return true;
         if (this._enableOnActionModeResponse() && !this._playerInfoService.isFollowing) return true;
@@ -135,7 +133,7 @@ export class ControlComponent {
 
     enableThreeJack = () => {
         if (this._playerService.actionFinishTrigger || this._playerService.actionPerformTrigger) return false;
-        if (this.cardsAsJackDisable().length == 0) return false;
+        if (this._playerService.canPlayCardsAsJack().length == 0) return false;
         if (this._enableInActionMode()) return true;
         if (this._enableWhileFollowing()) return true;
     }

@@ -39,7 +39,7 @@ import { PlayerService } from '../../common/player.service';
                             [card]="pile.foundation"
                             [size]="size"
                             [customSize]="customSize"
-                            [interactable]="enableFoundation()">
+                            [interactable]="enableFoundation(pile)">
                 </card-image>
         </div>
     `,
@@ -104,13 +104,14 @@ export class FoundationComponent {
     }
 
     onFoundationClick = (pile: IFoundationPile) => {
-        if (this.enableFoundation()) {
+        if (this.enableFoundation(pile)) {
             this.useFoundation(pile.foundation);
             this._playerService.foundationChosen(pile);
         }
     }
 
-    enableFoundation = () => {
-        return this._playerService.actionPerformTrigger == eCardEffect.statue;
+    enableFoundation = (pile: IFoundationPile) => {
+        return  this._playerService.actionPerformTrigger == eCardEffect.statue &&
+                this._playerService.canAddNewBuilding(pile.foundation.role);
     }
 }

@@ -9,6 +9,8 @@
                         <div *ngFor="let block of message.textBlocks">{{block.text}}</div>
                     </div>
 
+                    <div class="message-divider" *ngSwitchCase="eMessageType.line"></div>
+
                     <div class="message-body" *ngSwitchCase="eMessageType.custom">
                         <span *ngFor="let block of message.textBlocks">
                             <span *ngIf="_messageService.isType(block) === 'player'"

@@ -126,7 +126,11 @@ export class StockpileComponent {
             return true;
         }
 
-        if (this._gameService.gameState.mode == eWorkerType.merchant) {
+        // Merchant action
+        if (
+            this._gameService.gameState.mode == eWorkerType.merchant &&
+            this._playerService.canPutIntoVault()
+        ) {
             return true;
         }
         else if (this._gameService.gameState.mode == eWorkerType.architect) {
@@ -138,6 +142,7 @@ export class StockpileComponent {
             }
             return false;
         }
+        return false;
     }
 
     onMouseOver = (card: ICard) => {

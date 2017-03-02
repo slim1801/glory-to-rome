@@ -117,6 +117,7 @@ export class UnderConstructionComponent implements AfterContentInit {
     private _createPhantomCard(card: ICard) {
         let newCard = new Card();
         newCard.changeValues(card);
+        newCard.uid = card.uid;
         newCard.setPhantom(true);
         return newCard;
     }

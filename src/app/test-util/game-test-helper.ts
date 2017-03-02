@@ -68,6 +68,12 @@ export interface IConfigureParams {
     stockpile?: eCardEffect[]
 }
 
+export enum eInteractable {
+    interactable,
+    noninteractable,
+    inactive
+}
+
 export class GameTestHelper<T> {
 
     srvs: IServices
@@ -100,6 +106,10 @@ export class GameTestHelper<T> {
         // Create clientelles
         if (conf.clientelles)
             this.replaceCards(conf.clientelles, pState.clientelles);
+
+        // Create vault
+        if (conf.vault)
+            this.replaceCards(conf.vault, pState.vault);
         
         // Create Completed
         if (conf.completed) {
@@ -203,6 +213,10 @@ export class GameTestHelper<T> {
 
     getStockpileCards() {
         return this.testHelper.getElements('.stockpile-card-container .card-sprite');
+    }
+
+    getPoolCards() {
+        return this.testHelper.getElements('.pool-card-container .card-sprite');
     }
 
     completeBuilding(cardEff: eCardEffect) {
@@ -345,5 +359,18 @@ export class GameTestHelper<T> {
             hasLooted: false,
             gloryToRome: false
         }, extendedProps));
+    }
+
+    checkInteraction(cards: HTMLElement[], classes: eInteractable[]) {
+        forEach(cards, (card, i) => {
+            switch(classes[i]) {
+                case eInteractable.interactable:
+                    expect(card.classList.contains('interactable')).toBe(true); break;
+                case eInteractable.noninteractable:
+                    expect(card.classList.contains('interactable')).toBe(false); break;
+                case eInteractable.inactive:
+                    expect(card.classList.contains('inactive')).toBe(true); break;
+            }
+        });
     }
 }

@@ -40,8 +40,13 @@ export class PlayerTemplateComponent {
     selected: boolean = false;
 
     actionMessageEnabled() {
-        return this._gameService.gameState.actionMode === eActionMode.resolveCardMode &&
-                this._playerInfoService.isPlayersTurn
+        return  this._gameService.gameState.actionMode === eActionMode.resolveCardMode &&
+                this._playerInfoService.isPlayersTurn && 
+                this._gameService.gameState.mode !== eWorkerType.legionary ||
+                this._gameService.gameState.actionMode === eActionMode.resolveCardMode &&
+                this._playerInfoService.isPlayersTurn &&
+                this._gameService.gameState.mode === eWorkerType.legionary &&
+                this._gameService.gameState.legionaryStage === eLegionaryStage.declare
     }
 
     actionMessageClicked() {

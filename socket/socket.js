@@ -226,8 +226,7 @@ module.exports = function() {
             socket.emit("on all players chosen", res);
             socket.to(params.roomID).emit("on all players chosen", res);
         }
-
-        if (state.actionMode == eActionMode.turnEnd) {
+        else if (state.actionMode == eActionMode.turnEnd) {
             socket.emit("on turn end", state);
             socket.to(params.roomID).emit("on turn end", state);
         }
@@ -345,11 +344,11 @@ module.exports = function() {
 
             incrementPlayerTurn(state);
             state.actions.push(eActions.think);
+            
             if (state.playerTurn === 0) {
                 socket.emit("on all players chosen", state);
                 socket.to(params.roomID).emit("on all players chosen", state);
             }
-            socket.to(params.roomID).emit("on card played", state);
         }
     }
 

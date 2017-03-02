@@ -45,3 +45,9 @@
 .message-body {
     padding: 2px 0px;
 }
+
+.message-divider {
+    margin: 7px 0px;
+    height: 2px;
+    background-color: black;
+}

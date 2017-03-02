@@ -9,13 +9,14 @@ import { eWorkerType, ICard, IFoundation } from './card/card';
 
 export enum eMessageType {
     player,
+    line,
     custom
 }
 
 export interface IMessage {
     type: eMessageType;
     player?: IPlayer,
-    textBlocks: ICustomMessage[];
+    textBlocks?: ICustomMessage[];
 }
 
 export interface ICustomMessage {
@@ -69,11 +70,12 @@ export class MessageService {
     }
 
     addPlayerMessage(text: string) {
+        let prevMessage = this.messages[this.messages.length - 1];
         if (
             this.messages.length > 0 &&
-            this.messages[this.messages.length - 1].player.id === this._playerInfoService.player.id
+            prevMessage.player && prevMessage.player.id === this._playerInfoService.player.id
         ) {
-            this.messages[this.messages.length - 1].textBlocks.push({ text });
+            prevMessage.textBlocks.push({ text });
             this._socketService.sendPlayerChat(text);
             this.rerenderScrollSubject.next();
         }
@@ -247,6 +249,11 @@ export class MessageService {
             ]
         }
         this.addMessage(msg);
+    }
+
+    addLine() {
+        let msg = { type: eMessageType.line };
+        this.messages.push(msg);
     }
 
     private rerenderScrollSubject: Subject<void> = new Subject<void>();

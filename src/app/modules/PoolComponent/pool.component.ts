@@ -172,8 +172,10 @@ export class PoolComponent {
         if (this._playerService.activeActionTrigger == eCardEffect.dock) return false;
         
         if (this._gameService.gameState.actionMode == eActionMode.resolveCardMode) {
-            // Laboerer and Patron condition
-            if (mode == eWorkerType.laborer || mode == eWorkerType.patron) return true;
+            // Laboerer condition
+            if (mode == eWorkerType.laborer) return true;
+            // Patron condition
+            if (mode == eWorkerType.patron && this._playerService.canAddToClientelles()) return true;
             // Legionary from pool condition
             if (this._legionaryFromPool(mode, card)) return true;
             // Archway condition

@@ -49,14 +49,22 @@ export class GameMechanicsService {
             this.actionMode = gameState.actionMode;
         });
 
-        skt.onCardPlayed().subscribe(gameState => {
-            if (gameState.playerOrder[gameState.playerTurn].id == this._playerInfoService.player.id) {
-                this._playerInfoService.isPlayersTurn = true;
-            }
-            else if (gameState.actionMode == eActionMode.turnEndMode) {
-                this.actionEnd();
-            }
+        skt.onAllPlayersChosen().subscribe(gameState => {
+            this._configurePlayerTurn(gameState);
         });
+
+        skt.onCardPlayed().subscribe(gameState => {
+            this._configurePlayerTurn(gameState);
+        });
+    }
+    
+    private _configurePlayerTurn(gameState) {
+        if (gameState.playerOrder[gameState.playerTurn].id == this._playerInfoService.player.id) {
+            this._playerInfoService.isPlayersTurn = true;
+        }
+        else if (gameState.actionMode == eActionMode.turnEndMode) {
+            this.actionEnd();
+        }
     }
 
     getActionMode = () => this.actionMode;

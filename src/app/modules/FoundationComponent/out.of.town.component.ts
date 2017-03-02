@@ -1,17 +1,15 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, AfterContentInit } from '@angular/core';
 
 import { eWorkerType } from '../../common/card/card';
+import { PlayerService } from '../../common/player.service';
 
 @Component({
     selector: 'out-of-town-component',
     template: `
         <div class="out-of-town-container"
-            [class.architect]="role == 0"
-            [class.craftsman]="role == 1"
-            [class.laborer]="role == 2"
-            [class.legionary]="role == 3"
-            [class.merchant]="role == 4"
-            [class.patron]="role == 5">
+             [ngClass]="className"
+             [class.interactable]="canInteract()"
+             title="out of town site">
                 <div class="icon-container fa fa-gavel"></div>
         </div>
     `,
@@ -24,17 +22,37 @@ import { eWorkerType } from '../../common/card/card';
             position: absolute;
             top: 25%;
             left: 50%;
-            transform: translate(-50%, 0%);
+            transform: translate(-50%, -50%);
 
-            color: white;
-            font-size: 20px;
+            font-size: 25px;
+        }
+        .interactable {
+            box-shadow: inset 0 0 4px 4px #F89406;
         }
     `]
 })
-export class OutOfTownComponent {
+export class OutOfTownComponent implements AfterContentInit {
 
     @Input('role') private role: eWorkerType;
+    private className: string;
 
-    constructor() {
+    constructor(
+        private _playerService: PlayerService
+    ) {
+    }
+
+    ngAfterContentInit() {
+        switch(this.role) {
+            case eWorkerType.architect: this.className = 'architect-text'; break;
+            case eWorkerType.craftsman: this.className = 'craftsman-text'; break;
+            case eWorkerType.laborer: this.className = 'laborer-text'; break;
+            case eWorkerType.legionary: this.className = 'legionary-text'; break;
+            case eWorkerType.merchant: this.className = 'merchant-text'; break;
+            case eWorkerType.patron: this.className = 'patron-text'; break;
+        }
+    }
+
+    canInteract() {
+        return this._playerService.canAddNewBuilding(this.role);
     }
 }

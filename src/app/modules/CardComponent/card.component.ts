@@ -61,7 +61,7 @@ export class CardComponent {
         let game = this._gameMechanicsService;
         let player = this._playerService;
 
-        this._socketService.onCardPlayed().subscribe(this._enableActions);
+        this._socketService.onAllPlayersChosen().subscribe(this._enableActions);
         player.onActionFinished().subscribe(this._enableActions);
 
         game.onPlayCardsAsJack().subscribe(types => {
@@ -173,16 +173,18 @@ export class CardComponent {
         let role = this._gameService.gameState.mode;
         let player = this._playerService;
 
-        if (role == eWorkerType.craftsman && this.card.role != eWorkerType.jack) {
-            if (player.selectedBuilding) {
-                player.cardIsHoveredAddMaterial(this.card);
+        if (this._gameService.gameState.actionMode === eActionMode.resolveCardMode) {
+            if (role == eWorkerType.craftsman && this.card.role != eWorkerType.jack) {
+                if (player.selectedBuilding) {
+                    player.cardIsHoveredAddMaterial(this.card);
+                }
+                else {
+                    player.cardIsHoveredNewBuilding(this.card);
+                }
             }
-            else {
+            else if (role == eWorkerType.architect) {
                 player.cardIsHoveredNewBuilding(this.card);
             }
-        }
-        else if (role == eWorkerType.architect) {
-            player.cardIsHoveredNewBuilding(this.card);
         }
     }
 
@@ -191,10 +193,12 @@ export class CardComponent {
         this._hoverState = "dormant";
 
         let mode = this._gameService.gameState.mode;
-        if (mode == eWorkerType.craftsman || mode == eWorkerType.architect) {
+        if (this._gameService.gameState.actionMode === eActionMode.resolveCardMode) {
+            if (mode == eWorkerType.craftsman || mode == eWorkerType.architect) {
 
-            if (this.card.role != eWorkerType.jack)
-                this._playerService.cardIsNotHovered(this.card);
+                if (this.card.role != eWorkerType.jack)
+                    this._playerService.cardIsNotHovered(this.card);
+            }
         }
     }
 
@@ -424,7 +428,9 @@ export class CardComponent {
 
                 // Craftsman conditions
                 if (role == eWorkerType.craftsman) {
-                    if (!this._playerService.selectedBuilding) return true;
+                    if (!this._playerService.selectedBuilding && this._playerService.canAddNewBuilding(this.card.role)) 
+                        return true;
+
                     return this._playerService.cardCanInteractAsMaterial(this.card);
                 }
 
@@ -432,8 +438,9 @@ export class CardComponent {
                 if (role == eWorkerType.architect) {
                     // Clean up maybe
                     if (this._playerService.activeActionTrigger === eCardEffect.stairway) return false;
-                    if (this._playerService.cardCanInteractAsMaterial(this.card)) return true;
-                    return !this._playerService.selectedBuilding;
+                    if (!this._playerService.selectedBuilding && this._playerService.canAddNewBuilding(this.card.role))
+                        return true;
+                    return false;
                 }
 
                 return false;

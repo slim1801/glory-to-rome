@@ -143,7 +143,6 @@ export class Card implements ICard {
     changeValues(data: ICard) {
         if (data == null) return;
         this.assignData(data);
-
     }
 
     setPhantom(val: boolean) {
