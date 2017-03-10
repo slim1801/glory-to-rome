@@ -41,8 +41,13 @@ export class ActionCardComponent {
 
         this._socketService.onAllPlayersChosen().subscribe(() => {
             let gState = this._gameService.gameState;
+            let pState = this._playerInfoService.getPlayerState();
+
             let index = findLastIndex(gState.playerOrder, player => player.id == this._playerInfoService.player.id);
-            if (this._gameService.gameState.actions[index] === eActions.think) return;
+            if (
+                pState.action === eActions.think &&
+                !this._playerService.hasClientelleType(gState.mode)
+            ) return;
 
             let mode = gState.mode;
 
@@ -55,11 +60,11 @@ export class ActionCardComponent {
             player.activeActionItem.numActions = 0;
             // Palace condition
             if (this._playerService.hasCompletedBuilding(eCardEffect.palace)) {
-                player.activeActionItem.numActions += this._playerInfoService.getPlayerState().additionalActions.length;
+                player.activeActionItem.numActions += pState.additionalActions.length;
             }
             // Storeroom condition
             if (this._storeroomCondition()) {
-                player.activeActionItem.numActions += this._playerInfoService.getPlayerState().clientelles.length;
+                player.activeActionItem.numActions += pState.clientelles.length;
             }
             // Ludus Magna condition
             else if (this._ludusMagnaCondition() && mode != eWorkerType.merchant) {
@@ -74,8 +79,10 @@ export class ActionCardComponent {
                 player.activeActionItem.numActions = player.activeActionItem.numActions * 2;
             }
             // Bath condition
-            if (this._playerService.actionPerformTrigger !== eCardEffect.bath)
-                player.activeActionItem.numActions++;
+            if (this._playerService.actionPerformTrigger !== eCardEffect.bath) {
+                if (pState.action !== eActions.think)
+                    player.activeActionItem.numActions++;
+            }
         });
 
         game.onCardsPlayedAsJack().subscribe(types => {

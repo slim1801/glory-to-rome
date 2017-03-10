@@ -1,6 +1,6 @@
 import { Component, Input, AfterContentInit } from '@angular/core';
 
-import { eWorkerType } from '../../common/card/card';
+import { eWorkerType, eCardEffect } from '../../common/card/card';
 import { PlayerService } from '../../common/player.service';
 
 @Component({
@@ -53,6 +53,7 @@ export class OutOfTownComponent implements AfterContentInit {
     }
 
     canInteract() {
-        return this._playerService.canAddNewBuilding(this.role);
+        return this._playerService.activeActionTrigger === eCardEffect.statue &&
+               this._playerService.canAddNewBuilding(eCardEffect.statue);
     }
 }

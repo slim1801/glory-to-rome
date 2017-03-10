@@ -39,7 +39,6 @@ const cardConfig = require('../../config/card.config.json');
                 [class.card-sprite-medium]="isMedium()"
                 class="card-sprite"
                 [ngStyle]="cardStyle()"
-                [class.inactive]="cardInactive"
                 [class.interactable]="interactable && !(card && card.selected)"
                 [class.selected]="card && card.selected"
                 [style.cursor]="interactable ? 'pointer' : 'default'"
@@ -60,9 +59,6 @@ const cardConfig = require('../../config/card.config.json');
             width: 89px;
             height: 123.8px;
             box-shadow: inset 0 0 4px 4px black;
-        }
-        .inactive {
-            filter: grayscale(100%);
         }
         .interactable {
             box-shadow: inset 0 0 4px 4px #F89406;
@@ -123,7 +119,6 @@ export class CardImageComponent implements OnChanges, DoCheck, AfterContentInit 
 
     @Input('card') private card: ICard;
     @Input('size') private size: eCardSize;
-    @Input('inactive') private cardInactive;
     @Input('interactable') private interactable;
     @Input('invert') private invert;
     @Input('customSize') private customSize: ICustomCardSize;

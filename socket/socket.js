@@ -120,7 +120,6 @@ module.exports = function() {
             startingHand: [],
             playerTurn: 0,
             actionMode: eActionMode.actionCardMode,
-            actions: [],
             actionTriggers: [],
             playerStates: [],
             foundations: [],
@@ -181,6 +180,7 @@ module.exports = function() {
             maxClientelles: 2,
 
             actionCard: null,
+            action: null,
             additionalActions: [],
             jackCards: null,
 
@@ -206,10 +206,6 @@ module.exports = function() {
     cardPlayed = function(params, socket) {
         let state = gameStates[params.roomID];
         _.extend(state, params.gameState);
-
-        if (state.actionMode == eActionMode.actionCardMode) {
-            state.actions.push(eActions.playCard);
-        }
 
         let prevActionMode = state.actionMode;
         incrementPlayerTurn(state);
@@ -300,8 +296,6 @@ module.exports = function() {
         // Set action cards to null
         _.forEach(pStates, pState => pState.actionCard = null);
 
-        state.actions = [];
-
         let pOrder = state.playerOrder;
         state.actionMode = eActionMode.actionCardMode;
         pOrder.push(pOrder.shift());
@@ -343,8 +337,9 @@ module.exports = function() {
         else {
 
             incrementPlayerTurn(state);
-            state.actions.push(eActions.think);
-            
+
+            console.log(state);
+
             if (state.playerTurn === 0) {
                 socket.emit("on all players chosen", state);
                 socket.to(params.roomID).emit("on all players chosen", state);
@@ -365,7 +360,10 @@ module.exports = function() {
         state.playerTurn = (state.playerTurn + 1) % len;
 
         if (state.actionMode == eActionMode.resolveAction) {
-            while (state.actions[state.playerTurn] == eActions.think) {
+            while (
+                state.playerStates[state.playerTurn].action === eActions.think &&
+                !_.find(state.playerStates[state.playerTurn].clientelles, client => client.role === state.mode)
+            ) {
                 state.playerTurn = (state.playerTurn + 1) % len;
                 if (state.playerTurn == 0) {
                     state.actionMode = eActionMode.turnEnd;

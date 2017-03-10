@@ -46,7 +46,6 @@ export interface IGameState {
     mode: eWorkerType;
 
     actionMode: eActionMode;
-    actions: Array<eActions>;
     actionTriggers: eCardEffect[];
 
     romeDemands: ICard[];
@@ -144,16 +143,16 @@ export class GameService {
     }
 
     drawCards(numCards: number): ICard[] {
+        let drawn = this.gameState.deck.slice(0, numCards);
+        // End game condition
         if (this.gameState.deck.length === 0) {
             return null;
         }
-        else {
-            let drawn = this.gameState.deck.slice(0, numCards);
-            for(let i = 0; i < numCards; i++) {
-                this.gameState.deck.shift();
-            }
-            return drawn;
+
+        for(let i = 0; i < numCards; i++) {
+            this.gameState.deck.shift();
         }
+        return drawn;
     }
 
     drawJack() {
@@ -177,6 +176,11 @@ export class GameService {
         return _.every(this.gameState.foundations, foundation => {
             return foundation.inTown == 0
         });
+    }
+
+    hasFoundationToLay(wType: eWorkerType) {
+        let foundation = _.find(this.gameState.foundations, foundationPile => foundationPile.foundation.role == wType);
+        return foundation.outOfTown > 0
     }
 
     getNameOfAction(type: eWorkerType) {
@@ -210,6 +214,7 @@ export function removeFromList(card: ICard, cardArr: ICard[]) {
     for (let i = 0; i < cardArr.length; i++) {
         if (card.uid == cardArr[i].uid) {
             cardArr.splice(i, 1);
+            i--;
         }
     }
 }

@@ -63,22 +63,20 @@ export class StockpileComponent {
         let game = this._gameMechanicsService;
         let skt = this._socketService;
         
-        skt.onCardPlayed().subscribe(() => {
-            let mode = this._gameService.gameState.mode;
-            if (mode == eWorkerType.merchant) {
-                this._cardAction = this._mechantAction;
-            }
-            if (mode == eWorkerType.architect) {
-                this._cardAction = this._architectAction;
-            }
-        });
+        // skt.onCardPlayed().subscribe(() => {
+        //     let mode = this._gameService.gameState.mode;
+        //     if (mode == eWorkerType.merchant) {
+        //         this._cardAction = this._mechantAction;
+        //     }
+        //     if (mode == eWorkerType.architect) {
+        //         this._cardAction = this._architectAction;
+        //     }
+        // });
 
-        skt.onRomeDemands().subscribe(gameState => {
-            this._cardAction = this._bridgeAction;
-        });
+        // skt.onRomeDemands().subscribe(gameState => {
+        //     this._cardAction = this._bridgeAction;
+        // });
     }
-
-    private _cardAction: (cards: ICard) => void;
 
     private _mechantAction(card: ICard) {
         this._playerService.removeFromStockpile(card);
@@ -108,11 +106,27 @@ export class StockpileComponent {
     }
 
     cardClicked = (card: ICard) => {
-        this.cardCanInteract(card) && this._cardAction(card);
+        if(this.cardCanInteract(card)) {
+            let mode = this._gameService.gameState.mode;
+            // Bridge trigger
+            if (
+                mode == eWorkerType.legionary &&
+                this._gameService.gameState.legionaryStage === eLegionaryStage.bridge
+            ) {
+                this._bridgeAction(card);
+            }
+            // Merchant action
+            if (mode == eWorkerType.merchant)
+                this._mechantAction(card);
+            // Architect action
+            if (mode == eWorkerType.architect)
+                this._architectAction(card);
+        }
     }
 
     cardCanInteract = (card: ICard) => {
         let ps = this._playerService;
+        if (!this._playerInfoService.isPlayersTurn) return false;
         if (this._gameService.gameState.actionMode != eActionMode.resolveCardMode) return false;
         if (ps.resolvingCard) return false;
         if (ps.activeActionTrigger === eCardEffect.basilica) return false;

@@ -92,8 +92,6 @@ export class PoolComponent {
 
     /* ACTION FUNCTIONS */
 
-    private _cardAction: (card: ICard) => void;
-
     private _patronAction(card: ICard) {
         this.checkCardsInPool();
         if (this._playerService.addToClientelles(card))

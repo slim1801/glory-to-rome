@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 
 import { ICard, IFoundation, ICompletedFoundation } from './card/card';
-import { IGameState  } from './game.service';
+import { IGameState, eActions } from './game.service';
 
 export interface IPlayer {
     id: string;
@@ -26,6 +26,7 @@ export interface IPlayerState {
     maxClientelles: number;
 
     actionCard: ICard;
+    action: eActions;
     additionalActions: ICard[];
     jackCards: ICard[];
 
@@ -58,6 +59,7 @@ export class PlayerInfoService {
         cardsInHand: 5,
 
         actionCard: null,
+        action: null,
         additionalActions: [],
         jackCards: null,
         
@@ -90,7 +92,6 @@ export class PlayerInfoService {
 
     private getThisPlayer(gameState: IGameState) {
         return _.find(gameState.playerStates, pState => pState.player.id == this.player.id);
-
     }
 
     isPlayersTurn: boolean = false;

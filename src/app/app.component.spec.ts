@@ -111,12 +111,12 @@ describe('Test whole application', () => {
 
         let handCards = gth.getHandCards();
         gth.checkInteraction(handCards, [
-            eInteractable.inactive,
+            eInteractable.noninteractable,
             eInteractable.interactable,
-            eInteractable.inactive,
-            eInteractable.inactive,
-            eInteractable.inactive,
-            eInteractable.inactive,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
             eInteractable.interactable
         ]);
     }));
@@ -136,13 +136,13 @@ describe('Test whole application', () => {
 
         let hCards = gth.getHandCards();
         gth.checkInteraction(hCards, [
-            eInteractable.inactive,
+            eInteractable.noninteractable,
             eInteractable.interactable,
-            eInteractable.inactive,
-            eInteractable.inactive,
-            eInteractable.inactive,
-            eInteractable.inactive,
-            eInteractable.inactive
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable
         ]);
     }));
 
@@ -182,11 +182,11 @@ describe('Test whole application', () => {
             eInteractable.interactable,
             eInteractable.interactable,
             eInteractable.interactable,
-            eInteractable.inactive,
-            eInteractable.inactive,
-            eInteractable.inactive,
-            eInteractable.inactive,
-            eInteractable.inactive
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable,
+            eInteractable.noninteractable
         ]);
 
         // Select cards
@@ -225,7 +225,7 @@ describe('Test whole application', () => {
             vault: [eCardEffect.academy, eCardEffect.academy],
             stockpile: ALL_CLIENTS
         });
-        
+
         gth.clickOnHandCard(0);
 
         let spCards = gth.getStockpileCards();
@@ -235,6 +235,30 @@ describe('Test whole application', () => {
             eInteractable.noninteractable,
             eInteractable.noninteractable,
             eInteractable.noninteractable,
+            eInteractable.noninteractable
+        ]);
+    }));
+
+    it('tests duplicate under construction', injector(srvs => {
+        gth.configureState({
+            handCards: [
+                eCardEffect.dock,
+                eCardEffect.scriptorium,
+                eCardEffect.scriptorium
+            ],
+            clientelles: [eCardEffect.dock]
+        });
+
+        gth.clickOnHandCard(0);
+        let hCards = gth.getHandCards();
+        gth.checkInteraction(hCards, [
+            eInteractable.interactable,
+            eInteractable.interactable
+        ]);
+
+        gth.clickOnHandCard(0);
+        hCards = gth.getHandCards();
+        gth.checkInteraction(hCards, [
             eInteractable.noninteractable
         ]);
     }));
@@ -439,17 +463,17 @@ describe('Test whole application', () => {
         fixture.detectChanges();
         // Legionary from hand
         gth.clickOnHandCard(0);
-        expect(srvs.ps.handCards.length).toBe(0);
+        expect(srvs.ps.handCards.length).toBe(0, 'Did not legionary from hand');
 
         srvs.pis.isPlayersTurn = true;
         fixture.detectChanges();
         // Legionary from stockpile
         gth.clickOnStockpile(0);
-        expect(srvs.pis.getPlayerState().stockpile.length).toBe(0);
+        expect(srvs.pis.getPlayerState().stockpile.length).toBe(0, 'Did not legionary from stockpile');
 
         gth.clickOnPool(0);
         // After action is finished
-        expect(srvs.gs.gameState.pool.length).toBe(1);
+        expect(srvs.gs.gameState.pool.length).toBe(1, 'Did not legionary from pool');
     }));
     
     it('is testing CATACOMB functionality', injector(srvs => {

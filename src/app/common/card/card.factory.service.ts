@@ -141,6 +141,11 @@ export class CardFactoryService {
         }
     }
 
+    getRoleFromId(cardEff: eCardEffect): eWorkerType {
+        let card = _.find(this.cards, crd => crd.id === cardEff);
+        return this.cards[cardEff].role;
+    }
+
     getTextColor(type: eWorkerType) {
         switch(type) {
             case eWorkerType.architect: return 'architect-text';

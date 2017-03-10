@@ -16,8 +16,7 @@
                     <button class="yes-button"
                             type="button"
                             *ngIf="yesVisible()"
-                            (click)="yesClicked()"
-                            [disabled]="_playerService.activeActionTrigger !== null">Yes</button>
+                            (click)="yesClicked()">Yes</button>
                     <button class="no-button" type="button" *ngIf="noVisible()" (click)="noClicked()">No</button>
                 </div>
                 <div class="additional-message-text" style="margin:10px;">{{additionalActionMessage()}}</div>

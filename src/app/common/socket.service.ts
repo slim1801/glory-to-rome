@@ -59,7 +59,6 @@ export class SocketService {
         io.on("on all players chosen", data => {
             this._onNext(this.allPlayersChosenSubject, data);
         });
-
         io.on("on card played", data => {
             this._onNext(this.cardPlayedSubject, data);
         });

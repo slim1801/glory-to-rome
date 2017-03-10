@@ -112,6 +112,6 @@ export class FoundationComponent {
 
     enableFoundation = (pile: IFoundationPile) => {
         return  this._playerService.actionPerformTrigger == eCardEffect.statue &&
-                this._playerService.canAddNewBuilding(pile.foundation.role);
+                this._playerService.canAddNewBuilding(eCardEffect.statue);
     }
 }

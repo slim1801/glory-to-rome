@@ -3,8 +3,9 @@ import { find } from 'lodash';
 import { Component } from '@angular/core';
 
 import { ICard, Card, eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
+import { CardFactoryService } from '../../common/card/card.factory.service';
 import { GameMechanicsService } from '../../common/game.mechanics.service';
-import { GameService, eActionMode } from '../../common/game.service';
+import { GameService, eActionMode, eActions } from '../../common/game.service';
 import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
 import { SocketService } from '../../common/socket.service';
@@ -18,6 +19,7 @@ import { MessageService } from '../../common/message.service';
 export class ControlComponent {
 
     constructor(
+        private _cardFactoryService: CardFactoryService,
         private _gameMechanicsService: GameMechanicsService,
         private _gameService: GameService,
         private _playerService: PlayerService,
@@ -25,37 +27,19 @@ export class ControlComponent {
         private _socketService: SocketService,
         private _messageService: MessageService
     ) {
-        this._initListeners();
     }
-
-    private _initListeners() {
-        let game = this._gameMechanicsService;
-
-        game.onActionEnd().subscribe(cardPlayed => {
-            this.bothVisible = false;
-        })
-    }
-
-    private bothVisible = false;
 
     /* Normal section */
 
     no_action_think() {
         this._playerService.thinkAction();
-        this.bothVisible = false;
     }
 
     think = () => {
         if (!this.enableThink()) return;
-        // Both Condition
-        if (
-            this._playerService.hasCompletedBuilding(eCardEffect.vomitorium) &&
-            this._playerService.hasCompletedBuilding(eCardEffect.latrine)
-        ) {
-            this.bothVisible = true;
-        }
+
         // Vomitorium Condition
-        else if (this._playerService.hasCompletedBuilding(eCardEffect.vomitorium)) {
+        if (this._playerService.hasCompletedBuilding(eCardEffect.vomitorium)) {
             this._playerService.actionPerformTrigger = eCardEffect.vomitorium;
         }
         // Latrine Condition
@@ -64,11 +48,16 @@ export class ControlComponent {
             this._playerService.resolvingCard = true;
         }
         // Normal Condition
-        if (
-            !this._playerService.hasCompletedBuilding(eCardEffect.vomitorium) &&
-            !this._playerService.hasCompletedBuilding(eCardEffect.latrine)
-        ) {
-            this._playerService.thinkAction();
+        else {
+            this._playerInfoService.getPlayerState().action = eActions.think;
+            if (this._playerService.hasClientelleType(this._gameService.gameState.mode)) {
+                let card = this._cardFactoryService.getJack();
+                card.setMode(this._gameService.gameState.mode);
+
+                this._gameMechanicsService.changeActiveCard(card);
+                this._playerInfoService.saveActionCardToPlayerState(card);
+            }
+                this._playerService.thinkAction();
         }
     }
 

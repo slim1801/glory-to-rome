@@ -14,7 +14,7 @@ import { ICard, eCardSize, eCardEffect, eWorkerType } from '../../common/card/ca
 
 import { CardFactoryService } from '../../common/card/card.factory.service';
 import { GameMechanicsService } from '../../common/game.mechanics.service';
-import { GameService, eActionMode, eLegionaryStage, removeFromList } from '../../common/game.service';
+import { GameService, eActionMode, eLegionaryStage, removeFromList, eActions } from '../../common/game.service';
 import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
 import { SocketService } from '../../common/socket.service';
@@ -61,109 +61,109 @@ export class CardComponent {
         let game = this._gameMechanicsService;
         let player = this._playerService;
 
-        this._socketService.onAllPlayersChosen().subscribe(this._enableActions);
-        player.onActionFinished().subscribe(this._enableActions);
+        // this._socketService.onAllPlayersChosen().subscribe(this._enableActions);
+        // player.onActionFinished().subscribe(this._enableActions);
 
         game.onPlayCardsAsJack().subscribe(types => {
-            this._cardAction = this._playCardsAsJack
+            // this._cardAction = this._playCardsAsJack
         })
 
         game.onActionEnd().subscribe(card => {
-            this._cardAction = this._playCard;
+            // this._cardAction = this._playCard;
 
             this.card.selected = false;
             this._hoverState = "dormant";
         });
 
-        player.onBuildingCompleted().subscribe(card => {
-            switch(card.id) {
-                case eCardEffect.amphitheatre:
-                    this._cardAction = this._newBuildingClicked;
-                    break;
-            }
-        });
+        // player.onBuildingCompleted().subscribe(card => {
+        //     switch(card.id) {
+        //         case eCardEffect.amphitheatre:
+        //             this._cardAction = this._newBuildingClicked;
+        //             break;
+        //     }
+        // });
 
-        player.onBuildingSelected().subscribe(() => {
-            let mode = this._gameService.gameState.mode;
+        // player.onBuildingSelected().subscribe(() => {
+        //     let mode = this._gameService.gameState.mode;
 
-            if (mode == eWorkerType.craftsman) {
-                if (this._playerService.selectedBuilding == null) {
-                    this._cardAction = this._newBuildingClicked;
-                }
-                // Road condition
-                else if (
-                    player.roadCondition() ||
-                    this.card.role == eWorkerType.laborer && player.hasCompletedBuilding(eCardEffect.tower)
-                ) {
-                    if (this._playerService.selectedBuilding) {
-                        this._cardAction = this._addMaterial;
-                    }
-                    else {
-                        this._cardAction = this._newBuildingClicked;
-                    }
-                }
-                // Scriptorium condition
-                else if (
-                    this.card.role == eWorkerType.patron &&
-                    player.hasCompletedBuilding(eCardEffect.scriptorium)
-                ) {
-                    this._cardAction = this._addMaterial
-                }
-                // Normal condition
-                else {
-                    this._cardAction = this._addMaterial
-                }
-            }
-        });
+        //     if (mode == eWorkerType.craftsman) {
+        //         if (this._playerService.selectedBuilding == null) {
+        //             this._cardAction = this._newBuildingClicked;
+        //         }
+        //         // Road condition
+        //         else if (
+        //             player.roadCondition() ||
+        //             this.card.role == eWorkerType.laborer && player.hasCompletedBuilding(eCardEffect.tower)
+        //         ) {
+        //             if (this._playerService.selectedBuilding) {
+        //                 this._cardAction = this._addMaterial;
+        //             }
+        //             else {
+        //                 this._cardAction = this._newBuildingClicked;
+        //             }
+        //         }
+        //         // Scriptorium condition
+        //         else if (
+        //             this.card.role == eWorkerType.patron &&
+        //             player.hasCompletedBuilding(eCardEffect.scriptorium)
+        //         ) {
+        //             this._cardAction = this._addMaterial
+        //         }
+        //         // Normal condition
+        //         else {
+        //             this._cardAction = this._addMaterial
+        //         }
+        //     }
+        // });
 
-        player.onLatrineTriggered().subscribe(() => {
-            this._cardAction = this._discardToPool
-        });
+        // player.onLatrineTriggered().subscribe(() => {
+        //     this._cardAction = this._discardToPool
+        // });
 
-        player.onPalaceResolved().subscribe(() => {
-            this._cardAction = this._palaceAction
-        });
+        // player.onPalaceResolved().subscribe(() => {
+        //     this._cardAction = this._palaceAction
+        // });
 
-        this._socketService.onRomeDemands().subscribe(gameState => {
-            this._cardAction = this._extortMaterial;
-        });
+        // this._socketService.onRomeDemands().subscribe(gameState => {
+        //     this._cardAction = this._extortMaterial;
+        // });
 
-        this._cardAction = this._playCard;
+        // this._cardAction = this._playCard;
     }
 
-    private _enableActions = () => {
+    // private _enableActions = () => {
 
-            let player = this._playerService;
+    //         let player = this._playerService;
 
-            let mode = this._gameService.gameState.mode;
-            // Craftsman, Architect and Legionary actions
-            if (
-                mode == eWorkerType.craftsman ||
-                mode == eWorkerType.architect || 
-                mode == eWorkerType.legionary
-            ) {
-                if (
-                    player.activeActionItem &&
-                    this.card.role != eWorkerType.jack &&
-                    this._playerService.foundationCost(this.card.role) <= player.activeActionItem.numActions
-                ) {
-                    this._cardAction = mode === eWorkerType.legionary ? this._romeDemands : this._newBuildingClicked;
-                }
-            }
+    //         let mode = this._gameService.gameState.mode;
+    //         // Craftsman, Architect and Legionary actions
+    //         if (
+    //             mode == eWorkerType.craftsman ||
+    //             mode == eWorkerType.architect || 
+    //             mode == eWorkerType.legionary
+    //         ) {
+    //             if (
+    //                 player.activeActionItem &&
+    //                 this.card.role != eWorkerType.jack &&
+    //                 this._playerService.canAddNewBuilding(this.card.id)
+    //             ) {
+    //                 this._cardAction = mode === eWorkerType.legionary ? this._romeDemands : this._newBuildingClicked;
+    //             }
+    //         }
 
-            // Aqueduct Condition
-            if (mode == eWorkerType.patron && player.hasCompletedBuilding(eCardEffect.aqueduct)) {
-                this._cardAction = this._addClientelle;
-            }
-            // Basilica Condition
-            if (mode == eWorkerType.merchant && player.hasCompletedBuilding(eCardEffect.basilica)) {
-                this._cardAction = this._addToVault;
-            }
-            // Dock Condition
-            if (mode == eWorkerType.laborer && player.hasCompletedBuilding(eCardEffect.dock)) {
-                this._cardAction = this._addToStockpile;
-            }
-    }
+    //         // Aqueduct Condition
+    //         if (mode == eWorkerType.patron && player.hasCompletedBuilding(eCardEffect.aqueduct)) {
+    //             this._cardAction = this._addClientelle;
+    //         }
+    //         // Basilica Condition
+    //         if (mode == eWorkerType.merchant && player.hasCompletedBuilding(eCardEffect.basilica)) {
+    //             this._cardAction = this._addToVault;
+    //         }
+    //         // Dock Condition
+    //         if (mode == eWorkerType.laborer && player.hasCompletedBuilding(eCardEffect.dock)) {
+    //             this._cardAction = this._addToStockpile;
+    //         }
+    // }
 
     @HostListener('mouseover')
     onMouseOver(event: MouseEvent) {
@@ -210,8 +210,6 @@ export class CardComponent {
 
     private cardJustPlayed: ICard[] = null;
 
-    private _cardAction: () => void;
-
     cardClicked = () => {
         if (this.modeEnable()) {
             if (this.card.role != eWorkerType.jack) {
@@ -227,7 +225,7 @@ export class CardComponent {
                     this.card.selected = false;
                 }
                 else {
-                    this._cardAction();
+                    this._executeCardAction();
                 }
             }
             else if (this._playerService.activeActionTrigger == eCardEffect.latrine) {
@@ -237,18 +235,98 @@ export class CardComponent {
             }
             else if (this.card.role === eWorkerType.jack && this._playerInfoService.isFollowing) {
                 this.card.setMode(this._gameService.gameState.mode);
+                this._playerInfoService.getPlayerState().action = eActions.playCard;
+
                 this._playerService.playCard(this.card);
             }
         }
     }
 
-    private _actionCardPlayed() {
-        this._playerService.playCard(this.card);
+    private _executeCardAction() {
+        let gState = this._gameService.gameState;
+        let player = this._playerService;
+
+        // Latrine condition
+        if (this._playerService.activeActionTrigger === eCardEffect.latrine) {
+            this._discardToPool();
+        }
+        // Palace condition
+        else if(this._playerService.activeActionTrigger === eCardEffect.palace) {
+            this._palaceAction();
+        }
+        // Rome demands condition
+        else if (gState.legionaryStage === eLegionaryStage.romeDemanding) {
+            this._extortMaterial();
+        }
+        else if (gState.actionMode === eActionMode.actionCardMode) {
+            if (player.jackTypeSelected !== null) {
+                this._playCardsAsJack();
+            }
+            else {
+                this._playCard();
+            }
+        }
+        else if (gState.actionMode === eActionMode.resolveCardMode) {
+            if (player.selectedBuilding === null) {
+                let mode = gState.mode;
+                // Craftsman, Architect and Legionary actions
+                if (
+                    mode == eWorkerType.craftsman ||
+                    mode == eWorkerType.architect || 
+                    mode == eWorkerType.legionary
+                ) {
+                    if (
+                        player.activeActionItem &&
+                        this.card.role != eWorkerType.jack &&
+                        this._playerService.canAddNewBuilding(this.card.id)
+                    ) {
+                        if (mode === eWorkerType.legionary)
+                            this._romeDemands()
+                        else
+                            this._newBuildingClicked();
+                    }
+                }
+
+                // Aqueduct Condition
+                if (mode == eWorkerType.patron && player.hasCompletedBuilding(eCardEffect.aqueduct))
+                    this._addClientelle();
+                // Basilica Condition
+                if (mode == eWorkerType.merchant && player.hasCompletedBuilding(eCardEffect.basilica))
+                    this._addToVault();
+                // Dock Condition
+                if (mode == eWorkerType.laborer && player.hasCompletedBuilding(eCardEffect.dock))
+                    this._addToStockpile();
+            }
+            // BUILDING SELECTED
+            else {
+                let mode = this._gameService.gameState.mode;
+
+                if (mode == eWorkerType.craftsman) {
+                    if (
+                        player.roadCondition() ||
+                        this.card.role == eWorkerType.laborer && player.hasCompletedBuilding(eCardEffect.tower)
+                    ) {
+                        this._addMaterial();
+                    }
+                    // Scriptorium condition
+                    else if (
+                        this.card.role == eWorkerType.patron &&
+                        player.hasCompletedBuilding(eCardEffect.scriptorium)
+                    ) {
+                        this._addMaterial();
+                    }
+                    // Normal condition
+                    else {
+                        this._addMaterial();
+                    }
+                }
+            }
+        }
     }
 
     private _playCard() {
         if (this.card.role === eWorkerType.jack) return;
-        this._actionCardPlayed();
+        this._playerService.playCard(this.card);
     }
 
     private _romeDemands() {
@@ -428,9 +506,8 @@ export class CardComponent {
 
                 // Craftsman conditions
                 if (role == eWorkerType.craftsman) {
-                    if (!this._playerService.selectedBuilding && this._playerService.canAddNewBuilding(this.card.role)) 
-                        return true;
-
+                    if (!this._playerService.selectedBuilding) 
+                        return this._playerService.canAddNewBuilding(this.card.id);
                     return this._playerService.cardCanInteractAsMaterial(this.card);
                 }
 
@@ -438,7 +515,7 @@ export class CardComponent {
                 if (role == eWorkerType.architect) {
                     // Clean up maybe
                     if (this._playerService.activeActionTrigger === eCardEffect.stairway) return false;
-                    if (!this._playerService.selectedBuilding && this._playerService.canAddNewBuilding(this.card.role))
+                    if (!this._playerService.selectedBuilding && this._playerService.canAddNewBuilding(this.card.id))
                         return true;
                     return false;
                 }

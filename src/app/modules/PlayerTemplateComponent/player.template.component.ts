@@ -54,8 +54,10 @@ export class PlayerTemplateComponent {
     }
 
     message() {
+        if (!this._playerInfoService.isPlayersTurn) return;
+
         if (!this._playerService.resolvingCard) {
-            if (this._playerService.actionPerformTrigger === eCardEffect.palace) {
+            if (this._playerService.activeActionTrigger === eCardEffect.palace) {
                 this.yesAction = this._palaceFinishAction;
                 this.noAction = null;
                 return `[Palace] Finish playing cards?`;
@@ -211,6 +213,7 @@ export class PlayerTemplateComponent {
                 perfTrig == eCardEffect.garden ||
                 perfTrig == eCardEffect.latrine ||
                 perfTrig == eCardEffect.palace ||
+                this._playerService.activeActionTrigger == eCardEffect.palace ||
                 perfTrig == eCardEffect.prison ||
                 perfTrig == eCardEffect.school ||
                 finTrig == eCardEffect.senate ||
@@ -242,7 +245,7 @@ export class PlayerTemplateComponent {
                 perfTrig == eCardEffect.foundry ||
                 perfTrig == eCardEffect.garden ||
                 perfTrig == eCardEffect.latrine ||
-                (perfTrig == eCardEffect.palace && this._playerService.resolvingCard) ||
+                perfTrig == eCardEffect.palace ||
                 perfTrig == eCardEffect.prison ||
                 perfTrig == eCardEffect.school ||
                 finTrig == eCardEffect.senate ||
@@ -394,18 +397,21 @@ export class PlayerTemplateComponent {
     }
 
     onMouseOver(event: MouseEvent) {
+        if (!this.fountainInteraction()) return;
         this._playerService.cardIsHoveredNewBuilding(this._playerService.fountainCard);
     }
 
     onMouseLeave(event: MouseEvent) {
+        if (!this.fountainInteraction()) return;
         this._playerService.cardIsNotHovered(this._playerService.fountainCard);
     }
 
     private fountainInteraction() {
-        return this._playerService.canAddNewBuilding(this._playerService.fountainCard.role);
+        return this._playerService.canAddNewBuilding(this._playerService.fountainCard.id);
     }
 
     private fountainClicked() {
+        if (!this.fountainInteraction()) return;
         this._playerService.activeActionTrigger = null;
         this._playerService.addToUnderConstruction(this._playerService.fountainCard);
     }
@@ -437,7 +443,9 @@ export class PlayerTemplateComponent {
 
     // PALACE
     private _palaceYesAction() {
-        this._playerService.palaceResolved();
+        this._playerService.resolvingCard = false;
+        this._playerService.activeActionTrigger = eCardEffect.palace;
+        this._playerService.actionPerformTrigger = null;
     }
 
     private _palaceNoAction() {

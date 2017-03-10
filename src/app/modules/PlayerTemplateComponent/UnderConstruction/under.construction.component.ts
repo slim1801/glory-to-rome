@@ -154,9 +154,7 @@ export class UnderConstructionComponent implements AfterContentInit {
             this._playerService.activeActionTrigger = null;
         }
         else {
-            this._playerService.selectedBuilding = foundation === this._playerService.selectedBuilding ? null : foundation;
-            foundation.building.selected = this._playerService.selectedBuilding === null ? false : true;
-            this._playerService.buildingSelected(this._playerService.selectedBuilding);
+            this._playerService.buildingSelected(foundation);
         }
     }
 
