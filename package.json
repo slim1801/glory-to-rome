@@ -11,6 +11,7 @@
     "start": "better-npm-run start",
     "build:client": "webpack -p --config webpack.prod.config.js --progress",
     "build": "better-npm-run build",
+    "create": "rimraf node_modules/* && better-npm-run build",
     "clean": "rimraf dist/*"
   },
   "betterScripts": {
