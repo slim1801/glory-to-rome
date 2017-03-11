@@ -136,10 +136,16 @@ i {
     margin-right: 10px;
 }
 
+.rome-demands-content {
+    height: 100%;
+}
 .rome-demands-container {
     margin-bottom: 5px;
     font-weight: bold;
     position: relative;
+    height: 100%;
+
+    display: flex;
 }
 
 .fountain-container {
@@ -166,4 +172,15 @@ i {
     text-align: center;
     font-size: 16px;
     color: red;
+}
+
+.rome-demands-left {
+    flex: 1;
+}
+.rome-demands-right {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

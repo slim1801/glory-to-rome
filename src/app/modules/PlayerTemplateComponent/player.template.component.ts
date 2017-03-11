@@ -7,6 +7,7 @@ import { CardFactoryService } from '../../common/card/card.factory.service';
 import { GameService, eLegionaryStage, eActionMode } from '../../common/game.service';
 import { GameMechanicsService } from '../../common/game.mechanics.service';
 import { SocketService } from '../../common/socket.service';
+import { MessageService } from '../../common/message.service';
 
 @Component({
     selector: 'player-template',
@@ -23,7 +24,8 @@ export class PlayerTemplateComponent {
         private _gameService: GameService,
         private _gameMechanicsService: GameMechanicsService,
         private _cardFactoryService: CardFactoryService,
-        private _socketService: SocketService
+        private _socketService: SocketService,
+        private _messageService: MessageService
 
     ) {
         this._gameMechanicsService.onActionEnd().subscribe(() => {
@@ -33,6 +35,15 @@ export class PlayerTemplateComponent {
 
     romeIsDemanding() {
         return this._gameService.gameState.legionaryStage === eLegionaryStage.romeDemanding;
+    }
+
+    gtrEnable() {
+        return this._playerInfoService.getPlayerState().gloryToRome;
+    }
+
+    gloryToRome() {
+        this._messageService.gloryToRomeMessage();
+        this._playerService.extortMaterial();
     }
 
     isPlayersLead() {

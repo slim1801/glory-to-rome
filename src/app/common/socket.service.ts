@@ -86,8 +86,8 @@ export class SocketService {
     }
 
     private _onNext(subject: Subject<IGameState>, data: IGameState) {
-        // CONSOLE LOG
-        // console.log(data);
+        if (data === null) return;
+        
         let gState = this._gameService.gameState;
         _.extend(gState, data);
         this._playerInfoService.setPlayerState(gState)
@@ -153,7 +153,7 @@ export class SocketService {
         this.io.emit("rome demands", {
             roomID: this.roomID,
             gameState: this._gameService.gameState
-        })
+        });
     }
 
     extortMaterial = () => {
@@ -168,21 +168,21 @@ export class SocketService {
         this.io.emit("extort material", {
             roomID: this.roomID,
             gameState: this._gameService.gameState
-        })
+        });
     }
 
     sendMessage(message: IMessage) {
         this.io.emit("send message", {
             roomID: this.roomID,
             message
-        })
+        });
     }
 
     sendPlayerChat(text: string) {
         this.io.emit("player chat", {
             roomID: this.roomID,
             text
-        })
+        });
     }
 
     private roomCreatedSubject = new Subject<IRoom>();

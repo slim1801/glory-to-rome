@@ -251,6 +251,17 @@ export class MessageService {
         this.addMessage(msg);
     }
 
+    gloryToRomeMessage() {
+        let msg = {
+            type: eMessageType.custom,
+            textBlocks: [
+                { player: this._playerInfoService.player },
+                { text: "shouts GLORY TO ROME!" }
+            ]
+        };
+        this.addMessage(msg);
+    }
+
     addLine() {
         let msg = { type: eMessageType.line };
         this.messages.push(msg);

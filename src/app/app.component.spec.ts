@@ -853,6 +853,12 @@ describe('Test whole application', () => {
 
         gth.clickOnHandCard(0);
         gth.clickOnHandCard(0);
+
+        let gtrButton = gth.getElement(eSelector.gloryToRomeButton);
+        expect(gtrButton).toBeDefined('Glory To Rome button should be visible');
+
+        th.click(gtrButton);
+
         expect(srvs.gs.gameState.actionMode).toBe(eActionMode.actionCardMode);
     }));
 

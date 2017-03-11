@@ -19,8 +19,8 @@ module.exports = function() {
         socket.on("start game", function(params) { this.startGame(params, socket) }.bind(this) );
         socket.on("card played", function(params) { this.cardPlayed(params, socket) }.bind(this) );
         socket.on("think", function(params) { this.think(params, socket) }.bind(this) );
-        socket.on("rome demands", function(params) { this.emitState(params, socket, 'on rome demands') }.bind(this) );
-        socket.on("extort material", function(params) { this.emitState(params, socket, 'on extort material') }.bind(this) );
+        socket.on("extort material", function(params) { this.extortMaterial(params, socket) }.bind(this) );
+        socket.on("rome demands", function(params) { this.romeDemands(params, socket) }.bind(this) );
         socket.on("send message", function(params) { this.sendMessage(params, socket) }.bind(this) );
         socket.on("player chat", function(params) { this.playerChat(params, socket) }.bind(this) );
         socket.on("turn end", function(params) { this.turnEnd(params, socket) }.bind(this) );
@@ -309,10 +309,18 @@ module.exports = function() {
         socket.to(params.roomID).emit("on turn started", state);
     }
 
-    emitState = function(params, socket, emit) {
+    romeDemands = function(params, socket) {
         let state = gameStates[params.roomID];
         _.extend(state, params.gameState);
-        socket.broadcast.emit(emit, state);
+        console.log("ROME DEMANDS");
+        socket.broadcast.emit('on rome demands', state);
+    }
+
+    extortMaterial = function(params, socket) {
+        let state = gameStates[params.roomID];
+        _.extend(state, params.gameState);
+        console.log("EXTORT MATERIAL");
+        socket.broadcast.emit('on extort material', state);
     }
 
     emitAll = function(params, socket, emit) {

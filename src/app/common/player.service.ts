@@ -195,8 +195,6 @@ export class PlayerService {
             }
             else if (!hasCard) {
                 pState.gloryToRome = true;
-
-                this.extortMaterial();
             }
         });
 
@@ -452,6 +450,18 @@ export class PlayerService {
         });
     }
 
+    thinkCheck() {
+        this._playerInfoService.getPlayerState().action = eActions.think;
+
+        if (this.hasClientelleType(this._gameService.gameState.mode)) {
+            let card = this._cardFactoryService.getJack();
+            card.setMode(this._gameService.gameState.mode);
+
+            this._gameMechanicsService.changeActiveCard(card);
+            this._playerInfoService.saveActionCardToPlayerState(card);
+        }
+    }
+
     think() {
         let cardsToDraw = this.getCardsToMax();
         let cards = this.drawCardsFromDeck(cardsToDraw);
@@ -463,7 +473,10 @@ export class PlayerService {
         this.activeActionTrigger = null;
         this.actionPerformTrigger = null;
         this.actionFinishTrigger = null;
+
+        this.thinkCheck();
         this.think();
+        
         this._playerInfoService.isPlayersTurn = false;
 
         this._messageService.addTextMessage("THINKS");

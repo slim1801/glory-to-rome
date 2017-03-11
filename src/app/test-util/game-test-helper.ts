@@ -22,6 +22,7 @@ export enum eSelector {
     promptText,
     think,
     yesButton,
+    gloryToRomeButton,
 
     woodFoundation,
     rubbleFoundation,
@@ -203,6 +204,8 @@ export class GameTestHelper<T> {
                 return this.testHelper.getElement('.merchant-option');
             case eSelector.patronOption:
                 return this.testHelper.getElement('.patron-option');
+            case eSelector.gloryToRomeButton:
+                return this.testHelper.getElement('.gtr-button');
             
         }
     }

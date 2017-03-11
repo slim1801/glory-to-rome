@@ -47,15 +47,20 @@
 
             <div class="rome-demands-content" *ngIf="romeIsDemanding()">
                 <div class="rome-demands-container" #romeDemands>
-                    <div>Rome Demands...</div>
-                    <div *ngFor="let rDemands of _gameService.gameState.romeDemands; let i = index">
-                        <card-image [card]="rDemands"
-                                    [size]="size"
+                    <div class="rome-demands-left">
+                        <div>Rome Demands...</div>
+                        <div *ngFor="let rDemands of _gameService.gameState.romeDemands; let i = index">
+                            <card-image [card]="rDemands"
+                                        [size]="size"
 
-                                    [cardGroup]="romeDemands"
-                                    [cardGroupIndex]="i"
-                                    [cardGroupLength]="_gameService.gameState.romeDemands.length">
-                        </card-image>
+                                        [cardGroup]="romeDemands"
+                                        [cardGroupIndex]="i"
+                                        [cardGroupLength]="_gameService.gameState.romeDemands.length">
+                            </card-image>
+                        </div>
+                    </div>
+                    <div class="rome-demands-right">
+                        <button *ngIf="gtrEnable()" class="gtr-button" type="button" (click)="gloryToRome()">Glory to ROME!!</button>
                     </div>
                 </div>
             </div>

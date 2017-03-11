@@ -61,109 +61,11 @@ export class CardComponent {
         let game = this._gameMechanicsService;
         let player = this._playerService;
 
-        // this._socketService.onAllPlayersChosen().subscribe(this._enableActions);
-        // player.onActionFinished().subscribe(this._enableActions);
-
-        game.onPlayCardsAsJack().subscribe(types => {
-            // this._cardAction = this._playCardsAsJack
-        })
-
         game.onActionEnd().subscribe(card => {
-            // this._cardAction = this._playCard;
-
             this.card.selected = false;
             this._hoverState = "dormant";
         });
-
-        // player.onBuildingCompleted().subscribe(card => {
-        //     switch(card.id) {
-        //         case eCardEffect.amphitheatre:
-        //             this._cardAction = this._newBuildingClicked;
-        //             break;
-        //     }
-        // });
-
-        // player.onBuildingSelected().subscribe(() => {
-        //     let mode = this._gameService.gameState.mode;
-
-        //     if (mode == eWorkerType.craftsman) {
-        //         if (this._playerService.selectedBuilding == null) {
-        //             this._cardAction = this._newBuildingClicked;
-        //         }
-        //         // Road condition
-        //         else if (
-        //             player.roadCondition() ||
-        //             this.card.role == eWorkerType.laborer && player.hasCompletedBuilding(eCardEffect.tower)
-        //         ) {
-        //             if (this._playerService.selectedBuilding) {
-        //                 this._cardAction = this._addMaterial;
-        //             }
-        //             else {
-        //                 this._cardAction = this._newBuildingClicked;
-        //             }
-        //         }
-        //         // Scriptorium condition
-        //         else if (
-        //             this.card.role == eWorkerType.patron &&
-        //             player.hasCompletedBuilding(eCardEffect.scriptorium)
-        //         ) {
-        //             this._cardAction = this._addMaterial
-        //         }
-        //         // Normal condition
-        //         else {
-        //             this._cardAction = this._addMaterial
-        //         }
-        //     }
-        // });
-
-        // player.onLatrineTriggered().subscribe(() => {
-        //     this._cardAction = this._discardToPool
-        // });
-
-        // player.onPalaceResolved().subscribe(() => {
-        //     this._cardAction = this._palaceAction
-        // });
-
-        // this._socketService.onRomeDemands().subscribe(gameState => {
-        //     this._cardAction = this._extortMaterial;
-        // });
-
-        // this._cardAction = this._playCard;
     }
-
-    // private _enableActions = () => {
-
-    //         let player = this._playerService;
-
-    //         let mode = this._gameService.gameState.mode;
-    //         // Craftsman, Architect and Legionary actions
-    //         if (
-    //             mode == eWorkerType.craftsman ||
-    //             mode == eWorkerType.architect || 
-    //             mode == eWorkerType.legionary
-    //         ) {
-    //             if (
-    //                 player.activeActionItem &&
-    //                 this.card.role != eWorkerType.jack &&
-    //                 this._playerService.canAddNewBuilding(this.card.id)
-    //             ) {
-    //                 this._cardAction = mode === eWorkerType.legionary ? this._romeDemands : this._newBuildingClicked;
-    //             }
-    //         }
-
-    //         // Aqueduct Condition
-    //         if (mode == eWorkerType.patron && player.hasCompletedBuilding(eCardEffect.aqueduct)) {
-    //             this._cardAction = this._addClientelle;
-    //         }
-    //         // Basilica Condition
-    //         if (mode == eWorkerType.merchant && player.hasCompletedBuilding(eCardEffect.basilica)) {
-    //             this._cardAction = this._addToVault;
-    //         }
-    //         // Dock Condition
-    //         if (mode == eWorkerType.laborer && player.hasCompletedBuilding(eCardEffect.dock)) {
-    //             this._cardAction = this._addToStockpile;
-    //         }
-    // }
 
     @HostListener('mouseover')
     onMouseOver(event: MouseEvent) {
@@ -272,19 +174,18 @@ export class CardComponent {
                 // Craftsman, Architect and Legionary actions
                 if (
                     mode == eWorkerType.craftsman ||
-                    mode == eWorkerType.architect || 
-                    mode == eWorkerType.legionary
+                    mode == eWorkerType.architect
                 ) {
                     if (
                         player.activeActionItem &&
                         this.card.role != eWorkerType.jack &&
                         this._playerService.canAddNewBuilding(this.card.id)
                     ) {
-                        if (mode === eWorkerType.legionary)
-                            this._romeDemands()
-                        else
-                            this._newBuildingClicked();
+                        this._newBuildingClicked();
                     }
+                }
+                if (mode === eWorkerType.legionary) {
+                    this._romeDemands();
                 }
 
                 // Aqueduct Condition

@@ -62,20 +62,6 @@ export class StockpileComponent {
     private _initListeners() {
         let game = this._gameMechanicsService;
         let skt = this._socketService;
-        
-        // skt.onCardPlayed().subscribe(() => {
-        //     let mode = this._gameService.gameState.mode;
-        //     if (mode == eWorkerType.merchant) {
-        //         this._cardAction = this._mechantAction;
-        //     }
-        //     if (mode == eWorkerType.architect) {
-        //         this._cardAction = this._architectAction;
-        //     }
-        // });
-
-        // skt.onRomeDemands().subscribe(gameState => {
-        //     this._cardAction = this._bridgeAction;
-        // });
     }
 
     private _mechantAction(card: ICard) {

@@ -49,15 +49,7 @@ export class ControlComponent {
         }
         // Normal Condition
         else {
-            this._playerInfoService.getPlayerState().action = eActions.think;
-            if (this._playerService.hasClientelleType(this._gameService.gameState.mode)) {
-                let card = this._cardFactoryService.getJack();
-                card.setMode(this._gameService.gameState.mode);
-
-                this._gameMechanicsService.changeActiveCard(card);
-                this._playerInfoService.saveActionCardToPlayerState(card);
-            }
-                this._playerService.thinkAction();
+            this._playerService.thinkAction();
         }
     }
 
@@ -68,6 +60,10 @@ export class ControlComponent {
         this._playerInfoService.isPlayersTurn = false;
 
         this._messageService.addTextMessage("draws a JACK");
+
+        this._playerService.thinkCheck();
+        this._gameService.updateGameState();
+
         this._socketService.think();
     }
 
