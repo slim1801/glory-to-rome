@@ -15,7 +15,7 @@
   },
   "betterScripts": {
     "build": {
-      "command": "npm run clean && npm run build:client && npm run start",
+      "command": "npm run clean && npm run build:client && node server.js",
       "env": {
         "NODE_ENV": "production"
       }
