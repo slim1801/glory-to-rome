@@ -74,7 +74,7 @@ process.on('uncaughtException', evt => {
     console.log('uncaughtException ', evt);
 });
 
-var port = process.env.PORT || '3000';
+var port = process.env.PORT || 3000;
 var server = http.createServer(app);
 
 var io = require('./socket/roomSocket')(server).io;
