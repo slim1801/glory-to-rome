@@ -4,6 +4,10 @@
 
         <!-- MESSAGE SECTION -->
         <div class="message-section">
+            <div class="message-prompt">
+                <div class="player-lead" *ngIf="isPlayersLead()">Your <b>LEAD</b></div>
+                <div class="player-turn" *ngIf="isPlayersTurn()">Your <b>ACTION</b></div>
+            </div>
             <div class="action-card-message" *ngIf="actionMessageEnabled()">
                 <span class="action-card-message-text">Done with actions?</span>
                 <button class="action-end-button"

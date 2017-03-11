@@ -46,6 +46,8 @@ module.exports = {
         extensions: ['.js', '.ts']
     },
     plugins: [
+        new webpack.EnvironmentPlugin(['NODE_ENV']),
+        
         new CommonsChunkPlugin({
             name: ['vendor', 'polyfills']
         }),

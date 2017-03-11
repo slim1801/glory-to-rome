@@ -338,8 +338,6 @@ module.exports = function() {
 
             incrementPlayerTurn(state);
 
-            console.log(state);
-
             if (state.playerTurn === 0) {
                 socket.emit("on all players chosen", state);
                 socket.to(params.roomID).emit("on all players chosen", state);

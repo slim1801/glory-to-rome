@@ -17,6 +17,8 @@ var session = expressSession({
     saveUninitialized: true
 });
 
+var isDev = process.env.NODE_ENV !== "production";
+
 // Get webpack configuration
 var config = require('./webpack.dev.config');
 
@@ -29,27 +31,34 @@ var router = express.Router();
 // Set webpack as out compiler
 var compiler = webpack(config);
 // Setup session
-app.use(
-    webpackMiddleware(compiler, {
-        noInfo: true,
-        publicPath: config.output.publicPath
-    })
-)
 
-var index = fs.readFileSync('./index.html', {
+var HTML_FILE = fs.readFileSync('./index.html', {
   encoding: 'utf-8'
 });
 
-var str = index;
-
-app.get('*', function(req, res) {
-    if (
-        req.session.uid
-        || true
+if (isDev) {
+    app.use(
+        webpackMiddleware(compiler, {
+            noInfo: true,
+            publicPath: config.output.publicPath
+        })
     )
-        req.session.uid = Math.random().toString(36).substring(7);
-    res.status(200).send(str);
-});
+
+    app.get('*', function(req, res) {
+        if (
+            req.session.uid
+            || true
+        ) {
+            req.session.uid = Math.random().toString(36).substring(7);
+        }
+        res.status(200).send(HTML_FILE);
+    });
+}
+else {
+    var distPath = path.join(__dirname, "dist");
+    app.use(express.static(distPath));
+    app.get("*", (req, res) => res.send(path.join(distPath, "index.html")));
+}
 
 app.get('*', function(req, res) {
     res.status(404).send('Server.js > 404 - Page Not Found');

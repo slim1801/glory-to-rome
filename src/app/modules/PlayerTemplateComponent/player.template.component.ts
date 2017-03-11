@@ -35,6 +35,18 @@ export class PlayerTemplateComponent {
         return this._gameService.gameState.legionaryStage === eLegionaryStage.romeDemanding;
     }
 
+    isPlayersLead() {
+        return  this._gameService.gameState.actionMode === eActionMode.actionCardMode &&
+                this._playerInfoService.isPlayersLead &&
+                this._playerInfoService.isPlayersTurn;
+    }
+
+    isPlayersTurn() {
+        return  this._gameService.gameState.actionMode === eActionMode.actionCardMode &&
+                !this._playerInfoService.isPlayersLead &&
+                this._playerInfoService.isPlayersTurn;
+    }
+
     yesAction = null;
     noAction = null;
     selected: boolean = false;

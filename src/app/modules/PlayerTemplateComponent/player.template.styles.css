@@ -157,6 +157,13 @@ i {
 }
 
 .action-card-message-text {
+    text-align: center;
     font-weight: bold;
     margin-right: 5px;
+}
+
+.message-prompt {
+    text-align: center;
+    font-size: 16px;
+    color: red;
 }
