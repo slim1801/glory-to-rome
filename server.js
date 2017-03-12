@@ -10,12 +10,12 @@ var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var sessionStore = require('session-file-store')(expressSession);
 
-var session = expressSession({
-    store: new sessionStore({path: '/sessions'}),
-    secret: 'pass',
-    resave: true,
-    saveUninitialized: true
-});
+// var session = expressSession({
+//     store: new sessionStore({path: '/sessions'}),
+//     secret: 'pass',
+//     resave: true,
+//     saveUninitialized: true
+// });
 
 var isDev = process.env.NODE_ENV !== "production";
 
@@ -24,7 +24,7 @@ var config = require('./webpack.dev.config');
 
 // Config our server
 var app = express();
-app.use(session);
+//app.use(session);
 
 var router = express.Router();
 
@@ -45,12 +45,6 @@ if (isDev) {
     )
 
     app.get('*', function(req, res) {
-        if (
-            req.session.uid
-            || true
-        ) {
-            req.session.uid = Math.random().toString(36).substring(7);
-        }
         res.status(200).send(HTML_FILE);
     });
 }
@@ -78,9 +72,9 @@ var port = process.env.PORT || 3000;
 var server = http.createServer(app);
 
 var io = require('./socket/roomSocket')(server).io;
-io.use(function(socket, next) {
-    session(socket.handshake, {}, next);
-});
+// io.use(function(socket, next) {
+//     session(socket.handshake, {}, next);
+// });
 
 server.listen(port, (err) => {
     if (err) {

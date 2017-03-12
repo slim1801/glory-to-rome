@@ -11,12 +11,11 @@
     "start": "better-npm-run start",
     "build:client": "webpack -p --config webpack.prod.config.js --progress",
     "build": "better-npm-run build",
-    "create": "rm -rf node_modules/* && better-npm-run build",
-    "clean": "rm -rf dist/*"
+    "create": "rm -rf node_modules/* && better-npm-run build"
   },
   "betterScripts": {
     "build": {
-      "command": "npm run clean && npm run build:client && node server.js",
+      "command": "npm run build:client && node server.js",
       "env": {
         "NODE_ENV": "production"
       }
