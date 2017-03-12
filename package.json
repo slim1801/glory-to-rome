@@ -15,7 +15,7 @@
   },
   "betterScripts": {
     "build": {
-      "command": "npm run build:client && node server.js",
+      "command": "npm run build:client && node --optimize_for_size --max_old_space_size=460 --gc_interval=100 server.js",
       "env": {
         "NODE_ENV": "production"
       }
