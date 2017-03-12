@@ -24,6 +24,7 @@ var config = require('./webpack.dev.config');
 
 // Config our server
 var app = express();
+app.set('port', process.env.PORT || 3000);
 //app.use(session);
 
 var router = express.Router();
@@ -76,9 +77,9 @@ var io = require('./socket/roomSocket')(server).io;
 //     session(socket.handshake, {}, next);
 // });
 
-server.listen(port, (err) => {
+server.listen(app.get('port'), (err) => {
     if (err) {
         console.error(err);
     }
-    console.log('Listening on port: ' + port);
+    console.log('Listening on port: ' + app.get('port'));
 });

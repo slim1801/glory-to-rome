@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "karma start",
+    "prod": "better-npm-run prod",
     "start": "better-npm-run start",
     "build:client": "webpack -p --config webpack.prod.config.js --progress",
     "build": "better-npm-run build",
@@ -24,6 +25,12 @@
       "command": "node server.js",
       "env": {
         "NODE_ENV": "development"
+      }
+    },
+    "prod": {
+      "command": "node server.js",
+      "env": {
+        "NODE_ENV": "production"
       }
     }
   },
@@ -48,8 +55,8 @@
     "bootstrap": "^4.0.0-alpha.4",
     "bootstrap-loader": "^2.0.0-beta.20",
     "bootstrap-sass": "^3.3.7",
-    "core-js": "^2.4.1",
     "cookie-parser": "^1.4.3",
+    "core-js": "^2.4.1",
     "css-loader": "^0.26.1",
     "exports-loader": "^0.6.3",
     "express": "^4.14.1",
@@ -72,11 +79,11 @@
     "session-file-store": "^1.0.0",
     "socket.io": "^1.7.2",
     "style-loader": "^0.13.1",
-    "ts-loader": "^2.0.0",
+    "ts-loader": "^2.0.1",
     "typescript": "^2.1.5",
     "url-loader": "^0.5.7",
-    "webpack-dev-middleware": "^1.9.0",
     "webpack": "^2.2.1",
+    "webpack-dev-middleware": "^1.9.0",
     "zone.js": "^0.7.2"
   },
   "devDependencies": {

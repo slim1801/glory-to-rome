@@ -43,7 +43,7 @@ export class SocketService {
         
         io.on("connected", data => {
             //this._playerInfoService.player.id = data.uid;
-            this._playerInfoService.player.id = Math.random().toString(36).substring(7);
+            this._playerInfoService.player.id = data.uid;
         })
         io.on("room created", data => {
             this.roomID = data.id;
