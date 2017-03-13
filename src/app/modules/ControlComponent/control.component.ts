@@ -143,7 +143,7 @@ export class ControlComponent {
     canFollow = () => {
         return find(this._playerService.handCards, card => 
             card.role == eWorkerType.jack || card.mode == this._gameService.gameState.mode
-        );
+        ) || this._playerService.canPlayCardsAsJack().length > 0;
     }
 
     private _enableInActionMode() {

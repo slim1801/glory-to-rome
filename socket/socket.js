@@ -156,7 +156,6 @@ module.exports = function() {
 
     function createFoundation() {
         return [
-
         ]
     }
 
@@ -312,14 +311,12 @@ module.exports = function() {
     romeDemands = function(params, socket) {
         let state = gameStates[params.roomID];
         _.extend(state, params.gameState);
-        console.log("ROME DEMANDS");
         socket.broadcast.emit('on rome demands', state);
     }
 
     extortMaterial = function(params, socket) {
         let state = gameStates[params.roomID];
         _.extend(state, params.gameState);
-        console.log("EXTORT MATERIAL");
         socket.broadcast.emit('on extort material', state);
     }
 
@@ -355,7 +352,21 @@ module.exports = function() {
 
     incrementPlayerTurn = function(state) {
         let len = state.playerOrder.length;
-        if (state.playerTurn % len === len - 1) {
+        state.playerTurn = (state.playerTurn + 1) % len;
+
+        let currPlayer = getCurrentPlayer(state);
+
+        if (state.actionMode == eActionMode.resolveAction) {
+            while (
+                currPlayer.action === eActions.think &&
+                !_.find(currPlayer.clientelles, client => client.role === state.mode)
+            ) {
+                state.playerTurn = (state.playerTurn + 1) % len;
+                currPlayer = getCurrentPlayer(state);
+            }
+        }
+
+        if (state.playerTurn === 0) {
             if (state.actionMode == eActionMode.actionCardMode) {
                 state.actionMode = eActionMode.resolveAction;
             }
@@ -363,19 +374,10 @@ module.exports = function() {
                 state.actionMode = eActionMode.turnEnd;
             }
         }
-        state.playerTurn = (state.playerTurn + 1) % len;
+    }
 
-        if (state.actionMode == eActionMode.resolveAction) {
-            while (
-                state.playerStates[state.playerTurn].action === eActions.think &&
-                !_.find(state.playerStates[state.playerTurn].clientelles, client => client.role === state.mode)
-            ) {
-                state.playerTurn = (state.playerTurn + 1) % len;
-                if (state.playerTurn == 0) {
-                    state.actionMode = eActionMode.turnEnd;
-                }
-            }
-        }
+    getCurrentPlayer = function(state) {
+        return _.find(state.playerStates, pState => pState.player.id === state.playerOrder[state.playerTurn].id);
     }
 
     sendMessage = function(params, socket) {
