@@ -40,10 +40,10 @@ export class SocketService {
     }
 
     protected initSocketListeners(io) {
-        
-        io.on("connected", data => {
+        let self = this;
+        io.on("connected", function(data) {
             //this._playerInfoService.player.id = data.uid;
-            this._playerInfoService.player.id = data.uid;
+            self._playerInfoService.player.id = this.id;
         })
         io.on("room created", data => {
             this.roomID = data.id;
@@ -99,7 +99,6 @@ export class SocketService {
     }
 
     joinRoom = (room: IRoom, player: IPlayer) => {
-        this.roomID = room.id;
         this.io.emit("join room", {
             room, player
         });
@@ -113,7 +112,6 @@ export class SocketService {
 
     cardPlayed = (card: ICard) => {
         this.io.emit("card played", {
-            roomID: this.roomID,
             card,
             gameState: this._gameService.gameState
         });
@@ -121,7 +119,6 @@ export class SocketService {
 
     think = () => {
         this.io.emit("think", {
-            roomID: this.roomID,
             gameState: this._gameService.gameState
         });
     }
@@ -132,7 +129,6 @@ export class SocketService {
     
     endGame = () => {
         this.io.emit("end game", {
-            roomID: this.roomID,
             gameState: this._gameService.gameState
         });
     }
@@ -143,7 +139,6 @@ export class SocketService {
 
     turnEnd = () => {
         this.io.emit("turn end", {
-            roomID: this.roomID,
             gameState: this._gameService.gameState
         });
     }
@@ -151,7 +146,6 @@ export class SocketService {
     romeDemands = () => {
         this._gameService.gameState.legionaryStage = eLegionaryStage.romeDemanding;
         this.io.emit("rome demands", {
-            roomID: this.roomID,
             gameState: this._gameService.gameState
         });
     }
@@ -166,21 +160,18 @@ export class SocketService {
         });
 
         this.io.emit("extort material", {
-            roomID: this.roomID,
             gameState: this._gameService.gameState
         });
     }
 
     sendMessage(message: IMessage) {
         this.io.emit("send message", {
-            roomID: this.roomID,
             message
         });
     }
 
     sendPlayerChat(text: string) {
         this.io.emit("player chat", {
-            roomID: this.roomID,
             text
         });
     }

@@ -476,7 +476,7 @@ export class PlayerService {
 
         this.thinkCheck();
         this.think();
-        
+
         this._playerInfoService.isPlayersTurn = false;
 
         this._messageService.addTextMessage("THINKS");
@@ -505,19 +505,7 @@ export class PlayerService {
     additionalActionPerformed = false;
 
     actionFinished() {
-        this.activeActionTrigger = null;
-        this.actionPerformTrigger = null;
-        this.actionFinishTrigger = null;
-
-        this.activeActionItem = null;
-        this.additionalActionPerformed = false;
-        this.actionStack = [];
-
-        if (this.selectedBuilding) {
-            this.selectedBuilding.building.selected = false;
-            this.selectedBuilding = null;
-        }
-
+        this.resetTurnState();
         this.updatePlayerState();
         this._gameService.updateGameState();
 
@@ -526,6 +514,19 @@ export class PlayerService {
     }
 
     turnFinished() {
+        this.resetTurnState();
+
+        this.jackTypeSelected = null;
+        this._gameService.gameState.legionaryStage = null;
+
+        this.updatePlayerState();
+        this._gameService.updateGameState();
+
+        this._gameMechanicsService.actionEnd();
+        this._socketService.turnEnd();
+    }
+
+    resetTurnState() {
         this.activeActionTrigger = null;
         this.actionPerformTrigger = null;
         this.actionFinishTrigger = null;
@@ -533,14 +534,13 @@ export class PlayerService {
         this.activeActionItem = null;
         this.additionalActionPerformed = false;
         this.actionStack = [];
-        this.jackTypeSelected = null;
 
-        this._gameService.gameState.legionaryStage = null;
-        this.updatePlayerState();
-        this._gameService.updateGameState();
+        _.forEach(this._gameService.gameState.playerStates, pState => pState.gloryToRome = false);
 
-        this._gameMechanicsService.actionEnd();
-        this._socketService.turnEnd();
+        if (this.selectedBuilding) {
+            this.selectedBuilding.building.selected = false;
+            this.selectedBuilding = null;
+        }
     }
 
     inAddition() {
@@ -807,6 +807,7 @@ export class PlayerService {
 
         this.allExtorted = false;
 
+        this._messageService.addPoolLegionaryMessage(card);
         this.actionFinished();
     }
 

@@ -51,9 +51,9 @@ module.exports = function() {
 
         //Join Room as well
         socket.join(id);
+        socket.handshake.roomID = id;
 
-        socket.emit("room created", room);
-
+        socket.broadcast.emit("room created", room);
         socket.emit("room changed", this.roomsArray);
         socket.broadcast.emit("room changed", this.roomsArray);
     }
@@ -73,16 +73,33 @@ module.exports = function() {
 
         room.players.push(params.player);
         socket.join(roomID);
+        socket.handshake.roomID = roomID;
 
         // Emit to clients
         socket.broadcast.emit("room changed", this.roomsArray);
     }
 
     this.leaveRoom = function(params, socket) {
-        let room = _.find(this.roomsArray, room => params.room.id == room.id);
-
-        _.remove(room.players, player => params.player.id == player.id);
+        removePlayerFromRoom(socket);
         socket.broadcast.emit("room changed", this.roomsArray);
+    }
+
+    removePlayerFromRoom = function(socket) {
+        if (!socket.handshake.roomID) return;
+
+        let roomIndex = _.findIndex(this.roomsArray, room => socket.handshake.roomID == room.id);
+        let room = this.roomsArray[roomIndex];
+        if (room) {
+            _.remove(room.players, player => player.id == socket.id);
+            room.numPlayers--;
+            if (room.players.length === 0) {
+                this.roomsArray.splice(roomIndex, 1);
+            }
+            removePlayerFromState(socket.handshake.roomID, socket.id);
+            socket.broadcast.emit("room changed", this.roomsArray);
+        }
+
+        socket.handshake.roomID = null;
     }
 
     this.startGame = function(params, socket) {
@@ -203,7 +220,7 @@ module.exports = function() {
     }
 
     cardPlayed = function(params, socket) {
-        let state = gameStates[params.roomID];
+        let state = gameStates[socket.handshake.roomID];
         _.extend(state, params.gameState);
 
         let prevActionMode = state.actionMode;
@@ -219,20 +236,20 @@ module.exports = function() {
             state.actionMode === eActionMode.resolveAction
         ) {
             socket.emit("on all players chosen", res);
-            socket.to(params.roomID).emit("on all players chosen", res);
+            socket.to(socket.handshake.roomID).emit("on all players chosen", res);
         }
         else if (state.actionMode == eActionMode.turnEnd) {
             socket.emit("on turn end", state);
-            socket.to(params.roomID).emit("on turn end", state);
+            socket.to(socket.handshake.roomID).emit("on turn end", state);
         }
         else {
             socket.emit("on card played", res);
-            socket.to(params.roomID).emit("on card played", res);
+            socket.to(socket.handshake.roomID).emit("on card played", res);
         }
     }
 
     turnEnd = function(params, socket) {
-        let state = gameStates[params.roomID];
+        let state = gameStates[socket.handshake.roomID];
         _.extend(state, params.gameState);
 
         let pStates = state.playerStates;
@@ -242,7 +259,7 @@ module.exports = function() {
 
         if (state.playerTurn > 0) {
             socket.emit("on turn end", state);
-            socket.to(params.roomID).emit("on turn end", state);
+            socket.to(socket.handshake.roomID).emit("on turn end", state);
             return;
         }
 
@@ -305,30 +322,30 @@ module.exports = function() {
         });
 
         socket.emit("on turn started", state);
-        socket.to(params.roomID).emit("on turn started", state);
+        socket.to(socket.handshake.roomID).emit("on turn started", state);
     }
 
     romeDemands = function(params, socket) {
-        let state = gameStates[params.roomID];
+        let state = gameStates[socket.handshake.roomID];
         _.extend(state, params.gameState);
-        socket.broadcast.emit('on rome demands', state);
+        socket.to(socket.handshake.roomID).emit('on rome demands', state);
     }
 
     extortMaterial = function(params, socket) {
-        let state = gameStates[params.roomID];
+        let state = gameStates[socket.handshake.roomID];
         _.extend(state, params.gameState);
-        socket.broadcast.emit('on extort material', state);
+        socket.to(socket.handshake.roomID).emit('on extort material', state);
     }
 
     emitAll = function(params, socket, emit) {
-        let state = gameStates[params.roomID];
+        let state = gameStates[socket.handshake.roomID];
         _.extend(state, params.gameState);
         socket.emit(emit, state);
-        socket.to(params.roomID).emit(emit, state);
+        socket.to(socket.handshake.roomID).emit(emit, state);
     }
 
     think = function(params, socket) {
-        let state = gameStates[params.roomID];
+        let state = gameStates[socket.handshake.roomID];
         _.extend(state, params.gameState);
 
         if (state.playerTurn === 0) {
@@ -337,7 +354,7 @@ module.exports = function() {
             });
 
             socket.emit("on turn end", state);
-            socket.to(params.roomID).emit("on turn end", state);
+            socket.to(socket.handshake.roomID).emit("on turn end", state);
         }
         else {
 
@@ -345,7 +362,7 @@ module.exports = function() {
 
             if (state.playerTurn === 0) {
                 socket.emit("on all players chosen", state);
-                socket.to(params.roomID).emit("on all players chosen", state);
+                socket.to(socket.handshake.roomID).emit("on all players chosen", state);
             }
         }
     }
@@ -380,16 +397,21 @@ module.exports = function() {
         return _.find(state.playerStates, pState => pState.player.id === state.playerOrder[state.playerTurn].id);
     }
 
+    removePlayerFromState = function(roomID, id) {
+        if (gameStates[roomID])
+            _.remove(gameStates[roomID].playerStates, pState => pState.player.id === id);
+    }
+
     sendMessage = function(params, socket) {
-        socket.to(params.roomID).emit("receive message", params.message);
+        socket.to(socket.handshake.roomID).emit("receive message", params.message);
     }
 
     playerChat = function(params, socket) {
-        socket.to(params.roomID).emit("on player chat", params.text);
+        socket.to(socket.handshake.roomID).emit("on player chat", params.text);
     }
 
     onDisconnect = function(params, socket) {
-        // this.leaveRoom(params, socket);
+        removePlayerFromRoom(socket);
     }
 
     return this;

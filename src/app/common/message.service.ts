@@ -199,6 +199,22 @@ export class MessageService {
         this.addMessage(msg);
     }
 
+    addPoolLegionaryMessage(card: ICard) {
+        let msg = {
+            type: eMessageType.custom,
+            textBlocks: [
+                { player: this._playerInfoService.player },
+                { text: "uses legionary to take" },
+                { card: {
+                    title: this._cardFactoryService.mapMaterialName(card.mode).toUpperCase(),
+                    mode: card.mode
+                }},
+                { text: "from POOL" }
+            ]
+        };
+        this.addMessage(msg);
+    }
+
     romeDemandsMessage(cards: ICard[]) {
         let msg = {
             type: eMessageType.custom,

@@ -37,39 +37,10 @@ export class PoolComponent {
         let player = this._playerService;
         let skt = this._socketService;
 
-        // game.onCardPerform().subscribe(this._poolAction);
-
-        // player.onActionFinished().subscribe(this._poolAction);
-        // player.onCompletionAction().subscribe(actionState => {
-        //     if (actionState.cardEffect === eCardEffect.garden) {
-        //         this._cardAction = this._patronAction;
-        //     }
-        //     if (actionState.cardEffect === eCardEffect.foundry) {
-        //         this._cardAction = this._laborerAction;
-        //     }
-        // });
-
         game.onActionEnd().subscribe(card => {
             if (card.role == eWorkerType.jack) return;
         });
     }
-
-    // private _poolAction = () => {
-    //     switch(this._gameMechanicsService.getMode()) {
-    //         case eWorkerType.laborer:
-    //             this._cardAction = this._laborerAction;
-    //             break;
-    //         case eWorkerType.patron:
-    //             this._cardAction = this._patronAction;
-    //             break;
-    //         case eWorkerType.legionary:
-    //             this._cardAction = this._legionaryFromPoolAction;
-    //             break;
-    //     }
-    //     if (this._archwayCondition()) {
-    //         this._cardAction = this._architectAction;
-    //     }
-    // }
 
     private _archwayCondition() {
         return this._gameService.gameState.mode == eWorkerType.architect &&
