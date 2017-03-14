@@ -851,15 +851,13 @@ describe('Test whole application', () => {
             ]
         });
 
+        spyOn(srvs.ps, 'extortMaterial');
+        // Start legionary action
         gth.clickOnHandCard(0);
+        // Demand material
         gth.clickOnHandCard(0);
-
-        let gtrButton = gth.getElement(eSelector.gloryToRomeButton);
-        expect(gtrButton).toBeDefined('Glory To Rome button should be visible');
-
-        th.click(gtrButton);
-
-        expect(srvs.gs.gameState.actionMode).toBe(eActionMode.actionCardMode);
+        gth.invokeAction('on rome demands');
+        expect(srvs.ps.extortMaterial).toHaveBeenCalled();
     }));
 
     it('is testing PRISON functionality', injector(srvs => {
@@ -1241,10 +1239,13 @@ describe('Test whole application', () => {
             ]
         });
 
-        spyOn(srvs.ps, 'turnFinished');
+        spyOn(srvs.ps, 'extortMaterial');
+        // Start legionary action
         gth.clickOnHandCard(0);
+        // Demand material
         gth.clickOnHandCard(0);
-        expect(srvs.ps.turnFinished).toHaveBeenCalled();
+        gth.invokeAction('on rome demands');
+        expect(srvs.ps.extortMaterial).toHaveBeenCalled();
     }));
 
     it('is testing WALL game end functionality', injector(srvs => {

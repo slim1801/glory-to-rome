@@ -79,7 +79,7 @@ export class PlayerService {
             this.configurePlayersTurn(gameState);
             this.configurePlayersLead(gameState.playerLead);
 
-            let card = this._cardFactoryService.getCard(eCardEffect.palisade);
+            let card = this._cardFactoryService.getCard(eCardEffect.wall);
             let card1 = this._cardFactoryService.createCard(eCardEffect.palisade);
             let card2 = this._cardFactoryService.getCard(eCardEffect.amphitheatre);
             // let card3 = this._cardFactoryService.getCard(eCardEffect.wall);
@@ -121,9 +121,9 @@ export class PlayerService {
             //     [card, card]
             // ));
             // this._playerInfoService.getPlayerState().completed.push(this._cardFactoryService.createCompletedFoundation(
-            //     card1,
-            //     card1.role,
-            //     [card1, card1]
+            //     card,
+            //     card.role,
+            //     [card, card]
             // ));
 
             // this._playerInfoService.getPlayerState().underConstruction.push(this._cardFactoryService.createFoundation(
@@ -807,7 +807,7 @@ export class PlayerService {
 
         this.allExtorted = false;
 
-        this._messageService.addPoolLegionaryMessage(card);
+        card && this._messageService.addPoolLegionaryMessage(card);
         this.actionFinished();
     }
 

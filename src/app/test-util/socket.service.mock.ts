@@ -52,6 +52,7 @@ class MockIO {
 class MockSocket {
 
     private messageListeners = {};
+    handshake = {};
 
     constructor(
         private socketServer: MockIO
