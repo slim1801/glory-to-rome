@@ -1,5 +1,6 @@
 <div class="action-card-container">
     <card-image [card]="_playerInfoService.getPlayerState().actionCard" [size]="size" [invert]="true"></card-image>
+    <jack-cards-component [player]="_playerInfoService.getPlayerState()"></jack-cards-component>
     <div *ngIf="_playerService.activeActionItem && _playerService.activeActionItem.numActions > 0" class="num-actions">
         {{_playerService.activeActionItem.numActions}}
     </div>

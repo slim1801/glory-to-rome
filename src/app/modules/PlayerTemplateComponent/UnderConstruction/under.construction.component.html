@@ -3,8 +3,13 @@
     <div *ngFor="let foundation of _playerInfoService.getPlayerState().underConstruction; let i = index">
         <div
             class="under-construction-card-container"
-            [ngStyle]="cardStyle(i)"
-            (click)="buildingClicked(foundation)">
+            (click)="buildingClicked(foundation)"
+            
+            [size]="size"
+            [cardGroup]="underConstructionContainer"
+            [cardGroupIndex]="i"
+            [cardGroupLength]="_playerInfoService.getPlayerState().underConstruction.length">
+
                 <div class="behind-container">
                     <div *ngFor="let material of foundation.materials; let j = index">
                         <card-image 

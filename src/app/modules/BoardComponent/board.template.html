@@ -30,10 +30,13 @@
             </div>
             <div class="player-detail-container">
                 <div class="action-section">
-                    <card-image [card]="pState.actionCard"
-                                [size]="size"
-                                [invert]="true">
-                    </card-image>
+                    <div style="position:relative; overflow: hidden">
+                        <card-image [card]="pState.actionCard"
+                                    [size]="size"
+                                    [invert]="true">
+                        </card-image>
+                        <jack-cards-component [player]="pState"></jack-cards-component>
+                    </div>
                 </div>
                 <div class="detail-section">
 

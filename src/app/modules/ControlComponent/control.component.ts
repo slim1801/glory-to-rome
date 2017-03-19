@@ -74,7 +74,15 @@ export class ControlComponent {
             this._playerService.canPlayCardsAsJack().length == 0
         ) return;
 
-        this.jackMenuVisible = !this.jackMenuVisible;
+        if (
+            this._playerInfoService.isPlayersTurn &&
+            this._playerInfoService.isFollowing
+        ) {
+            this._playerService.playCardsAsJack(this._gameService.gameState.mode);
+        }
+        else {
+            this.jackMenuVisible = !this.jackMenuVisible;
+        }
     }
 
     optionClicked = (wType: eWorkerType) => {

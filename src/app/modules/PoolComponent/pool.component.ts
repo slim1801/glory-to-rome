@@ -1,11 +1,12 @@
 import * as _ from 'lodash';
 
-import { Component } from '@angular/core';
+import { AfterContentInit, Component, ViewChild } from '@angular/core';
 
 import { ICard, eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
 
 import { GameService, eActionMode } from '../../common/game.service';
 import { CardDetailService } from '../CardDetailComponent/card.detail.service';
+import { CardFactoryService } from '../../common/card/card.factory.service';
 import { GameMechanicsService } from '../../common/game.mechanics.service';
 import { PlayerInfoService } from '../../common/player.info.service';
 import { PlayerService } from '../../common/player.service';
@@ -16,28 +17,34 @@ import { SocketService } from '../../common/socket.service';
     templateUrl: './pool.template.html',
     styleUrls: ['./pool.styles.css']
 })
-export class PoolComponent {
+export class PoolComponent implements AfterContentInit {
 
     private size = eCardSize.medium;
+    private cardWidth;
+
+    @ViewChild('poolContainer') private spContRef;
+    private spContWidth: number;
 
     constructor(
         private _gameService: GameService,
         private _cardDetailService: CardDetailService,
+        private _cardFactoryService: CardFactoryService,
         private _gameMechanicsService: GameMechanicsService,
         private _playerInfoService: PlayerInfoService,
         private _playerService: PlayerService,
         private _socketService: SocketService
     ) {
+        this.cardWidth = this._cardFactoryService.getCardWidth(eCardSize.medium);
         this._initListeners();
     }
 
-    private _initListeners() {
-        // Listen for card actions
-        let game = this._gameMechanicsService;
-        let player = this._playerService;
-        let skt = this._socketService;
+    ngAfterContentInit() {
+        this.spContWidth = this.spContRef.nativeElement.offsetWidth;
+    }
 
-        game.onActionEnd().subscribe(card => {
+    private _initListeners() {
+
+        this._gameMechanicsService.onActionEnd().subscribe(card => {
             if (card.role == eWorkerType.jack) return;
         });
     }
@@ -108,11 +115,18 @@ export class PoolComponent {
             this._architectAction(card);
         }
     }
+    
 
     cardStyle(index: number) {
-        let offset = (index * 30) + 'px';
+        let offset = 30;
+        let poolLength = this._gameService.gameState.pool.length;
+
+        let totalOffset = (poolLength - 1) * offset + this.cardWidth;
+        if (totalOffset > this.spContWidth) {
+            offset = (this.spContWidth - this.cardWidth) / (poolLength - 1);
+        }
         return {
-            left: offset
+            left: (offset * index) + 'px'
         }
     }
 

@@ -199,6 +199,7 @@ module.exports = function() {
             action: null,
             additionalActions: [],
             jackCards: null,
+            cardsForJack: 3,
 
             loot: [],
             hasLooted: false,

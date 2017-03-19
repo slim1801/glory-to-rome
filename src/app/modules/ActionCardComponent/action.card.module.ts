@@ -3,6 +3,7 @@ import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '../../common/common.module';
 
+import { JackCardsModule } from '../JackCardsComponent/jack.cards.module';
 import { ActionCardComponent } from './action.card.component';
 
 @NgModule({
@@ -12,7 +13,8 @@ import { ActionCardComponent } from './action.card.component';
     BrowserModule,
     HttpModule,
     
-    CommonModule
+    CommonModule,
+    JackCardsModule
   ],
   exports: [
       ActionCardComponent

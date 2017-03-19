@@ -2,6 +2,8 @@ import * as _ from 'lodash';
 
 import { Injectable } from '@angular/core';
 
+const userConfig = require('../config/user.config.json');
+
 import { ICard, IFoundation, ICompletedFoundation } from './card/card';
 import { IGameState, eActions } from './game.service';
 
@@ -29,6 +31,7 @@ export interface IPlayerState {
     action: eActions;
     additionalActions: ICard[];
     jackCards: ICard[];
+    cardsForJack: number,
 
     loot: Array<ICard>;
     hasLooted: boolean;
@@ -62,6 +65,7 @@ export class PlayerInfoService {
         action: null,
         additionalActions: [],
         jackCards: null,
+        cardsForJack: userConfig.cardsToPlayJack,
         
         loot: [],
         hasLooted: false,

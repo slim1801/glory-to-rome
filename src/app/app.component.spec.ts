@@ -263,6 +263,46 @@ describe('Test whole application', () => {
         ]);
     }));
 
+    it('tests three jacks', injector(srvs => {
+        gth.configureState({
+            handCards: [
+                eCardEffect.dock,
+                eCardEffect.dock,
+                eCardEffect.dock
+            ]
+        });
+
+        let petitionButton = gth.getElement(eSelector.petitionButton);
+
+        th.click(petitionButton);
+        let archOption = gth.getElement(eSelector.architectOption);
+        expect(archOption).toBeDefined("Architect option not visible");
+        srvs.ps.playCardsAsJack(eWorkerType.architect);
+
+        gth.checkInteraction(gth.getHandCards(), [
+            eInteractable.interactable,
+            eInteractable.interactable,
+            eInteractable.interactable
+        ]);
+
+        let { handCards } = srvs.ps;
+        gth.clickOnHandCard(0);
+        expect(handCards[0].selected).toBe(true, "Card 0 should be selected");
+        gth.clickOnHandCard(1);
+        expect(handCards[1].selected).toBe(true, "Card 1 should be selected");
+        gth.clickOnHandCard(1);
+        expect(handCards[1].selected).toBe(false, "Card 1 should not be selected");
+        gth.clickOnHandCard(1);
+        expect(handCards[1].selected).toBe(true, "Card 1 should be selected (2)");
+        gth.clickOnHandCard(2);
+
+        expect(srvs.ps.handCards.length).toBe(0, "Hand size length should be 0");
+        gth.actionRoleIs(eWorkerType.architect);
+
+        let actionCards = th.getElements('.action-cards-as-jack');
+        expect(actionCards.length).toBe(3);
+    }));
+
     // CARD EFFECTS
 
     it('is testing ACADEMY functionality', injector(srvs => {
@@ -490,9 +530,9 @@ describe('Test whole application', () => {
             underConstruction: [{ cardEff: eCardEffect.circus }]
         });
 
-        expect(srvs.ps.cardsToPlayJack).toBe(3);
+        expect(srvs.pis.getPlayerState().cardsForJack).toBe(3);
         gth.completeBuilding(eCardEffect.circus);
-        expect(srvs.ps.cardsToPlayJack).toBe(2);
+        expect(srvs.pis.getPlayerState().cardsForJack).toBe(2);
     }));
 
     it('is testing CIRCUS MAXIMUS functionality [ARCHITECT]', injector(srvs => {

@@ -24,9 +24,6 @@ export class PlayerService {
 
     handSize: number = userConfig.handSize;
 
-    cardsToPlayJack: number = userConfig.cardsToPlayJack;
-    //cardsToPlayJack: number = 2;
-
     handCards: ICard[] = [];
 
     allExtorted = false;
@@ -79,11 +76,11 @@ export class PlayerService {
             this.configurePlayersTurn(gameState);
             this.configurePlayersLead(gameState.playerLead);
 
-            let card = this._cardFactoryService.getCard(eCardEffect.wall);
+            let card = this._cardFactoryService.createCard(eCardEffect.wall);
             let card1 = this._cardFactoryService.createCard(eCardEffect.palisade);
-            let card2 = this._cardFactoryService.getCard(eCardEffect.amphitheatre);
-            // let card3 = this._cardFactoryService.getCard(eCardEffect.wall);
-            // let card4 = this._cardFactoryService.getCard(eCardEffect.palisade);
+            let card2 = this._cardFactoryService.createCard(eCardEffect.amphitheatre);
+            let card3 = this._cardFactoryService.createCard(eCardEffect.academy);
+            let card4 = this._cardFactoryService.createCard(eCardEffect.latrine);
             // let card5 = this._cardFactoryService.getCard(eCardEffect.road);
             // let card6 = this._cardFactoryService.getCard(eCardEffect.scriptorium);
             // this.handCards = [
@@ -120,11 +117,16 @@ export class PlayerService {
             //     card.role,
             //     [card, card]
             // ));
-            // this._playerInfoService.getPlayerState().completed.push(this._cardFactoryService.createCompletedFoundation(
-            //     card,
-            //     card.role,
-            //     [card, card]
-            // ));
+            this._playerInfoService.getPlayerState().completed.push(this._cardFactoryService.createCompletedFoundation(
+                card,
+                card.role,
+                [card1, card2]
+            ));
+            this._playerInfoService.getPlayerState().completed.push(this._cardFactoryService.createCompletedFoundation(
+                card3,
+                card1.role,
+                [card4]
+            ));
 
             // this._playerInfoService.getPlayerState().underConstruction.push(this._cardFactoryService.createFoundation(
             //     card,
@@ -311,7 +313,7 @@ export class PlayerService {
     selectCardAsJack = (card: ICard) => {
         let jackCards = this._playerInfoService.getPlayerState().jackCards;
         jackCards.push(card);
-        if (jackCards.length == this.cardsToPlayJack) {
+        if (jackCards.length == this._playerInfoService.getPlayerState().cardsForJack) {
 
             this._messageService.petitionMessage(jackCards);
 
@@ -1111,7 +1113,7 @@ export class PlayerService {
                 this._endGame();
                 return;
             case eCardEffect.circus:
-                this.cardsToPlayJack = 2;
+                pState.cardsForJack = 2;
                 break;
             case eCardEffect.foundry:
                 completionState = this._createCompletedStackItem(influence, eWorkerType.laborer, card.id);

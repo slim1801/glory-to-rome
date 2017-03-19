@@ -45,6 +45,7 @@ export interface ICard {
     changeValues(data: ICard): void; 
     setPhantom(val: boolean): void;
     setMode(wType: eWorkerType): void;
+    animationState?: string;
 }
 
 export interface ICardData {
@@ -134,6 +135,7 @@ export class Card implements ICard {
     phantom = false;
     mode: eWorkerType = null;
     selected = false;
+    animationState = 'none';
 
     constructor(data?: ICardData) {
         this.assignData(data);

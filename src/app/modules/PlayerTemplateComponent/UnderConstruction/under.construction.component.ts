@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { Component, ViewChild, AfterContentInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 
 import { ICard, IFoundation, Card, eCardSize, eCardEffect, eWorkerType } from '../../../common/card/card';
 
@@ -37,14 +37,11 @@ import { PlayerInfoService } from '../../../common/player.info.service';
         }
     `]
 })
-export class UnderConstructionComponent implements AfterContentInit {
+export class UnderConstructionComponent {
 
     private phantomCard: IFoundation;
     private size = eCardSize.medium;
     private cardWidth;
-
-    @ViewChild('underConstructionContainer') private spContRef;
-    private spContWidth: number;
 
     constructor(
         private _cardFactoryService: CardFactoryService,
@@ -55,10 +52,6 @@ export class UnderConstructionComponent implements AfterContentInit {
     ) {
         this.cardWidth = this._cardFactoryService.getCardWidth(eCardSize.medium);
         this._initListeners();
-    }
-
-    ngAfterContentInit() {
-        this.spContWidth = this.spContRef.nativeElement.offsetWidth;
     }
 
     private _initListeners() {
@@ -122,25 +115,9 @@ export class UnderConstructionComponent implements AfterContentInit {
         return newCard;
     }
 
-    cardStyle(index: number) {
-        let offset = this.cardWidth + 5;
-        let underCo = this._playerInfoService.getPlayerState().underConstruction;
-        let numCards = underCo.length;
-
-        let totalOffset = (underCo.length - 1) * offset + this.cardWidth;
-        if (totalOffset > this.spContWidth) {
-            offset = (this.spContWidth - this.cardWidth) / (numCards - 1);
-        }
-        return {
-            left: (offset * index) + 'px'
-        }
-    }
-
     materialStyle(i: number, j: number) {
-        let offset = 15;
-        let style = this.cardStyle(i);
         return {
-            top: (offset * (j + 1)) + 10 + 'px',
+            top: (15 * (j + 1)) + 10 + 'px',
             'z-index': (j * -1)
         }
     }

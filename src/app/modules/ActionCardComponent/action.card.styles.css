@@ -18,6 +18,7 @@
 
 .action-card-container {
     position: relative;
+    overflow: hidden;
 }
 
 .extra-action {

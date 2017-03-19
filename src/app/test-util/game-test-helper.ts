@@ -72,7 +72,8 @@ export interface IConfigureParams {
 export enum eInteractable {
     interactable,
     noninteractable,
-    inactive
+    inactive,
+    selectable
 }
 
 export class GameTestHelper<T> {
@@ -331,7 +332,7 @@ export class GameTestHelper<T> {
 
     actionRoleIs(type: eWorkerType) {
         if (this.srvs.pis.getPlayerState().actionCard)
-            expect(this.srvs.pis.getPlayerState().actionCard.role).toBe(type);
+            expect(this.srvs.pis.getPlayerState().actionCard.mode).toBe(type);
     }
 
     addPlayer(id: string, extendedProps?: any) {
@@ -368,11 +369,13 @@ export class GameTestHelper<T> {
         forEach(cards, (card, i) => {
             switch(classes[i]) {
                 case eInteractable.interactable:
-                    expect(card.classList.contains('interactable')).toBe(true); break;
+                    expect(card.classList.contains('interactable')).toBe(true, "Card should be interactable"); break;
                 case eInteractable.noninteractable:
-                    expect(card.classList.contains('interactable')).toBe(false); break;
+                    expect(card.classList.contains('interactable')).toBe(false, "Card should not be interactable"); break;
                 case eInteractable.inactive:
-                    expect(card.classList.contains('inactive')).toBe(true); break;
+                    expect(card.classList.contains('inactive')).toBe(true, "Card should be inactive"); break;
+                case eInteractable.selectable:
+                    expect(card.classList.contains('selected')).toBe(true, "Card should be selectable"); break;
             }
         });
     }

@@ -98,6 +98,10 @@
     padding-bottom: 3px;
 }
 
+.action-label {
+    text-align: center;
+}
+
 .pool-section {
     display: flex;
     flex-flow: column;
