@@ -1082,9 +1082,15 @@ export class PlayerService {
                 !!_.find(this.handCards, card => card.role == eWorkerType.patron && !card.phantom);
     }
 
-    statueCondition(foundation: IFoundation) {
+    statueCraftsmanCondition(foundation: IFoundation) {
         return foundation.building.id === eCardEffect.statue &&
                !!_.find(this.handCards, card => card.role == eWorkerType.patron || card.role == foundation.site.role)
+    }
+
+    statueArchitectCondition(foundation: IFoundation) {
+        let stockpile = this._playerInfoService.getPlayerState().stockpile;
+        return foundation.building.id === eCardEffect.statue &&
+               !!_.find(stockpile, card => card.role == eWorkerType.patron || card.role == foundation.site.role)
     }
 
     isInActionStack(id: eCardEffect) {

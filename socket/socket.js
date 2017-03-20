@@ -264,16 +264,13 @@ module.exports = function() {
             return;
         }
 
-        // Get all action cards clients used for the turn
-        let actionCards = _.map(pStates, pState => pState.actionCard);
-
         // Add to pool if not null
-        _.forEach(actionCards, card => {
-            if (card) {
-                if (card.role != 6) {
-                    state.pool.push(card);
+        _.forEach(pStates, pState => {
+            if (pState.actionCard) {
+                if (pState.actionCard.role != 6) {
+                    state.pool.push(pState.actionCard);
                 }
-                else {
+                else if (pState.jackCards === null) {
                     state.jacks++;
                 }
             }
@@ -294,10 +291,9 @@ module.exports = function() {
         _.forEach(pStates, pState => pState.additionActions = []);
 
         // Add jack cards to pool
-        let jackCards = _.map(pStates, pState => pState.jackCards);
-        _.forEach(jackCards, cards => {
-            if (cards) {
-                _.forEach(cards, card => {
+        _.forEach(pStates, pState => {
+            if (pState.jackCards) {
+                _.forEach(pState.jackCards, card => {
                     state.pool.push(card);
                 });
             }

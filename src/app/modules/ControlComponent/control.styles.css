@@ -23,7 +23,7 @@
 }
 .three-card-jack-container {
     height: 100%;
-
+    padding: 3px;
     color: white;
 
     border-radius: 5px;
@@ -49,6 +49,7 @@
 .follow-button-container,
 .no-container {
     height: 100%;
+    padding: 3px;
     margin-right: 5px;
 
     flex: 1;
@@ -84,17 +85,15 @@
     background-color: peachpuff;
 }
 
-
 .think-text, .jack-text, .follow-text, .three-jack-text {
-    
-    padding: 0px 5px;
-    text-align: center;
-    display: table-cell;
-    vertical-align: middle;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .three-jack-text {
-    margin-left: 10px;
+    margin-left: 15px;
 }
 
 .disabled {
@@ -104,16 +103,15 @@
 .disabled:hover {
     transform: none;
 }
+
 .border-container,
 .follow-border-container {
-    width: 95%;
-    height: 76%;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    position: absolute;
-    border-radius: 5px;
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
     border: 1px solid white;
+    position: relative;
+    display: flex;
 }
 
 .follow-border-container {
@@ -121,7 +119,7 @@
 }
 
 .icon {
-    left: 10px;
+    left: 6px;
     top: 50%;
     transform: translate(0%, -50%);
     font-size: 16px;
@@ -155,7 +153,7 @@
 .jack-num {
     transform: translate(-50%, -50%);
     top: 50%;
-    right: 3px;
+    right: 0px;
 }
 .yes-icon {
     cursor: pointer;

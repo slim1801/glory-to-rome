@@ -2,16 +2,18 @@
 
     <div class="control-buttons-container">
         <div class="think-button-container" *ngIf="showThink()" [class.disabled]="!enableThink()" (click)="think()">
-            <div class="border-container"></div>
-            <i class="fa fa-comment think-icon"></i>
-            <div class="think-text">THINK</div>
+            <div class="border-container">
+                <i class="fa fa-comment think-icon"></i>
+                <div class="think-text">THINK</div>
+            </div>
         </div>
 
         <div class="jack-button-container" *ngIf="showJack()" [class.disabled]="!enableJack()" (click)="drawJack()">
-            <div class="border-container"></div>
-            <i class="fa fa-question-circle-o icon"></i>
-            <div class="jack-text">DRAW JACK</div>
-            <div class="jack-num">{{_gameService.gameState.jacks}}</div>
+            <div class="border-container">
+                <i class="fa fa-question-circle-o icon"></i>
+                <div class="jack-text">DRAW JACK</div>
+                <div class="jack-num">{{_gameService.gameState.jacks}}</div>
+            </div>
         </div>
 
         <div class="outer-three-card-jack-container" *ngIf="showThreeJack()">
@@ -22,9 +24,12 @@
                  [class.disabled]="!enableThreeJack()"
                  (click)="playCardsAsJack()">
 
-                <div class="border-container"></div>
-                <i class="fa fa-male icon"></i>
-                <div class="three-jack-text">PLAY {{_playerInfoService.getPlayerState().cardsForJack}} AS JACK</div>
+                <div class="border-container">
+                    <i class="fa fa-male icon"></i>
+                    <div class="three-jack-text">
+                        <div>PLAY {{_playerInfoService.getPlayerState().cardsForJack}} AS JACK</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -32,9 +37,10 @@
              *ngIf="showFollow()"
              [class.disabled]="!enableFollow()"
              (click)="follow()">
-                <div class="follow-border-container"></div>
-                <i class="fa fa-male icon"></i>
-                <div class="follow-text">FOLLOW</div>
+                <div class="follow-border-container">
+                    <i class="fa fa-male icon"></i>
+                    <div class="follow-text">FOLLOW</div>
+                </div>
         </div>
     </div>
 </div>

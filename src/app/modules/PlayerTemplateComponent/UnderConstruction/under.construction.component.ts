@@ -136,7 +136,7 @@ export class UnderConstructionComponent {
     }
 
     checkInteraction(foundation: IFoundation) {
-        if (!this._playerInfoService.isPlayersTurn) return false;
+        if (!this._playerInfoService.isPlayersTurn || !foundation) return false;
         if (this._gameService.gameState.actionMode !== eActionMode.resolveCardMode) return false;
 
         // Check if craftsman or architect mode
@@ -173,7 +173,12 @@ export class UnderConstructionComponent {
         }
 
         // Statue Condition
-        if (foundation.site !== undefined && this._playerService.statueCondition(foundation)) {
+        if (
+            mode == eWorkerType.craftsman &&
+            this._playerService.statueCraftsmanCondition(foundation) ||
+            mode == eWorkerType.architect &&
+            this._playerService.statueArchitectCondition(foundation)
+        ) {
             return true;
         }
 

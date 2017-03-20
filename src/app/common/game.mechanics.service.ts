@@ -15,7 +15,6 @@ export class GameMechanicsService {
     private roleMap;
 
     activeCard: ICard = new Card();
-    private actionMode: eActionMode;
 
     // When other players lead
     private playedCard: ICard = new Card();
@@ -41,14 +40,6 @@ export class GameMechanicsService {
     private _initListeners() {
         let skt = this._socketService;
 
-        skt.onGameStarted().subscribe(gameState => {
-            this.actionMode = gameState.actionMode;
-        });
-        
-        skt.onTurnStarted().subscribe(gameState => {
-            this.actionMode = gameState.actionMode;
-        });
-
         skt.onAllPlayersChosen().subscribe(gameState => {
             this._configurePlayerTurn(gameState);
         });
@@ -66,8 +57,6 @@ export class GameMechanicsService {
             this.actionEnd();
         }
     }
-
-    getActionMode = () => this.actionMode;
 
     getPlayedCard = () => this.playedCard;
 

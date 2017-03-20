@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CardImageComponent } from './card/card.image.component';
 import { CardFactoryService } from './card/card.factory.service';
 import { CardImageService } from './card/card.image.service';
-import { CardGroupDirective } from './card/card.group.directive';
+import { CardGroupDirective, ActionColorDirective } from './card/card.group.directive';
 
 import { GameMechanicsService } from './game.mechanics.service';
 import { PlayerInfoService } from './player.info.service';
@@ -17,7 +17,8 @@ import { SocketService } from './socket.service';
 @NgModule({
   declarations: [
     CardImageComponent,
-    CardGroupDirective
+    CardGroupDirective,
+    ActionColorDirective
   ],
   bootstrap: [CardImageComponent],
   imports: [
@@ -26,7 +27,8 @@ import { SocketService } from './socket.service';
   ],
   exports: [
     CardImageComponent,
-    CardGroupDirective
+    CardGroupDirective,
+    ActionColorDirective
   ],
   providers: [
     CardFactoryService,

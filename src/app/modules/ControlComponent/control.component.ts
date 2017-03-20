@@ -27,6 +27,9 @@ export class ControlComponent {
         private _socketService: SocketService,
         private _messageService: MessageService
     ) {
+        this._socketService.onTurnEnd().subscribe(() => {
+            this.jackTypeChosen = false;
+        });
     }
 
     /* Normal section */
@@ -87,6 +90,7 @@ export class ControlComponent {
 
     optionClicked = (wType: eWorkerType) => {
         this.jackMenuVisible = false;
+        this.jackTypeChosen = true;
         this._playerService.playCardsAsJack(wType);
     }
 
@@ -124,8 +128,11 @@ export class ControlComponent {
         if (this._enableInActionMode()) return true;
     }
 
+    private jackTypeChosen = false;
+
     enableThreeJack = () => {
         if (this._playerService.actionFinishTrigger || this._playerService.actionPerformTrigger) return false;
+        if (this.jackTypeChosen) return false;
         if (this._playerService.canPlayCardsAsJack().length == 0) return false;
         if (this._enableInActionMode()) return true;
         if (this._enableWhileFollowing()) return true;
