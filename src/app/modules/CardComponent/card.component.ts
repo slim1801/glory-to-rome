@@ -13,7 +13,6 @@ import {
 import { ICard, eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
 
 import { CardFactoryService } from '../../common/card/card.factory.service';
-import { GameMechanicsService } from '../../common/game.mechanics.service';
 import { GameService, eActionMode, eLegionaryStage, removeFromList, eActions } from '../../common/game.service';
 import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
@@ -44,7 +43,6 @@ export class CardComponent {
 
     constructor(
         private _cardFactoryService: CardFactoryService,
-        private _gameMechanicsService: GameMechanicsService,
         private _gameService: GameService,
         private _playerService: PlayerService,
         private _playerInfoService: PlayerInfoService,
@@ -57,11 +55,7 @@ export class CardComponent {
     }
 
     private _initListeners() {
-
-        let game = this._gameMechanicsService;
-        let player = this._playerService;
-
-        game.onActionEnd().subscribe(card => {
+        this._gameService.onActionEnd().subscribe(card => {
             this.card.selected = false;
             this._hoverState = "dormant";
         });
@@ -189,13 +183,13 @@ export class CardComponent {
                 }
 
                 // Aqueduct Condition
-                if (mode == eWorkerType.patron && player.hasCompletedBuilding(eCardEffect.aqueduct))
+                if (mode == eWorkerType.patron && player.hasBuildingFunction(eCardEffect.aqueduct))
                     this._addClientelle();
                 // Basilica Condition
-                if (mode == eWorkerType.merchant && player.hasCompletedBuilding(eCardEffect.basilica))
+                if (mode == eWorkerType.merchant && player.hasBuildingFunction(eCardEffect.basilica))
                     this._addToVault();
                 // Dock Condition
-                if (mode == eWorkerType.laborer && player.hasCompletedBuilding(eCardEffect.dock))
+                if (mode == eWorkerType.laborer && player.hasBuildingFunction(eCardEffect.dock))
                     this._addToStockpile();
             }
             // BUILDING SELECTED
@@ -205,14 +199,14 @@ export class CardComponent {
                 if (mode == eWorkerType.craftsman) {
                     if (
                         player.roadCondition() ||
-                        this.card.role == eWorkerType.laborer && player.hasCompletedBuilding(eCardEffect.tower)
+                        this.card.role == eWorkerType.laborer && player.hasBuildingFunction(eCardEffect.tower)
                     ) {
                         this._addMaterial();
                     }
                     // Scriptorium condition
                     else if (
                         this.card.role == eWorkerType.patron &&
-                        player.hasCompletedBuilding(eCardEffect.scriptorium)
+                        player.hasBuildingFunction(eCardEffect.scriptorium)
                     ) {
                         this._addMaterial();
                     }
@@ -347,13 +341,22 @@ export class CardComponent {
             ) return true;
 
             if (mode == eActionMode.actionCardMode) {
-
+                let jCards = this._playerInfoService.getPlayerState().jackCards;
                 if (this._playerService.typesForJack != null) {
-                    return !!_.includes(this._playerService.typesForJack, this.card.role);
+                    if(
+                        !!_.includes(this._playerService.typesForJack, this.card.role) && jCards.length == 0
+                    ) return true;
+
+                    if (
+                        this._playerInfoService.getPlayerState().jackCards.length > 0 &&
+                        !!_.find(jCards, card => card.role == this.card.role)
+                    ) return true;
+                    
+                    return false;
                 }
 
                 if (
-                    this._playerService.hasCompletedBuilding(eCardEffect.palace) &&
+                    this._playerService.hasBuildingFunction(eCardEffect.palace) &&
                     this._playerService.actionPerformTrigger == eCardEffect.palace &&
                     !this._playerService.resolvingCard
                 ) {

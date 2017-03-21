@@ -19,7 +19,6 @@ export interface ICustomCardSize {
 
 import { ICard, eCardSize, eWorkerType } from './card';
 import { CardFactoryService } from './card.factory.service';
-import { GameMechanicsService } from '../game.mechanics.service';
 import { CardImageService } from './card.image.service';
 
 const cardSpriteLarge = require('../../assets/large/card-sprite.jpg');
@@ -126,8 +125,7 @@ export class CardImageComponent implements OnChanges, DoCheck, AfterContentInit 
 
     constructor(
         private differs: KeyValueDiffers,
-        private _cardImageService: CardImageService,
-        private _gameMechanicsService: GameMechanicsService
+        private _cardImageService: CardImageService
     ) {
 		this.differ = differs.find({}).create(null);
     }

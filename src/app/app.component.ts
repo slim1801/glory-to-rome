@@ -5,6 +5,7 @@ import { Component, ViewChild } from '@angular/core';
 import { ICard, ICompletedFoundation, eWorkerType, eCardEffect } from './common/card/card';
 import { SocketService } from './common/socket.service';
 import { PlayerService } from './common/player.service';
+import { PlayerInfoService } from './common/player.info.service';
 import { IPlayerState } from './common/player.info.service';
 import { GameService } from './common/game.service';
 
@@ -33,7 +34,8 @@ export class AppComponent {
     constructor(
         private _socketService: SocketService,
         private _gameService: GameService,
-        private _playerService: PlayerService
+        private _playerService: PlayerService,
+        private _playerInfoService: PlayerInfoService
     ){  
         this._initListeners();
     }

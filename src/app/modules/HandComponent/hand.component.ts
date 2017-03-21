@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import { Component, AfterContentInit, HostListener, ViewChild } from '@angular/core';
 
 import { ICard, eCardEffect, eWorkerType } from '../../common/card/card';
-import { GameMechanicsService } from '../../common/game.mechanics.service';
 import { GameService } from '../../common/game.service';
 import { PlayerService } from '../../common/player.service';
 
@@ -23,7 +22,6 @@ export class HandComponent implements AfterContentInit {
     private containerWidth: number;
 
     constructor(
-        private _gameMechanicsService: GameMechanicsService,
         private _gameService: GameService,
         private _playerService: PlayerService
     ) {

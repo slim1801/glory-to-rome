@@ -7,7 +7,6 @@ import { ICard, eCardSize, eCardEffect, eWorkerType } from '../../common/card/ca
 import { GameService, eActionMode } from '../../common/game.service';
 import { CardDetailService } from '../CardDetailComponent/card.detail.service';
 import { CardFactoryService } from '../../common/card/card.factory.service';
-import { GameMechanicsService } from '../../common/game.mechanics.service';
 import { PlayerInfoService } from '../../common/player.info.service';
 import { PlayerService } from '../../common/player.service';
 import { SocketService } from '../../common/socket.service';
@@ -29,29 +28,20 @@ export class PoolComponent implements AfterContentInit {
         private _gameService: GameService,
         private _cardDetailService: CardDetailService,
         private _cardFactoryService: CardFactoryService,
-        private _gameMechanicsService: GameMechanicsService,
         private _playerInfoService: PlayerInfoService,
         private _playerService: PlayerService,
         private _socketService: SocketService
     ) {
         this.cardWidth = this._cardFactoryService.getCardWidth(eCardSize.medium);
-        this._initListeners();
     }
 
     ngAfterContentInit() {
         this.spContWidth = this.spContRef.nativeElement.offsetWidth;
     }
 
-    private _initListeners() {
-
-        this._gameMechanicsService.onActionEnd().subscribe(card => {
-            if (card.role == eWorkerType.jack) return;
-        });
-    }
-
     private _archwayCondition() {
         return this._gameService.gameState.mode == eWorkerType.architect &&
-                this._playerService.hasCompletedBuilding(eCardEffect.archway);
+                this._playerService.hasBuildingFunction(eCardEffect.archway);
     }
 
     private _archwaySelectable(card: ICard) {
@@ -140,8 +130,8 @@ export class PoolComponent implements AfterContentInit {
 
     private _towerArchwayCondition(card: ICard) {
         return  card.role == eWorkerType.laborer &&
-                this._playerService.hasCompletedBuilding(eCardEffect.tower) &&
-                this._playerService.hasCompletedBuilding(eCardEffect.archway) &&
+                this._playerService.hasBuildingFunction(eCardEffect.tower) &&
+                this._playerService.hasBuildingFunction(eCardEffect.archway) &&
                 this._playerService.selectedBuilding
     }
 
@@ -162,7 +152,7 @@ export class PoolComponent implements AfterContentInit {
             // Legionary from pool condition
             if (this._legionaryFromPool(mode, card)) return true;
             // Archway condition
-            if (mode == eWorkerType.architect && this._playerService.hasCompletedBuilding(eCardEffect.archway)) {
+            if (mode == eWorkerType.architect && this._playerService.hasBuildingFunction(eCardEffect.archway)) {
                 return this._playerService.cardCanInteractAsMaterial(card);
             }
             return false;

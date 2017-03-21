@@ -208,6 +208,16 @@ export class GameService {
                 return 3;
         }
     }
+
+    private actionEndSubject = new Subject<void>();
+    actionEnd() {
+        this.gameState.mode = null;
+        this.actionEndSubject.next();
+    }
+
+    onActionEnd() {
+        return this.actionEndSubject.asObservable();
+    }
 }
 
 export function removeFromList(card: ICard, cardArr: ICard[]) {

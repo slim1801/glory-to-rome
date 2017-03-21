@@ -6,7 +6,6 @@ import { Subject } from 'rxjs/Subject';
 import { ICard, IFoundation, IFoundationPile, eWorkerType, eCardEffect, ICompletedFoundation } from './card/card';
 
 const userConfig = require('../config/user.config.json');
-import { GameMechanicsService } from './game.mechanics.service';
 import { GameService, IGameState, eLegionaryStage, eActionMode, eActions, removeFromList } from './game.service';
 import { CardFactoryService } from './card/card.factory.service';
 import { SocketService  } from './socket.service';
@@ -31,7 +30,6 @@ export class PlayerService {
 
     constructor(
         @Inject(CardFactoryService) private _cardFactoryService: CardFactoryService,
-        @Inject(GameMechanicsService) private _gameMechanicsService: GameMechanicsService,
         @Inject(GameService) private _gameService: GameService,
         @Inject(PlayerInfoService) private _playerInfoService: PlayerInfoService,
         @Inject(SocketService) private _socketService: SocketService,
@@ -200,22 +198,36 @@ export class PlayerService {
             }
         });
 
-        skt.onAllPlayersChosen().subscribe(() => {
+        skt.onAllPlayersChosen().subscribe(gameState => {
+            this._configurePlayerTurn(gameState);
             if (this._gameService.gameState.mode === eWorkerType.legionary) {
                 this._gameService.gameState.legionaryStage = eLegionaryStage.declare;
             }
 
             let mode = this._gameService.gameState.mode;
             // Atrium trigger
-            if (this.hasCompletedBuilding(eCardEffect.atrium) && mode == eWorkerType.merchant)
+            if (this.hasBuildingFunction(eCardEffect.atrium) && mode == eWorkerType.merchant)
                 this.actionPerformTrigger = eCardEffect.atrium;
             // Bar trigger
-            else if (this.hasCompletedBuilding(eCardEffect.bar) && mode == eWorkerType.patron)
+            else if (this.hasBuildingFunction(eCardEffect.bar) && mode == eWorkerType.patron)
                 this.actionPerformTrigger = eCardEffect.bar;
             // Stairway trigger
-            else if (this.hasCompletedBuilding(eCardEffect.stairway) && mode == eWorkerType.architect)
+            else if (this.hasBuildingFunction(eCardEffect.stairway) && mode == eWorkerType.architect)
                 this.actionPerformTrigger = eCardEffect.stairway;
         });
+        
+        skt.onCardPlayed().subscribe(gameState => {
+            this._configurePlayerTurn(gameState);
+        });
+    }
+
+    private _configurePlayerTurn(gameState) {
+        if (gameState.playerOrder[gameState.playerTurn].id == this._playerInfoService.player.id) {
+            this._playerInfoService.isPlayersTurn = true;
+        }
+        else if (gameState.actionMode == eActionMode.turnEndMode) {
+            this._gameService.actionEnd();
+        }
     }
 
     updatePlayerState() {
@@ -276,7 +288,7 @@ export class PlayerService {
     }
 
     canPlayCardsAsJack = (): eWorkerType[] => {
-        if (this.hasCompletedBuilding(eCardEffect.circus)) {
+        if (this.hasBuildingFunction(eCardEffect.circus)) {
             return this._hasNumCards(2);
         }
         return this._hasNumCards(3);
@@ -342,7 +354,6 @@ export class PlayerService {
     }
 
     playCard(card: ICard) {
-        this._gameMechanicsService.changeActiveCard(card);
         this._gameService.gameState.mode = card.mode != null ? card.mode : card.role;
         
         _.remove(this.handCards, card);
@@ -355,7 +366,7 @@ export class PlayerService {
         this._gameService.updateGameState();
 
         if (
-            this.hasCompletedBuilding(eCardEffect.palace) &&
+            this.hasBuildingFunction(eCardEffect.palace) &&
             this._palaceCondition(card)
         ) {
             this.resolvingCard = true;
@@ -424,7 +435,7 @@ export class PlayerService {
     canAddToBuilding = (card: ICard) => {
         let mode = this._gameService.gameState.mode;
 
-        if (this.hasCompletedBuilding(eCardEffect.road) && 
+        if (this.hasBuildingFunction(eCardEffect.road) && 
             this.selectedBuilding &&
             this.selectedBuilding.building.role == eWorkerType.merchant)
             return true;
@@ -458,8 +469,6 @@ export class PlayerService {
         if (this.hasClientelleType(this._gameService.gameState.mode)) {
             let card = this._cardFactoryService.getJack();
             card.setMode(this._gameService.gameState.mode);
-
-            this._gameMechanicsService.changeActiveCard(card);
             this._playerInfoService.saveActionCardToPlayerState(card);
         }
     }
@@ -524,7 +533,7 @@ export class PlayerService {
         this.updatePlayerState();
         this._gameService.updateGameState();
 
-        this._gameMechanicsService.actionEnd();
+        this._gameService.actionEnd();
         this._socketService.turnEnd();
     }
 
@@ -562,7 +571,7 @@ export class PlayerService {
         // Aqueduct condition
         if (
             mode === eWorkerType.patron &&
-            this.hasCompletedBuilding(eCardEffect.aqueduct) &&
+            this.hasBuildingFunction(eCardEffect.aqueduct) &&
             this.canAddToClientelles()
         ) {
             this.resolvingCard = true;
@@ -571,7 +580,7 @@ export class PlayerService {
         }
         // Basilica condition
         else if (
-            this.hasCompletedBuilding(eCardEffect.basilica) &&
+            this.hasBuildingFunction(eCardEffect.basilica) &&
             mode === eWorkerType.merchant
         ) {
             this.resolvingCard = true;
@@ -580,7 +589,7 @@ export class PlayerService {
         }
         // Dock condition
         else if (
-            this.hasCompletedBuilding(eCardEffect.dock) &&
+            this.hasBuildingFunction(eCardEffect.dock) &&
             mode === eWorkerType.laborer
         ) {
             this.resolvingCard = true;
@@ -706,15 +715,15 @@ export class PlayerService {
         let demandingPlayer = gState.playerStates[playerTurn];
 
         // Bridge condition
-        if (this.hasCompletedBuilding(eCardEffect.bridge, demandingPlayer)) {
-            return this.hasCompletedBuilding(eCardEffect.wall, pState) ? false : true;
+        if (this.hasBuildingFunction(eCardEffect.bridge, demandingPlayer)) {
+            return this.hasBuildingFunction(eCardEffect.wall, pState) ? false : true;
         }
         else if (
             (playerTurn - 1 < 0 ? gState.playerOrder.length - 1 : playerTurn - 1) % len == index ||
             (playerTurn + 1) % len == index
         ) {
-            return  this.hasCompletedBuilding(eCardEffect.palisade, pState) ||
-                    this.hasCompletedBuilding(eCardEffect.wall, pState) ? false : true;
+            return  this.hasBuildingFunction(eCardEffect.palisade, pState) ||
+                    this.hasBuildingFunction(eCardEffect.wall, pState) ? false : true;
         }
     }
 
@@ -722,11 +731,11 @@ export class PlayerService {
         _.forEach(this._gameService.gameState.romeDemands, rd => rd.selected = false);
         this._gameService.updateGameState();
 
-        if (this.hasCompletedBuilding(eCardEffect.bridge)) {
+        if (this.hasBuildingFunction(eCardEffect.bridge)) {
             this.actionPerformTrigger = eCardEffect.bridge;
             this.resolvingCard = true;
         }
-        else if (this.hasCompletedBuilding(eCardEffect.coliseum)) {
+        else if (this.hasBuildingFunction(eCardEffect.coliseum)) {
             this.actionPerformTrigger = eCardEffect.coliseum;
             this.resolvingCard = true;
         }
@@ -918,7 +927,7 @@ export class PlayerService {
             this._endGame();
             return false;
         }
-        else if (this.hasCompletedBuilding(eCardEffect.bath)) {
+        else if (this.hasBuildingFunction(eCardEffect.bath)) {
             if (
                 this._gameService.gameState.mode === eWorkerType.patron &&
                 !this.canAddToClientelles()
@@ -956,7 +965,7 @@ export class PlayerService {
         return this._playerInfoService.isPlayersTurn &&
             this._gameService.gameState.mode === eWorkerType.craftsman && 
             this._gameService.gameState.actionMode === eActionMode.resolveCardMode &&
-            this.hasCompletedBuilding(eCardEffect.fountain) && 
+            this.hasBuildingFunction(eCardEffect.fountain) && 
             this.activeActionTrigger !== eCardEffect.fountain;
     }
 
@@ -1035,16 +1044,16 @@ export class PlayerService {
             accumTypes[client.role] = accumTypes[client.role] ? accumTypes[client.role] + 1 : 1;
         });
         
-        if (this.hasCompletedBuilding(eCardEffect.forum)) return this.satisfiesForum(accumTypes);
+        if (this.hasBuildingFunction(eCardEffect.forum)) return this.satisfiesForum(accumTypes);
         // Gate combo into Forum
     }
 
     satisfiesForum(accumTypes: number[]) {
         return  _.every(accumTypes, type => type !== undefined && type > 0) ||
                 // Ludus Magna
-                this.hasCompletedBuilding(eCardEffect.ludusMagna) && this.satisfiesForumLudusMagna(accumTypes) ||
+                this.hasBuildingFunction(eCardEffect.ludusMagna) && this.satisfiesForumLudusMagna(accumTypes) ||
                 // Storeroom 
-                this.hasCompletedBuilding(eCardEffect.storeroom) && this.satisfiesForumStoreroom(accumTypes)
+                this.hasBuildingFunction(eCardEffect.storeroom) && this.satisfiesForumStoreroom(accumTypes)
     }
 
     private satisfiesForumLudusMagna(accumTypes: number[]) {
@@ -1058,14 +1067,18 @@ export class PlayerService {
 
     hasCompletedBuilding(effect: eCardEffect, customState?: IPlayerState) {
         let pState = customState ? customState : this._playerInfoService.getPlayerState();
-        return  !!_.find(pState.completed, comp => comp.building.id === effect) || 
-                !!_.find(pState.completed, comp => comp.building.id === eCardEffect.gate) &&
-                !!_.find(pState.underConstruction, foundation => foundation.building.id === effect) ||
+        return  !!_.find(pState.completed, comp => comp.building.id === effect);
+    }
+
+    hasBuildingFunction(effect: eCardEffect, customState?: IPlayerState) {
+        let pState = customState ? customState : this._playerInfoService.getPlayerState();
+        return  this.hasCompletedBuilding(effect, customState) ||
+                !!_.find(pState.functionAvailable, building => building.id === effect) ||
                 !!_.find(this._gameService.gameState.publicBuildings, building => building.id === effect);
     }
 
     roadInteractionCondition(card: ICard) {
-        return  this.hasCompletedBuilding(eCardEffect.road) &&
+        return  this.hasBuildingFunction(eCardEffect.road) &&
                 card.role != eWorkerType.jack &&
                 this.selectedBuilding &&
                 this.selectedBuilding.building.role == eWorkerType.merchant
@@ -1074,11 +1087,11 @@ export class PlayerService {
     roadCondition() {
         return  this.selectedBuilding && 
                 this.selectedBuilding.building.role == eWorkerType.merchant &&
-                this.hasCompletedBuilding(eCardEffect.road);
+                this.hasBuildingFunction(eCardEffect.road);
     }
 
     scriptoriumCondition() {
-        return this.hasCompletedBuilding(eCardEffect.scriptorium) && 
+        return this.hasBuildingFunction(eCardEffect.scriptorium) && 
                 !!_.find(this.handCards, card => card.role == eWorkerType.patron && !card.phantom);
     }
 
@@ -1287,13 +1300,13 @@ export class PlayerService {
             underCo.push(this._cardFactoryService.createFoundation(card, card.role, []));
 
             // Gate Condition
-            if (card.role == eWorkerType.patron && this.hasCompletedBuilding(eCardEffect.gate)) {
+            if (card.role == eWorkerType.patron && this.hasBuildingFunction(eCardEffect.gate)) {
                 pState.functionAvailable.push(card);
                 this._resolveCompletedFunction(card);
             }
 
             // Extra cost and Tower condition
-            if (this.foundationCost(card.role) == 2 && !this.hasCompletedBuilding(eCardEffect.tower)) {
+            if (this.foundationCost(card.role) == 2 && !this.hasBuildingFunction(eCardEffect.tower)) {
                 this.activeActionItem.numActions--;
             }
 
@@ -1391,7 +1404,7 @@ export class PlayerService {
 
     private _scriptoriumCompleted(material: ICard) {
         return  material.role == eWorkerType.patron &&
-                this.hasCompletedBuilding(eCardEffect.scriptorium);
+                this.hasBuildingFunction(eCardEffect.scriptorium);
     }
 
     villaCanBeCompleted() {
@@ -1461,11 +1474,11 @@ export class PlayerService {
             if (this.selectedBuilding) {
                 // Road condition
                 if (this.selectedBuilding.building.role === eWorkerType.merchant &&
-                    this.hasCompletedBuilding(eCardEffect.road)) return true;
+                    this.hasBuildingFunction(eCardEffect.road)) return true;
                 // Tower condition
-                if (this.hasCompletedBuilding(eCardEffect.tower) && card.role === eWorkerType.laborer) return true;
+                if (this.hasBuildingFunction(eCardEffect.tower) && card.role === eWorkerType.laborer) return true;
                 // Scriptorim condition
-                if (this.hasCompletedBuilding(eCardEffect.scriptorium) && card.role === eWorkerType.patron) return true;
+                if (this.hasBuildingFunction(eCardEffect.scriptorium) && card.role === eWorkerType.patron) return true;
                 // Statue condition
                 if (this.selectedBuilding.building.id === eCardEffect.statue && 
                     (card.role === eWorkerType.patron || card.role === this.selectedBuilding.site.role)) return true;
@@ -1483,7 +1496,7 @@ export class PlayerService {
 
     foundationCost = (workType: eWorkerType) => {
         let foundation = _.find(this._gameService.gameState.foundations, fPile => fPile.foundation.role === workType);
-        return foundation.inTown == 0 ? this.hasCompletedBuilding(eCardEffect.tower) ? 1 : 2 : 1;
+        return foundation.inTown == 0 ? this.hasBuildingFunction(eCardEffect.tower) ? 1 : 2 : 1;
     }
 
     

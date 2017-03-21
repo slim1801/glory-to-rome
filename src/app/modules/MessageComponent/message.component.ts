@@ -51,9 +51,23 @@ export class MessageComponent {
     }
 
     showPlayerName(i: number, message: IMessage) {
+        let currMessage = this._messageService.messages[i];
         let prevMessage = this._messageService.messages[i - 1];
-        return i == 0 || (i > 0 &&
-                            prevMessage.player &&
-                            message.player.id !== prevMessage.player.id);
+
+        if (i == 0) return true;
+        
+        if (
+            prevMessage.type !== eMessageType.player &&
+            currMessage.type === eMessageType.player
+        )
+            return true;
+        if (
+            prevMessage.type === eMessageType.player &&
+            currMessage.type === eMessageType.player &&
+            prevMessage.player.id !== currMessage.player.id
+        ) 
+            return true;
+        
+        return false;
     }
 }

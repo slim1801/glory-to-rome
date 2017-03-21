@@ -7,7 +7,6 @@ import { CardFactoryService } from '../../common/card/card.factory.service';
 import { ICustomCardSize } from '../../common/card/card.image.component';
 
 import { GameService } from '../../common/game.service';
-import { GameMechanicsService } from '../../common/game.mechanics.service';
 import { PlayerService } from '../../common/player.service';
 
 @Component({
@@ -59,7 +58,6 @@ export class FoundationComponent {
     constructor(
         private _cardFactoryService: CardFactoryService,
         private _playerService: PlayerService,
-        private _gameMechanicsService: GameMechanicsService,
         private _gameService: GameService
     ) {
         this._init();

@@ -4,7 +4,6 @@ import { Component } from '@angular/core';
 
 import { ICard, Card, eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
 import { CardFactoryService } from '../../common/card/card.factory.service';
-import { GameMechanicsService } from '../../common/game.mechanics.service';
 import { GameService, eActionMode, eActions } from '../../common/game.service';
 import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
@@ -20,7 +19,6 @@ export class ControlComponent {
 
     constructor(
         private _cardFactoryService: CardFactoryService,
-        private _gameMechanicsService: GameMechanicsService,
         private _gameService: GameService,
         private _playerService: PlayerService,
         private _playerInfoService: PlayerInfoService,
@@ -42,11 +40,11 @@ export class ControlComponent {
         if (!this.enableThink()) return;
 
         // Vomitorium Condition
-        if (this._playerService.hasCompletedBuilding(eCardEffect.vomitorium)) {
+        if (this._playerService.hasBuildingFunction(eCardEffect.vomitorium)) {
             this._playerService.actionPerformTrigger = eCardEffect.vomitorium;
         }
         // Latrine Condition
-        else if (this._playerService.hasCompletedBuilding(eCardEffect.latrine)) {
+        else if (this._playerService.hasBuildingFunction(eCardEffect.latrine)) {
             this._playerService.actionPerformTrigger = eCardEffect.latrine;
             this._playerService.resolvingCard = true;
         }

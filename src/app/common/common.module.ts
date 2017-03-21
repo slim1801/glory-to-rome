@@ -7,7 +7,6 @@ import { CardFactoryService } from './card/card.factory.service';
 import { CardImageService } from './card/card.image.service';
 import { CardGroupDirective, ActionColorDirective } from './card/card.group.directive';
 
-import { GameMechanicsService } from './game.mechanics.service';
 import { PlayerInfoService } from './player.info.service';
 import { PlayerService } from './player.service';
 import { GameService } from './game.service';
@@ -33,7 +32,6 @@ import { SocketService } from './socket.service';
   providers: [
     CardFactoryService,
     CardImageService,
-    GameMechanicsService,
     PlayerInfoService,
     PlayerService,
     SocketService,

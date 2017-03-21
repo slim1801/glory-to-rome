@@ -5,7 +5,6 @@ import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
 import { CardFactoryService } from '../../common/card/card.factory.service';
 import { GameService, eLegionaryStage, eActionMode } from '../../common/game.service';
-import { GameMechanicsService } from '../../common/game.mechanics.service';
 import { SocketService } from '../../common/socket.service';
 import { MessageService } from '../../common/message.service';
 
@@ -22,13 +21,12 @@ export class PlayerTemplateComponent {
         private _playerInfoService: PlayerInfoService,
         private _playerService: PlayerService,
         private _gameService: GameService,
-        private _gameMechanicsService: GameMechanicsService,
         private _cardFactoryService: CardFactoryService,
         private _socketService: SocketService,
         private _messageService: MessageService
 
     ) {
-        this._gameMechanicsService.onActionEnd().subscribe(() => {
+        this._gameService.onActionEnd().subscribe(() => {
             this.selected = false;
         });
     }
@@ -368,7 +366,7 @@ export class PlayerTemplateComponent {
 
     private _checkForColiseum() {
         let ps = this._playerService;
-        if (ps.hasCompletedBuilding(eCardEffect.coliseum)) {
+        if (ps.hasBuildingFunction(eCardEffect.coliseum)) {
             ps.resolvingCard = true;
             ps.actionPerformTrigger = eCardEffect.coliseum;
         }

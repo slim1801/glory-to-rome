@@ -4,7 +4,6 @@ import { Component } from '@angular/core';
 import { ICard, Card, eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
 
 import { PlayerService } from '../../common/player.service';
-import { GameMechanicsService } from '../../common/game.mechanics.service';
 import { GameService, eActions } from '../../common/game.service'
 import { CardFactoryService } from '../../common/card/card.factory.service';
 import { PlayerInfoService } from '../../common/player.info.service';
@@ -26,7 +25,6 @@ export class ActionCardComponent {
     constructor(
         private _cardFactoryService: CardFactoryService,
         private _playerService: PlayerService, 
-        private _gameMechanicsService: GameMechanicsService,
         private _gameService: GameService,
         private _playerInfoService: PlayerInfoService,
         private _socketService: SocketService
@@ -36,7 +34,6 @@ export class ActionCardComponent {
     }
 
     private _initListeners() {
-        let game = this._gameMechanicsService;
         let player = this._playerService;
 
         this._socketService.onAllPlayersChosen().subscribe(() => {
@@ -59,7 +56,7 @@ export class ActionCardComponent {
 
             player.activeActionItem.numActions = 0;
             // Palace condition
-            if (this._playerService.hasCompletedBuilding(eCardEffect.palace)) {
+            if (this._playerService.hasBuildingFunction(eCardEffect.palace)) {
                 player.activeActionItem.numActions += pState.additionalActions.length;
             }
             // Storeroom condition
@@ -75,7 +72,7 @@ export class ActionCardComponent {
                 player.activeActionItem.numActions += player.getClientelleOfType(mode).length;
             }
             // Circus Maximus condition
-            if (this._playerService.hasCompletedBuilding(eCardEffect.circusMaximus)) {
+            if (this._playerService.hasBuildingFunction(eCardEffect.circusMaximus)) {
                 player.activeActionItem.numActions = player.activeActionItem.numActions * 2;
             }
             // Bath condition
@@ -84,18 +81,14 @@ export class ActionCardComponent {
                     player.activeActionItem.numActions++;
             }
         });
-
-        game.onCardsPlayedAsJack().subscribe(types => {
-            this._gameMechanicsService.changeActiveCard(this._cardFactoryService.getJack());
-        })
     }
 
     private _storeroomCondition() {
         return this._gameService.gameState.mode == eWorkerType.laborer &&
-                this._playerService.hasCompletedBuilding(eCardEffect.storeroom);
+                this._playerService.hasBuildingFunction(eCardEffect.storeroom);
     }
 
     private _ludusMagnaCondition() {
-        return this._playerService.hasCompletedBuilding(eCardEffect.ludusMagna);
+        return this._playerService.hasBuildingFunction(eCardEffect.ludusMagna);
     }
 }

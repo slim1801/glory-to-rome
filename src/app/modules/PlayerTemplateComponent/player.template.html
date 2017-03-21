@@ -9,7 +9,7 @@
                 <div class="player-turn" *ngIf="isPlayersTurn()">
                     <span>Your <b>ACTION</b>: </span>
                     <span [actionColor]="_gameService.gameState.mode">
-                        <b>{{_cardFactoryService.mapMaterialName(_gameService.gameState.mode).toUpperCase()}}</b>
+                        <b>{{_cardFactoryService.getRoleFromType(_gameService.gameState.mode).toUpperCase()}}</b>
                     </span>
                 </div>
             </div>

@@ -5,7 +5,6 @@ import { Component, ViewChild } from '@angular/core';
 import { ICard, IFoundation, Card, eCardSize, eCardEffect, eWorkerType } from '../../../common/card/card';
 
 import { CardFactoryService } from '../../../common/card/card.factory.service';
-import { GameMechanicsService } from '../../../common/game.mechanics.service';
 import { GameService, removeFromList, eActionMode } from '../../../common/game.service';
 import { PlayerService } from '../../../common/player.service';
 import { PlayerInfoService } from '../../../common/player.info.service';
@@ -47,19 +46,16 @@ export class UnderConstructionComponent {
         private _cardFactoryService: CardFactoryService,
         private _playerService: PlayerService,
         private _playerInfoService: PlayerInfoService,
-        private _gameService: GameService,
-        private _gameMechanicsService: GameMechanicsService
+        private _gameService: GameService
     ) {
         this.cardWidth = this._cardFactoryService.getCardWidth(eCardSize.medium);
         this._initListeners();
     }
 
     private _initListeners() {
-        let game = this._gameMechanicsService;
 
-        game.onActionEnd().subscribe(card => {
+        this._gameService.onActionEnd().subscribe(card => {
             this._playerService.selectedBuilding = null;
-            this._playerService.removePhantomCard(card);
         });
 
         let player = this._playerService;
@@ -78,8 +74,8 @@ export class UnderConstructionComponent {
             let player = this._playerService;
 
             if (
-                player.hasCompletedBuilding(eCardEffect.road) || 
-                player.hasCompletedBuilding(eCardEffect.scriptorium) 
+                player.hasBuildingFunction(eCardEffect.road) || 
+                player.hasBuildingFunction(eCardEffect.scriptorium) 
             ) {
                 this._addPhantomCard(card);
             }
@@ -137,6 +133,7 @@ export class UnderConstructionComponent {
 
     checkInteraction(foundation: IFoundation) {
         if (!this._playerInfoService.isPlayersTurn || !foundation) return false;
+        if (foundation && !foundation.site) return false;
         if (this._gameService.gameState.actionMode !== eActionMode.resolveCardMode) return false;
 
         // Check if craftsman or architect mode
@@ -147,7 +144,7 @@ export class UnderConstructionComponent {
 
         // Archway Condition
         if (
-            this._playerService.hasCompletedBuilding(eCardEffect.archway) &&
+            this._playerService.hasBuildingFunction(eCardEffect.archway) &&
             this._gameService.hasSameTypeInPool(foundation.site.role)
         ) {
             return true;
@@ -161,7 +158,7 @@ export class UnderConstructionComponent {
         // Road Condition
         if (
             foundation.building.role == eWorkerType.merchant && 
-            this._playerService.hasCompletedBuilding(eCardEffect.road)
+            this._playerService.hasBuildingFunction(eCardEffect.road)
         ) {
             if (mode == eWorkerType.architect && this._playerInfoService.getPlayerState().stockpile.length == 0) return false;
             return true;
@@ -183,7 +180,7 @@ export class UnderConstructionComponent {
         }
 
         // Tower Condition
-        if (this._playerService.hasCompletedBuilding(eCardEffect.tower) &&
+        if (this._playerService.hasBuildingFunction(eCardEffect.tower) &&
             (this._playerService.hasCardTypeInHand(eWorkerType.laborer) ||
              this._playerService.hasCardTypeInStockpile(eWorkerType.laborer))
         ) {
@@ -205,7 +202,7 @@ export class UnderConstructionComponent {
             return !!_.find(this._playerInfoService.getPlayerState().stockpile, card => {
                 return card.role == foundation.building.role &&
                         !card.phantom ||
-                        (this._playerService.hasCompletedBuilding(eCardEffect.tower) &&
+                        (this._playerService.hasBuildingFunction(eCardEffect.tower) &&
                         this._playerService.hasCardTypeInStockpile(eWorkerType.laborer));
             });
         }

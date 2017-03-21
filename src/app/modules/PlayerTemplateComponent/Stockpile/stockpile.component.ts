@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import { Component, ViewChild } from '@angular/core';
 
 import { ICard, eCardEffect, eCardSize, eWorkerType } from '../../../common/card/card';
-import { GameMechanicsService } from '../../../common/game.mechanics.service';
 import { PlayerInfoService } from '../../../common/player.info.service';
 import { PlayerService } from '../../../common/player.service';
 import { GameService, eActionMode, eLegionaryStage } from '../../../common/game.service';
@@ -52,16 +51,8 @@ export class StockpileComponent {
     constructor(
         private _playerService: PlayerService,
         private _playerInfoService: PlayerInfoService,
-        private _gameService: GameService,
-        private _gameMechanicsService: GameMechanicsService,
-        private _socketService: SocketService
+        private _gameService: GameService
     ) {
-        this._initListeners()
-    }
-
-    private _initListeners() {
-        let game = this._gameMechanicsService;
-        let skt = this._socketService;
     }
 
     private _mechantAction(card: ICard) {

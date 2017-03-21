@@ -13,7 +13,8 @@
         </div>
     </div>
     <div class="right-container">
-        <div class="inner-right-container">
+        <div class="inner-right-container"
+            [class.isPlayersTurn]="_playerInfoService.isPlayersTurn">
             <div class="player-template-container">
                 <player-template></player-template>
             </div>

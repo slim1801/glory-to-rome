@@ -9,6 +9,7 @@ import { StockpileComponent } from './Stockpile/stockpile.component';
 
 import { UnderConstructionComponent } from './UnderConstruction/under.construction.component';
 import { ClientelleComponent } from './Clientelles/clientelles.component';
+import { CompletedCardComponent } from './Completed/completed.card.component';
 import { CompletedComponent } from './Completed/completed.component';
 import { DetailTabComponent } from './DetailTab/detail.tab.component';
 import { FoundationModule } from '../FoundationComponent/foundation.module';
@@ -26,6 +27,7 @@ import { PoolModule } from '../PoolComponent/pool.module';
         PlayerTemplateComponent,
         
         StockpileComponent,
+        CompletedCardComponent,
         CompletedComponent,
         ClientelleComponent,
         DetailTabComponent,
@@ -49,6 +51,7 @@ import { PoolModule } from '../PoolComponent/pool.module';
     ],
     exports: [
         PlayerTemplateComponent,
+        CompletedCardComponent,
         CompletedComponent,
         ClientelleComponent,
         DetailTabComponent,

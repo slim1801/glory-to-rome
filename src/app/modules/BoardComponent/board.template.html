@@ -45,12 +45,18 @@
                         <div class="under-construction-section">
                             <div class="card-content" #underCoGroup>
                                 <div *ngFor="let underCo of pState.underConstruction; let i = index">
-                                    <card-image [card]="underCo.building"
-                                                [size]="size"
-                                                [cardGroup]="underCoGroup"
-                                                [cardGroupIndex]="i"
-                                                [cardGroupLength]="pState.underConstruction.length">
-                                    </card-image>
+                                    <div class="underCo-container"
+                                        [size]="size"
+                                        [cardGroup]="underCoGroup"
+                                        [cardGroupIndex]="i"
+                                        [cardGroupLength]="pState.underConstruction.length">
+                                        <div class="underCo-inner-container">
+                                            <card-image [card]="underCo.building"
+                                                        [size]="size">
+                                            </card-image>
+                                            <div class="num-material">{{underCo.materials.length}}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="title-section">
@@ -64,15 +70,11 @@
                                 <div *ngFor="let comp of pState.completed; let i = index"
                                      class="opponent-completed"
                                      (click)="completedBuildingClicked(pState, comp)">
-                                    <card-image *ngIf="!comp.stairway"
-                                                [card]="comp.building"
-                                                [size]="size"
-                                                [interactable]="completedCanInteract(comp)"
-
-                                                [cardGroup]="completedGroup"
-                                                [cardGroupIndex]="i"
-                                                [cardGroupLength]="completedLength(pState.completed)">
-                                    </card-image>
+                                     
+                                     <completed-card-component
+                                        *ngIf="!comp.stairway"
+                                        [completedFoundation]="comp">
+                                    </completed-card-component>
                                 </div>
                             </div>
                             <div class="title-section">
