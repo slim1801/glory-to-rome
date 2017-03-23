@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { Component, ViewChild, AfterContentInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { ICard, eCardSize } from '../../../common/card/card';
 import { PlayerService } from '../../../common/player.service';

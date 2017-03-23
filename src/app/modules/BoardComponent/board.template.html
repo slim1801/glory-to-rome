@@ -2,6 +2,7 @@
     <div *ngFor="let pState of _gameService.gameState.playerStates">
 
         <div class="other-players"
+             [class.activePlayer]="_gameService.isPlayersTurn(pState.player.id)"
              *ngIf="pState.player.id !== _playerInfoService.player.id">
             <div class="header-section">
                 <div class="header-border-section">
@@ -68,10 +69,10 @@
                         <div class="completed-section">
                             <div class="card-content" #completedGroup>
                                 <div *ngFor="let comp of pState.completed; let i = index"
-                                     class="opponent-completed"
-                                     (click)="completedBuildingClicked(pState, comp)">
-                                     
-                                     <completed-card-component
+                                    class="opponent-completed"
+                                    (click)="completedBuildingClicked(pState, comp)">
+                                    
+                                    <completed-card-component
                                         *ngIf="!comp.stairway"
                                         [completedFoundation]="comp">
                                     </completed-card-component>

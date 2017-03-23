@@ -19,6 +19,7 @@
 .action-card-container {
     position: relative;
     overflow: hidden;
+    box-shadow: 0 0 15px black;
 }
 
 .extra-action {

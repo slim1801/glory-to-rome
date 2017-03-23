@@ -1,7 +1,7 @@
 import { findLastIndex } from 'lodash';
 import { Component } from '@angular/core';
 
-import { ICard, Card, eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
+import { Card, eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
 
 import { PlayerService } from '../../common/player.service';
 import { GameService, eActions } from '../../common/game.service'

@@ -60,7 +60,6 @@
 
 .board-sub-section {
     position: relative;
-    margin-left: 5px;
 }
 .message-section {
     width: 170px;
@@ -84,6 +83,12 @@
 .clientelle-sub-section {
     position: relative;
     margin-left: 10px;
+}
+.clientelle-heading-section {
+    background-color: black;
+    color: white;
+    font-size: 15px;
+    width: 20px;
 }
 
 .deck-section {
@@ -120,7 +125,6 @@
     flex: 1;
 }
 
-.pool-section,
 .control-section,
 .detail-tab-section {
     background-color: white;

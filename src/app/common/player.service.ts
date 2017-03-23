@@ -74,7 +74,7 @@ export class PlayerService {
             this.configurePlayersTurn(gameState);
             this.configurePlayersLead(gameState.playerLead);
 
-            // let card = this._cardFactoryService.createCard(eCardEffect.wall);
+            let card = this._cardFactoryService.createCard(eCardEffect.villa);
             // let card1 = this._cardFactoryService.createCard(eCardEffect.palisade);
             // let card2 = this._cardFactoryService.createCard(eCardEffect.amphitheatre);
             // let card3 = this._cardFactoryService.createCard(eCardEffect.academy);
@@ -216,7 +216,7 @@ export class PlayerService {
                 this.actionPerformTrigger = eCardEffect.stairway;
         });
         
-        skt.onCardPlayed().subscribe(gameState => {
+        skt.onActionFinished().subscribe(gameState => {
             this._configurePlayerTurn(gameState);
         });
     }
@@ -377,7 +377,7 @@ export class PlayerService {
             if (this._playerInfoService.isPlayersLead) {
                 this._messageService.addLeadMessage(card);
             }
-            this._socketService.cardPlayed(card);
+            this._socketService.actionFinished(card);
         }
     }
 
@@ -502,8 +502,6 @@ export class PlayerService {
 
     /* ACTION SECTION */
 
-    private actionFinishedSubject = new Subject<ICard>();
-
     actionFinishTrigger: eCardEffect = null;
     actionPerformTrigger: eCardEffect = null;
     additionalActionTrigger: eCardEffect = null;
@@ -521,7 +519,7 @@ export class PlayerService {
         this._gameService.updateGameState();
 
         this._playerInfoService.isPlayersTurn = false;
-        this._socketService.cardPlayed(null);
+        this._socketService.actionFinished(null);
     }
 
     turnFinished() {
@@ -602,6 +600,9 @@ export class PlayerService {
     decrementActions(compState?: IActionItem) {
         this.activeActionItem.numActions--;
 
+        if (this.activeActionItem.numActions > 0)
+            this.stateChanged();
+
         if (this.activeActionItem === null && compState) {
             this.actionStack.push(compState);
             this.resolveActionStack();
@@ -635,8 +636,12 @@ export class PlayerService {
                 this.resolveActionStack();
             }
         }
+    }
 
-        this.actionFinishedSubject.next();
+    stateChanged() {
+        this.updatePlayerState();
+        this._gameService.updateGameState()
+        this._socketService.stateChanged();
     }
 
     resolveActionStack() {
@@ -674,10 +679,6 @@ export class PlayerService {
             return true;
         }
         return false;
-    }
-
-    onActionFinished() {
-        return this.actionFinishedSubject.asObservable();
     }
 
     private palaceSubject = new Subject<void>();

@@ -17,7 +17,8 @@ module.exports = function() {
         socket.on("leave room", function(params) { this.leaveRoom(params, socket) }.bind(this) );
         socket.on("all rooms", function(params) { this.allRooms(params, socket) }.bind(this) );
         socket.on("start game", function(params) { this.startGame(params, socket) }.bind(this) );
-        socket.on("card played", function(params) { this.cardPlayed(params, socket) }.bind(this) );
+        socket.on("action finished", function(params) { this.actionFinished(params, socket) }.bind(this) );
+        socket.on("state changed", function(params) { this.stateChanged(params, socket) }.bind(this) )
         socket.on("think", function(params) { this.think(params, socket) }.bind(this) );
         socket.on("extort material", function(params) { this.extortMaterial(params, socket) }.bind(this) );
         socket.on("rome demands", function(params) { this.romeDemands(params, socket) }.bind(this) );
@@ -220,7 +221,13 @@ module.exports = function() {
         think: 1
     }
 
-    cardPlayed = function(params, socket) {
+    stateChanged = function(params, socket) {
+        let state = gameStates[socket.handshake.roomID];
+        _.extend(state, params.gameState);
+        socket.to(socket.handshake.roomID).emit('on state changed', state);
+    }
+
+    actionFinished = function(params, socket) {
         let state = gameStates[socket.handshake.roomID];
         _.extend(state, params.gameState);
 
@@ -244,8 +251,8 @@ module.exports = function() {
             socket.to(socket.handshake.roomID).emit("on turn end", state);
         }
         else {
-            socket.emit("on card played", res);
-            socket.to(socket.handshake.roomID).emit("on card played", res);
+            socket.emit("on action finished", res);
+            socket.to(socket.handshake.roomID).emit("on action finished", res);
         }
     }
 

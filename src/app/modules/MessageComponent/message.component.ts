@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
 import { CardFactoryService } from '../../common/card/card.factory.service';
-import { IPlayer, PlayerInfoService } from '../../common/player.info.service';
+import { PlayerInfoService } from '../../common/player.info.service';
 import { SocketService } from '../../common/socket.service';
 import { IMessage, eMessageType, MessageService } from '../../common/message.service';
 
@@ -55,7 +55,7 @@ export class MessageComponent {
         let prevMessage = this._messageService.messages[i - 1];
 
         if (i == 0) return true;
-        
+
         if (
             prevMessage.type !== eMessageType.player &&
             currMessage.type === eMessageType.player

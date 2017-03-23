@@ -118,5 +118,10 @@ export class AppComponent {
         return Math.floor(cards.length / 2);
     }
 
+    toLobby() {
+        this.gameStarted = false;
+        this.gameEnded = false;
+    }
+
     @ViewChild(LobbyComponent) lobbyComponent: LobbyComponent;
 }

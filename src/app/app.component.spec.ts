@@ -1317,4 +1317,64 @@ describe('Test whole application', () => {
         gth.completeBuilding(eCardEffect.gate);
         expect(component.gameEnded).toBe(true);
     }));
+
+
+    it('is testing completion chains', injector(srvs => {
+        gth.configureState({
+            underConstruction: [
+                { cardEff: eCardEffect.amphitheatre },
+                { cardEff: eCardEffect.foundry },
+                { cardEff: eCardEffect.school },
+                { cardEff: eCardEffect.academy },
+                { cardEff: eCardEffect.insula }
+            ],
+            handCards: [
+                eCardEffect.dock,
+                eCardEffect.amphitheatre,
+                eCardEffect.foundry,
+                eCardEffect.school,
+                eCardEffect.academy,
+                eCardEffect.insula
+            ]
+        });
+        // Perform craftsman action
+        gth.clickOnHandCard(0);
+        // Complete amphitheatre
+        gth.clickOnUnderConstruction(0);
+        gth.clickOnHandCard(0);
+        expect(srvs.pis.getPlayerState().completed.length).toBe(1, "Amphitheatre should be completed");
+
+        gth.checkPrompt('Perform CRAFTSMAN for each influence?', true, true);
+        gth.checkNumAction(eWorkerType.craftsman, '4');
+
+        // Complete foundry
+        gth.clickOnUnderConstruction(0);
+        gth.clickOnHandCard(0);
+        gth.checkPrompt('Perform LABORER for each each influence?', true, true);
+        gth.checkNumAction(eWorkerType.laborer, '6');
+        th.click(gth.getElement(eSelector.doneWithActions));
+
+        // Should revert back to craftsman actions
+        gth.checkNumAction(eWorkerType.craftsman, '3');
+        
+        // Complete school
+        gth.clickOnUnderConstruction(0);
+        gth.clickOnHandCard(0);
+
+        gth.checkPrompt('Perform THINKER action for each influence?', true, true);
+        gth.checkNumAction(eWorkerType.craftsman, '2');
+        
+        // Complete academy
+        gth.clickOnUnderConstruction(0);
+        gth.clickOnHandCard(0);
+        gth.checkNumAction(eWorkerType.craftsman, '1');
+
+        // Complete insula
+        gth.clickOnUnderConstruction(0);
+        gth.clickOnHandCard(0);
+
+        expect(srvs.pis.getPlayerState().completed.length).toBe(5, 'Number of compelered building should be 5');
+        gth.checkPrompt('[Academy] Think on turn end?', true, true);
+    }));
+    
 });

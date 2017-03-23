@@ -1,8 +1,7 @@
 import * as _ from 'lodash';
 
-import { Component, AfterContentInit, HostListener, ViewChild } from '@angular/core';
+import { Component, AfterContentInit, ViewChild } from '@angular/core';
 
-import { ICard, eCardEffect, eWorkerType } from '../../common/card/card';
 import { GameService } from '../../common/game.service';
 import { PlayerService } from '../../common/player.service';
 

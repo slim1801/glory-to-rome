@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
-import { ICard, IFoundationPile, ICardPlayed, eCardEffect, eWorkerType, Card } from './card/card';
+import { ICard, IFoundationPile, eCardEffect, eWorkerType, Card } from './card/card';
 import { CardFactoryService } from './card/card.factory.service';
 import { PlayerInfoService, IPlayer, IPlayerState } from './player.info.service';
 import { SocketService } from './socket.service';
@@ -72,13 +72,8 @@ export class GameService {
         this.deckList = this._cardFactoryService.getCardArray();
     }
 
-    playerHasActioned(card: ICard) {
-        this.playedCards.push(card);
-
-        // TODO: Integrate with multiplayer
-        if (this.playedCards.length == 1) {
-            this.playedCards.splice(0, this.playedCards.length);
-        }
+    isPlayersTurn(playerID: string) {
+        return this.gameState.playerOrder[this.gameState.playerTurn].id === playerID
     }
 
     updateGameState() {

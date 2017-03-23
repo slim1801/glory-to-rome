@@ -45,7 +45,9 @@ export enum eSelector {
     laborerOption,
     legionaryOption,
     merchantOption,
-    patronOption
+    patronOption,
+    
+    doneWithActions
 }
 
 export interface IServices {
@@ -207,6 +209,9 @@ export class GameTestHelper<T> {
                 return this.testHelper.getElement('.patron-option');
             case eSelector.gloryToRomeButton:
                 return this.testHelper.getElement('.gtr-button');
+            
+            case eSelector.doneWithActions:
+                return this.testHelper.getElement('.action-end-button')
             
         }
     }

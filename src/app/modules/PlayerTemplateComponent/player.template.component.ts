@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { ICard, eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
+import { eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
 import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
 import { CardFactoryService } from '../../common/card/card.factory.service';
@@ -71,7 +71,7 @@ export class PlayerTemplateComponent {
     }
 
     actionMessageClicked() {
-        this._playerService.actionFinished();
+        this._playerService.resolveNextActionState();
     }
 
     message() {
@@ -245,12 +245,12 @@ export class PlayerTemplateComponent {
     }
 
     yesResolveAction() {
-        this._playerService.actionPerformTrigger = null;
         this._playerService.resolveNextActionState();
     }
 
     yesClicked() {
         this._playerService.resolvingCard = false;
+        this._playerService.actionPerformTrigger = null;
         this.yesAction && this.yesAction();
     }
 
@@ -276,7 +276,8 @@ export class PlayerTemplateComponent {
     }
 
     noActionFinish() {
-        this._playerService.actionFinished();
+        this._playerService.resolvingCard = false;
+        this._playerService.resolveNextActionState();
     }
 
     noCompletionAction() {
@@ -285,6 +286,7 @@ export class PlayerTemplateComponent {
     }
 
     noTurnFinish() {
+        this._playerService.resolvingCard = false;
         this._playerService.turnFinished();
     }
 
@@ -371,16 +373,12 @@ export class PlayerTemplateComponent {
             ps.actionPerformTrigger = eCardEffect.coliseum;
         }
         else {
-            ps.resolvingCard = false;
-            ps.actionPerformTrigger = null;
             this._socketService.romeDemands();
         }
     }
 
     // BATH
     private _bathYesAction() {
-        this._playerService.actionPerformTrigger = null;
-
         let clientelles = this._playerInfoService.getPlayerState().clientelles;
         let card = clientelles[clientelles.length - 1];
 
@@ -397,14 +395,10 @@ export class PlayerTemplateComponent {
 
     private _coliseumYesAction() {
         this._gameService.gameState.actionTriggers.push(eCardEffect.coliseum);
-        this._playerService.resolvingCard = false;
-        this._playerService.actionPerformTrigger = null;
         this._socketService.romeDemands();
     }
 
     private _coliseumNoAction() {
-        this._playerService.resolvingCard = false;
-        this._playerService.actionPerformTrigger = null;
         this._socketService.romeDemands();
     }
 
@@ -451,30 +445,25 @@ export class PlayerTemplateComponent {
             this._playerService.think();
         }
         this._playerService.actionStack.pop();
-        this._playerService.actionFinished();
+        this._playerService.resolveNextActionState();
     }
 
     // LATRINE
     private _latrineYesAction() {
-        this._playerService.resolvingCard = false;
         this._playerService.activeActionTrigger = eCardEffect.latrine;
-        this._playerService.actionPerformTrigger = null;
         this._playerService.latrineTriggered();
     }
 
     // PALACE
     private _palaceYesAction() {
-        this._playerService.resolvingCard = false;
         this._playerService.activeActionTrigger = eCardEffect.palace;
-        this._playerService.actionPerformTrigger = null;
     }
 
     private _palaceNoAction() {
-        this._playerService.resolvingCard = false;
     }
 
     private _palaceFinishAction() {
-        this._playerService.actionFinished();
+        this._playerService.resolveNextActionState();
     }
 
     // PRISON
@@ -484,12 +473,11 @@ export class PlayerTemplateComponent {
 
     private _prisonNoAction() {
         this._playerService.actionStack.pop();
-        this._playerService.actionFinished();
+        this._playerService.resolveNextActionState();
     }
 
     // SENATE
     private _senateYesAction() {
-        this._playerService.actionFinished = null;
         this._playerService.takeOpponentsJacks();
         this._playerService.turnFinished();
     }
@@ -508,7 +496,6 @@ export class PlayerTemplateComponent {
     // STAIRWAY
     private _stairwayYesAction() {
         this._playerService.activeActionTrigger = eCardEffect.stairway;
-        this._playerService.actionPerformTrigger = null;
     }
 
     // VILLA

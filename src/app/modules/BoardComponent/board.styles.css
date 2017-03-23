@@ -11,9 +11,15 @@
 
 .other-players {
     min-height: 140px;
+    margin-bottom: 15px;
     
     display: flex;
     flex-flow: column;
+}
+
+.activePlayer {
+    box-shadow: 0px 0px 10px #F89406;
+    border: 1px solid #F89406 !important;
 }
 
 .player-detail-container {

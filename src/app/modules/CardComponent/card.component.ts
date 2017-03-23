@@ -1,22 +1,18 @@
 import * as _ from 'lodash';
 
-import { Component, HostListener, Input, Output } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 import {
   trigger,
   state,
   style,
-  transition,
-  animate,
-  AnimationTransitionEvent
 } from '@angular/core';
 
 import { ICard, eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
 
 import { CardFactoryService } from '../../common/card/card.factory.service';
-import { GameService, eActionMode, eLegionaryStage, removeFromList, eActions } from '../../common/game.service';
+import { GameService, eActionMode, eLegionaryStage, eActions } from '../../common/game.service';
 import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
-import { SocketService } from '../../common/socket.service';
 import { MessageService } from '../../common/message.service';
 
 @Component({
@@ -46,7 +42,6 @@ export class CardComponent {
         private _gameService: GameService,
         private _playerService: PlayerService,
         private _playerInfoService: PlayerInfoService,
-        private _socketService: SocketService,
         private _messageService: MessageService
     ) {
         this.height = (this._cardFactoryService.getCardHeight(eCardSize.large) / 2) + 'px';
@@ -61,7 +56,7 @@ export class CardComponent {
         });
     }
 
-    @HostListener('mouseover')
+    @HostListener('mouseenter')
     onMouseOver(event: MouseEvent) {
         if (!this.modeEnable()) return;
         this._hoverState = "active";
@@ -351,7 +346,7 @@ export class CardComponent {
                         this._playerInfoService.getPlayerState().jackCards.length > 0 &&
                         !!_.find(jCards, card => card.role == this.card.role)
                     ) return true;
-                    
+
                     return false;
                 }
 

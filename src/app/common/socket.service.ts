@@ -59,8 +59,8 @@ export class SocketService {
         io.on("on all players chosen", data => {
             this._onNext(this.allPlayersChosenSubject, data);
         });
-        io.on("on card played", data => {
-            this._onNext(this.cardPlayedSubject, data);
+        io.on("on action finished", data => {
+            this._onNext(this.actionFinishedSubject, data);
         });
         io.on("on turn end", data => {
             this._onNext(this.turnEndSubject, data);
@@ -83,6 +83,9 @@ export class SocketService {
         io.on("game ended", data => {
             this._onNext(this.gameEndedSubject, data);
         });
+        io.on("on state changed", data => {
+            this._onNext(null, data);
+        });
     }
 
     private _onNext(subject: Subject<IGameState>, data: IGameState) {
@@ -91,7 +94,7 @@ export class SocketService {
         let gState = this._gameService.gameState;
         _.extend(gState, data);
         this._playerInfoService.setPlayerState(gState)
-        subject.next(data);
+        subject && subject.next(data);
     }
 
     createRoom = (params: ICreateRoomParams) =>  {
@@ -110,8 +113,8 @@ export class SocketService {
         })
     }
 
-    cardPlayed = (card: ICard) => {
-        this.io.emit("card played", {
+    actionFinished = (card: ICard) => {
+        this.io.emit("action finished", {
             card,
             gameState: this._gameService.gameState
         });
@@ -176,6 +179,12 @@ export class SocketService {
         });
     }
 
+    stateChanged() {
+        this.io.emit("state changed", {
+            gameState: this._gameService.gameState
+        });
+    }
+
     private roomCreatedSubject = new Subject<IRoom>();
     onRoomCreated = () => {
         return this.roomCreatedSubject.asObservable();
@@ -201,9 +210,9 @@ export class SocketService {
         return this.allPlayersChosenSubject.asObservable();
     }
 
-    private cardPlayedSubject = new Subject<IGameState>();
-    onCardPlayed = () => {
-        return this.cardPlayedSubject.asObservable();
+    private actionFinishedSubject = new Subject<IGameState>();
+    onActionFinished = () => {
+        return this.actionFinishedSubject.asObservable();
     }
 
     private turnStartedSubject = new Subject<IGameState>();

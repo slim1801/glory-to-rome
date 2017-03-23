@@ -82,6 +82,15 @@ body {
     font-weight: bold;
     text-align: center;
     padding: 5px 0px;
+    position: relative;
+}
+
+.home-icon {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translate(0%, -50%);
+    cursor: pointer;
 }
 
 .game-over-content-container {

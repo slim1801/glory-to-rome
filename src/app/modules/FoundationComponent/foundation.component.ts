@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import { Component } from '@angular/core';
 
-import { ICard, IFoundationPile, eCardEffect, eCardSize, eWorkerType } from '../../common/card/card';
+import { ICard, IFoundationPile, eCardEffect, eCardSize } from '../../common/card/card';
 import { CardFactoryService } from '../../common/card/card.factory.service';
 import { ICustomCardSize } from '../../common/card/card.image.component';
 

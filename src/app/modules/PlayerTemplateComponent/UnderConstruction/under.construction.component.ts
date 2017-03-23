@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { ICard, IFoundation, Card, eCardSize, eCardEffect, eWorkerType } from '../../../common/card/card';
 

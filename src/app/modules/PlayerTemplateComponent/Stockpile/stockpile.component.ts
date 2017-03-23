@@ -1,12 +1,11 @@
 import * as _ from 'lodash';
 
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { ICard, eCardEffect, eCardSize, eWorkerType } from '../../../common/card/card';
 import { PlayerInfoService } from '../../../common/player.info.service';
 import { PlayerService } from '../../../common/player.service';
 import { GameService, eActionMode, eLegionaryStage } from '../../../common/game.service';
-import { SocketService } from '../../../common/socket.service';
 
 const cardConfig = require('../../../config/card.config.json');
 

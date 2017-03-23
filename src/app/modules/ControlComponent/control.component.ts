@@ -2,9 +2,9 @@ import { find } from 'lodash';
 
 import { Component } from '@angular/core';
 
-import { ICard, Card, eCardSize, eCardEffect, eWorkerType } from '../../common/card/card';
+import { Card, eCardEffect, eWorkerType } from '../../common/card/card';
 import { CardFactoryService } from '../../common/card/card.factory.service';
-import { GameService, eActionMode, eActions } from '../../common/game.service';
+import { GameService, eActionMode } from '../../common/game.service';
 import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
 import { SocketService } from '../../common/socket.service';

@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 
-import { eCardEffect } from '../../common/card/card';
-
 import { GameService } from '../../common/game.service';
 import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
