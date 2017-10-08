@@ -5,7 +5,6 @@ import { Component } from '@angular/core';
 import { ICard, eCardSize } from '../../../common/card/card';
 import { PlayerService } from '../../../common/player.service';
 import { PlayerInfoService } from '../../../common/player.info.service';
-import { SocketService } from '../../../common/socket.service';
 import { GameService, eLegionaryStage } from '../../../common/game.service';
 
 const cardConfig = require('../../../config/card.config.json');
@@ -45,8 +44,7 @@ export class ClientelleComponent {
     constructor(
         private _playerInfoService: PlayerInfoService,
         private _playerService: PlayerService,
-        private _gameService: GameService,
-        private _socketService: SocketService
+        private _gameService: GameService
     ) {
     }
 

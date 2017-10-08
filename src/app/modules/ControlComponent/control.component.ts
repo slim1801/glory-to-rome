@@ -3,7 +3,6 @@ import { find } from 'lodash';
 import { Component } from '@angular/core';
 
 import { Card, eCardEffect, eWorkerType } from '../../common/card/card';
-import { CardFactoryService } from '../../common/card/card.factory.service';
 import { GameService, eActionMode } from '../../common/game.service';
 import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
@@ -18,7 +17,6 @@ import { MessageService } from '../../common/message.service';
 export class ControlComponent {
 
     constructor(
-        private _cardFactoryService: CardFactoryService,
         private _gameService: GameService,
         private _playerService: PlayerService,
         private _playerInfoService: PlayerInfoService,

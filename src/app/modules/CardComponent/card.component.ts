@@ -432,8 +432,4 @@ export class CardComponent {
         }
         else return false;
     }
-
-    private _cardIsSelectable(role: eWorkerType) {
-        return this._playerService.selectedBuilding.building.role == this.card.role;
-    }
 }

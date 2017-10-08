@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
 
 import { GameService } from '../../common/game.service';
-import { PlayerService } from '../../common/player.service';
 import { PlayerInfoService } from '../../common/player.info.service';
-import { CardFactoryService } from '../../common/card/card.factory.service';
 
 @Component({
     selector: 'user-stats-component',
@@ -35,9 +33,7 @@ export class UserStatsComponent {
 
     constructor(
         private _gameService: GameService,
-        private _playerService: PlayerService,
-        private _playerInfoService: PlayerInfoService,
-        private _cardFactoryService: CardFactoryService
+        private _playerInfoService: PlayerInfoService
     ) {
     }
 }

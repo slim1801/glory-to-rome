@@ -13,8 +13,6 @@ import { TestHelper } from '../../test-util/test-helper';
 
 import { IPlayer } from '../../common/player.info.service';
 
-import * as $ from 'jquery';
-
 describe('Test Lobby Component', () => {
 
     let fixture: ComponentFixture<LobbyComponent>;

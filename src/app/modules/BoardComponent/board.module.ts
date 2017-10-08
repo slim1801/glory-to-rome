@@ -1,5 +1,4 @@
 import { NgModule }      from '@angular/core';
-import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '../../common/common.module';
 
@@ -18,7 +17,6 @@ import { BoardComponent } from './board.component';
   bootstrap:    [ BoardComponent ],
   imports: [
     BrowserModule,
-    HttpModule,
     CommonModule,
 
     ActionCardModule,

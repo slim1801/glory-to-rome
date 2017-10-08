@@ -26,11 +26,9 @@ export class PoolComponent implements AfterContentInit {
 
     constructor(
         private _gameService: GameService,
-        private _cardDetailService: CardDetailService,
         private _cardFactoryService: CardFactoryService,
         private _playerInfoService: PlayerInfoService,
         private _playerService: PlayerService,
-        private _socketService: SocketService
     ) {
         this.cardWidth = this._cardFactoryService.getCardWidth(eCardSize.medium);
     }

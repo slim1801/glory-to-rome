@@ -1,5 +1,4 @@
 import { NgModule }      from '@angular/core';
-import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { CardImageComponent } from './card/card.image.component';
@@ -21,8 +20,7 @@ import { SocketService } from './socket.service';
   ],
   bootstrap: [CardImageComponent],
   imports: [
-      BrowserModule,
-      HttpModule
+      BrowserModule
   ],
   exports: [
     CardImageComponent,

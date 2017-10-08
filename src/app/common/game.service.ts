@@ -57,19 +57,13 @@ export class GameService {
 
     players = 2;
 
-    playedCards: ICard[] = [];
-
     gameState: IGameState;
 
     constructor(
         private _cardFactoryService: CardFactoryService,
         private _playerInfoService: PlayerInfoService
     ) {
-        this._init();
-    }
 
-    private _init() {
-        this.deckList = this._cardFactoryService.getCardArray();
     }
 
     isPlayersTurn(playerID: string) {
@@ -96,11 +90,6 @@ export class GameService {
         })
     }
 
-    replacePool(cards: ICard[]) {
-        this.gameState.pool = [];
-        this.addToPool(cards);
-    }
-
     removeFromPool(card: ICard) {
         _.remove(this.gameState.pool, card);
     }
@@ -110,8 +99,6 @@ export class GameService {
     }
 
     /* DECK SECTION */
-
-    deckList: ICard[];
 
     createDeck() {
         let cards = this._cardFactoryService.cards;
@@ -123,18 +110,6 @@ export class GameService {
             }
         });
         return _.shuffle(deck);
-    }
-
-    getDeck() {
-        return this.gameState.deck;
-    }
-
-    shuffleDeck() {
-        this.gameState.deck = _.shuffle(this.gameState.deck);
-    }
-
-    getDeckSize() {
-        return this.gameState.deck.length;
     }
 
     drawCards(numCards: number): ICard[] {
@@ -157,10 +132,6 @@ export class GameService {
 
     addJack() {
         this.gameState.jacks = this.gameState.jacks < 6 ? this.gameState.jacks + 1 : 6;
-    }
-
-    drawStartGameCards(): ICard[] {
-        return this.drawCards(4).concat(this._cardFactoryService.getJack());
     }
 
     /* FOUNDATION SECTION */

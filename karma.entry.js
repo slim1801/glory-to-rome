@@ -1,4 +1,3 @@
-
 require('core-js/client/shim');
 require('reflect-metadata');
 

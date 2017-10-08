@@ -1,5 +1,4 @@
 import { NgModule }      from '@angular/core';
-import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '../../common/common.module';
 
@@ -12,7 +11,6 @@ import { CardModule } from '../CardComponent/card.module';
   bootstrap:    [ ControlComponent ],
   imports: [
     BrowserModule,
-    HttpModule,
     
     CardModule,
     CommonModule

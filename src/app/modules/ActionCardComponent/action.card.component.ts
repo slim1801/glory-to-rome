@@ -18,18 +18,12 @@ export class ActionCardComponent {
 
     private size = eCardSize.medium;
 
-    private height;
-    private width;
-    private jackMenuVisible = false;
-
     constructor(
-        private _cardFactoryService: CardFactoryService,
         private _playerService: PlayerService, 
         private _gameService: GameService,
         private _playerInfoService: PlayerInfoService,
         private _socketService: SocketService
     ) {
-        this.width = this._cardFactoryService.getCardWidth(eCardSize.medium) + 'px';
         this._initListeners();
     }
 

@@ -56,8 +56,7 @@ export class CardFactoryService {
             this.cardDictionary[fCard.title] = _.assign(fCard);
         });
     }
-
-    getCardArray = (): ICard[] => _.assign(this.cardArray);
+    
     getCard = (id: eCardEffect): ICard => this.cardArray[id];
     getCardByName = (title: string) => this.cardDictionary[title];
     getJack = (): ICard => new Card(cardConfig.jack);

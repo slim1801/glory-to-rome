@@ -88,9 +88,4 @@ export interface IDetailTab {
     `]
 })
 export class DetailTabComponent {
-
-    constructor(
-        private _playerService: PlayerService
-    ) {
-    }
 }

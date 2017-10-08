@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
@@ -16,7 +15,6 @@ import { PlayerTemplateModule } from './modules/PlayerTemplateComponent/player.t
 
 export const AppImports = [
     BrowserModule,
-    HttpModule,
     
     ActionCardModule,
     BoardModule,

@@ -45,7 +45,6 @@ const cardConfig = require('../../../config/card.config.json');
 export class StockpileComponent {
 
     private size = eCardSize.medium;
-    private cardWidth: number = cardConfig.sprites.medium.cardWidth;
 
     constructor(
         private _playerService: PlayerService,

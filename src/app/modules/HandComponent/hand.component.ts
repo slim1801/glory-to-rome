@@ -21,7 +21,6 @@ export class HandComponent implements AfterContentInit {
     private containerWidth: number;
 
     constructor(
-        private _gameService: GameService,
         private _playerService: PlayerService
     ) {
     }

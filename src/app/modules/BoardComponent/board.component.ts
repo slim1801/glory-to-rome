@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
 
 import { ICard, ICompletedFoundation, eCardSize, eCardEffect } from '../../common/card/card';
 
-import { GameService, eActionMode } from '../../common/game.service';
+import { GameService, eActionMode, eActions } from '../../common/game.service';
 import { CardFactoryService } from '../../common/card/card.factory.service';
 import { PlayerInfoService, IPlayerState } from '../../common/player.info.service';
 import { PlayerService } from '../../common/player.service';
@@ -17,12 +17,8 @@ import { SocketService } from '../../common/socket.service';
 })
 export class BoardComponent {
 
-    deck: ICard[];
-    width: string;
-    height: string;
     size = eCardSize.medium;
-
-    //playerStates = [];
+    private eActions = eActions;
 
     constructor(
         private _cardFactoryService: CardFactoryService,

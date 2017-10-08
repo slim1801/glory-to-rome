@@ -1,5 +1,4 @@
 import { NgModule }      from '@angular/core';
-import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '../../common/common.module';
 
@@ -11,7 +10,6 @@ import { PoolService } from './pool.service';
   bootstrap:    [ PoolComponent ],
   imports: [
     BrowserModule,
-    HttpModule,
     CommonModule
   ],
   exports: [

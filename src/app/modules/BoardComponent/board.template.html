@@ -6,7 +6,11 @@
              *ngIf="pState.player.id !== _playerInfoService.player.id">
             <div class="header-section">
                 <div class="header-border-section">
-                    <div class="player-name">{{pState.player.name}}</div>
+                    <div class="player-name">
+                        <span>{{pState.player.name}}</span>
+                        <i class="fa fa-comment" *ngIf="pState.action === eActions.think" style="margin-left:10px;" title="Thought"></i>
+                        <i class="fa fa-male" *ngIf="pState.action === eActions.playCard" style="margin-left:10px;" title="Followed"></i>
+                    </div>
 
                     <div class="dialogue">
                         {{setDialogue()}}
