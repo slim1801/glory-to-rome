@@ -42,6 +42,9 @@ const cardConfig = require('../../config/card.config.json');
                 [class.selected]="card && card.selected"
                 [style.cursor]="interactable ? 'pointer' : 'default'"
                 [style.opacity]="card && card.phantom ? 0.1 : ''">
+                <div *ngIf="card && card.role === 6" style="height:100%;padding:8px;">
+                    <div style="border:3px solid white;height:100%"></div>
+                </div>
             </div>
         </div>
     `,
