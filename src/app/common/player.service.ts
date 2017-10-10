@@ -23,8 +23,6 @@ export class PlayerService {
 
     handSize: number = userConfig.handSize;
 
-    handCards: ICard[] = [];
-
     allExtorted = false;
     resolvingCard = false;
 
@@ -69,7 +67,6 @@ export class PlayerService {
 
         skt.onGameStarted().subscribe(gameState => {
             let index = _.findLastIndex(gameState.playerOrder, player => player.id == this._playerInfoService.player.id);
-            this.addCards(_.concat(gameState.startingHand[index], this._cardFactoryService.getJack()));
             
             this.configurePlayersTurn(gameState);
             this.configurePlayersLead(gameState.playerLead);
@@ -221,6 +218,10 @@ export class PlayerService {
         });
     }
 
+    private playerHand() {
+        return this._playerInfoService.getPlayerHand();
+    }
+
     private _configurePlayerTurn(gameState) {
         if (gameState.playerOrder[gameState.playerTurn].id == this._playerInfoService.player.id) {
             this._playerInfoService.isPlayersTurn = true;
@@ -231,13 +232,14 @@ export class PlayerService {
     }
 
     updatePlayerState() {
-        this._playerInfoService.saveCardsInHand(this.handCards.length);
+        this._playerInfoService.saveCardsInHand(this.playerHand().length);
     }
 
     removeFromHand(card: ICard) {
-        for (let i = 0; i < this.handCards.length; i++) {
-            if (this.handCards[i].uid == card.uid) {
-                this.handCards.splice(i, 1);
+        const handCards = this.playerHand();
+        for (let i = 0; i < handCards.length; i++) {
+            if (handCards[i].uid == card.uid) {
+                handCards.splice(i, 1);
                 i--;
             }
         }
@@ -245,17 +247,17 @@ export class PlayerService {
 
     addCards = (cards: ICard[]) => {
         _.forEach(cards, card => {
-            this.handCards.push(card);
+            this.playerHand().push(card);
         });
     }
 
     drawCard = (id: eCardEffect) => {
-        this.handCards.push(this._cardFactoryService.getCard(id))
+        this.playerHand().push(this._cardFactoryService.getCard(id))
     }
 
     discardHand = () => {
-        this._messageService.discardMessage(this.handCards);
-        _.forEach(this.handCards, card => {
+        this._messageService.discardMessage(this.playerHand());
+        _.forEach(this.playerHand(), card => {
             if (card.role == eWorkerType.jack) {
                 this._gameService.addJack();
             }
@@ -263,7 +265,7 @@ export class PlayerService {
                 this._gameService.addToPool([card]);
             }
         });
-        this.handCards = [];
+        this._playerInfoService.getPlayerState().hand = [];
     }
 
     drawCards(num: number) {
@@ -279,7 +281,7 @@ export class PlayerService {
     }
 
     getNumCardsInHand = () => {
-        return this.handCards.length;
+        return this.playerHand().length;
     }
 
     getCardsToMax = () => {
@@ -305,7 +307,7 @@ export class PlayerService {
                 pState.actionCard.role == eWorkerType.jack &&
                 pState.player.id !== currPlayer.player.id
             ) {
-                this.handCards.push(pState.actionCard);
+                this.playerHand().push(pState.actionCard);
                 pState.actionCard = null;
             }
         })
@@ -331,7 +333,7 @@ export class PlayerService {
 
             _.forEach(jackCards, card => {
                 card.selected = false;
-                _.remove(this.handCards, card);
+                _.remove(this.playerHand(), card);
             });
 
             let jack = this._cardFactoryService.getJack()
@@ -356,7 +358,7 @@ export class PlayerService {
     playCard(card: ICard) {
         this._gameService.gameState.mode = card.mode != null ? card.mode : card.role;
         
-        _.remove(this.handCards, card);
+        _.remove(this.playerHand(), card);
 
         // Save state
         this._playerInfoService.saveActionCardToPlayerState(card);
@@ -384,8 +386,9 @@ export class PlayerService {
     private _hasNumCards(num: number): eWorkerType[] {
         let cardDict = {};
         let typeArr = [];
-        for (let i = 0; i < this.handCards.length; i++) {
-            let key = this.handCards[i].role;
+        const handCards = this.playerHand();
+        for (let i = 0; i < handCards.length; i++) {
+            let key = handCards[i].role;
             cardDict[key] = cardDict[key] == undefined ? 1 : cardDict[key] + 1;
             if (cardDict[key] == num && key != eWorkerType.jack) {
                 typeArr.push(key);
@@ -451,13 +454,13 @@ export class PlayerService {
 
     dumpHand = () => {
         // Non jack cards add to pool
-        let removedCards = _.remove(this.handCards, card => {
+        let removedCards = _.remove(this.playerHand(), card => {
             return card.role != eWorkerType.jack;
         });
         this._gameService.addToPool(removedCards);
 
         // Jack cards add back to deck
-        let jackCards = _.remove(this.handCards, card => {
+        let jackCards = _.remove(this.playerHand(), card => {
             this._gameService.addJack();
             return card.role == eWorkerType.jack;
         });
@@ -497,7 +500,7 @@ export class PlayerService {
     }
 
     hasCardTypeInHand(type: eWorkerType) {
-        return !!_.find(this.handCards, card => card.role == type);
+        return !!_.find(this.playerHand(), card => card.role == type);
     }
 
     /* ACTION SECTION */
@@ -697,7 +700,7 @@ export class PlayerService {
     }
 
     addAdditionalAction(card: ICard) {
-        _.remove(this.handCards, card);
+        _.remove(this.playerHand(), card);
 
         let pState = this._playerInfoService.getPlayerState();
         pState.additionalActions.push(card);
@@ -1093,12 +1096,12 @@ export class PlayerService {
 
     scriptoriumCondition() {
         return this.hasBuildingFunction(eCardEffect.scriptorium) && 
-                !!_.find(this.handCards, card => card.role == eWorkerType.patron && !card.phantom);
+                !!_.find(this.playerHand(), card => card.role == eWorkerType.patron && !card.phantom);
     }
 
     statueCraftsmanCondition(foundation: IFoundation) {
         return foundation.building.id === eCardEffect.statue &&
-               !!_.find(this.handCards, card => card.role == eWorkerType.patron || card.role == foundation.site.role)
+               !!_.find(this.playerHand(), card => card.role == eWorkerType.patron || card.role == foundation.site.role)
     }
 
     statueArchitectCondition(foundation: IFoundation) {
@@ -1358,7 +1361,7 @@ export class PlayerService {
         let foundation = this.selectedBuilding;
         foundation.building.selected = false;
 
-        this._gameService.gameState.mode == eWorkerType.craftsman && _.remove(this.handCards, card);
+        this._gameService.gameState.mode == eWorkerType.craftsman && _.remove(this.playerHand(), card);
         _.remove(foundation.materials, c => c.phantom);
 
         foundation.materials.push(card);

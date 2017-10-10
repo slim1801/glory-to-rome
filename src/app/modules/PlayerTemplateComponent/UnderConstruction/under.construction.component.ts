@@ -193,7 +193,7 @@ export class UnderConstructionComponent {
     private _canFilter(foundation: IFoundation) {
         let mode = this._gameService.gameState.mode;
         if (mode == eWorkerType.craftsman) {
-            return !!_.find(this._playerService.handCards, card => {
+            return !!_.find(this._playerInfoService.getPlayerHand(), card => {
                 return card.role == foundation.building.role && !card.phantom;
             });
         }

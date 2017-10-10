@@ -117,7 +117,8 @@ export enum eCardEffect {
     marble,
     rubble,
     stone,
-    wood
+    wood,
+    jack = 100
 }
 
 export class Card implements ICard {

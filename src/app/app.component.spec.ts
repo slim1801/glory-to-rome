@@ -97,7 +97,7 @@ describe('Test whole application', () => {
         gth.configureState({
             handCards: ALL_CLIENTS
         });
-        srvs.ps.handCards.push(srvs.cfs.getJack());
+        srvs.pis.getPlayerHand().push(srvs.cfs.getJack());
         fixture.detectChanges();
 
         srvs.pis.saveActionCardToPlayerState(srvs.cfs.createCard(eCardEffect.dock));
@@ -128,7 +128,7 @@ describe('Test whole application', () => {
             handCards
         });
 
-        srvs.ps.handCards.push(srvs.cfs.getJack());
+        srvs.pis.getPlayerHand().push(srvs.cfs.getJack());
         fixture.detectChanges();
 
         gth.clickOnHandCard(0);
@@ -285,7 +285,7 @@ describe('Test whole application', () => {
             eInteractable.interactable
         ]);
 
-        let { handCards } = srvs.ps;
+        const handCards = srvs.pis.getPlayerHand();
         gth.clickOnHandCard(0);
         expect(handCards[0].selected).toBe(true, "Card 0 should be selected");
         gth.clickOnHandCard(1);
@@ -296,7 +296,7 @@ describe('Test whole application', () => {
         expect(handCards[1].selected).toBe(true, "Card 1 should be selected (2)");
         gth.clickOnHandCard(2);
 
-        expect(srvs.ps.handCards.length).toBe(0, "Hand size length should be 0");
+        expect(srvs.pis.getPlayerHand().length).toBe(0, "Hand size length should be 0");
         gth.actionRoleIs(eWorkerType.architect);
 
         let actionCards = th.getElements('.action-cards-as-jack');
@@ -313,7 +313,7 @@ describe('Test whole application', () => {
         gth.invokeAction('on turn end');
         gth.checkPrompt('[Academy] Think on turn end?', true, true);
 
-        expect(srvs.ps.handCards.length).toBe(6);
+        expect(srvs.pis.getPlayerHand().length).toBe(6);
     }));
 
     it('is testing AMPTHITHEATRE functionality', injector(srvs => {
@@ -503,7 +503,7 @@ describe('Test whole application', () => {
         fixture.detectChanges();
         // Legionary from hand
         gth.clickOnHandCard(0);
-        expect(srvs.ps.handCards.length).toBe(0, 'Did not legionary from hand');
+        expect(srvs.pis.getPlayerHand().length).toBe(0, 'Did not legionary from hand');
 
         srvs.pis.isPlayersTurn = true;
         fixture.detectChanges();
@@ -593,7 +593,7 @@ describe('Test whole application', () => {
         fixture.detectChanges();
         // Legionary from hand
         gth.clickOnHandCard(0);
-        expect(srvs.ps.handCards.length).toBe(0);
+        expect(srvs.pis.getPlayerHand().length).toBe(0);
 
         srvs.pis.isPlayersTurn = true;
         fixture.detectChanges();
@@ -699,7 +699,7 @@ describe('Test whole application', () => {
         checkFountainPrompt();
 
         th.click(gth.getElement(eSelector.fountainYes));
-        expect(srvs.ps.handCards.length).toBe(1);
+        expect(srvs.pis.getPlayerHand().length).toBe(1);
     }));
 
     function checkFountainPrompt() {
@@ -763,7 +763,7 @@ describe('Test whole application', () => {
 
         gth.clickOnHandCard(0);
         expect(srvs.gs.gameState.pool.length).toBe(1);
-        expect(srvs.ps.handCards.length).toBe(5);
+        expect(srvs.pis.getPlayerHand().length).toBe(5);
     }));
 
     it('is testing LUDUS MAGNA functionality [ARCHITECT]', injector(srvs => {
@@ -851,7 +851,7 @@ describe('Test whole application', () => {
         gth.clickOnUnderConstruction(0);
         gth.clickOnHandCard(0);
 
-        expect(srvs.ps.handCards.length).toBe(12 - (index * 2 + 2), "Hand size is incorrect");
+        expect(srvs.pis.getPlayerHand().length).toBe(12 - (index * 2 + 2), "Hand size is incorrect");
 
         let materials = srvs.pis.getPlayerState().underConstruction[0].materials;
         expect(materials.length).toBe(1, "Materials should be 1");
@@ -932,7 +932,7 @@ describe('Test whole application', () => {
 
         gth.completeBuilding(eCardEffect.school);
         gth.checkPrompt('Perform THINKER action for each influence?', true, true);
-        expect(srvs.ps.handCards.length).toBe(8);
+        expect(srvs.pis.getPlayerHand().length).toBe(8);
     }));
 
     it('is testing SCRIPTORIUM functionality', injector(srvs => {
@@ -990,7 +990,7 @@ describe('Test whole application', () => {
         gth.invokeAction('on turn end');
         gth.checkPrompt("[Senate] Take opponent's JACK's", true, true);
 
-        let jacksInHand = filter(srvs.ps.handCards, handCard => handCard.role == eWorkerType.jack);
+        let jacksInHand = filter(srvs.pis.getPlayerHand(), handCard => handCard.role == eWorkerType.jack);
         expect(jacksInHand.length).toBe(1);
     }));
 
@@ -1231,7 +1231,7 @@ describe('Test whole application', () => {
             srvs.gs.gameState.foundations[i].inTown = 0;
             gth.clickOnHandCard(0);
             gth.clickOnHandCard(0);
-            expect(srvs.ps.handCards.length).toBe(12 - (i * 2 + 2), "Hand size is wrong");
+            expect(srvs.pis.getPlayerHand().length).toBe(12 - (i * 2 + 2), "Hand size is wrong");
             expect(srvs.pis.getPlayerState().underConstruction.length).toBe(i + 1, "Under Construction is wrong");
             srvs.gs.gameState.foundations[i].inTown = 2;
         }
@@ -1267,7 +1267,7 @@ describe('Test whole application', () => {
         gth.checkPrompt('[Vomitorium] Discard all cards to POOL before THINKER action?', true, true);
 
         expect(srvs.gs.gameState.pool.length).toBe(3);
-        expect(srvs.ps.handCards.length).toBe(5);
+        expect(srvs.pis.getPlayerHand().length).toBe(5);
     }));
 
     it('is testing WALL functionality', injector(srvs => {

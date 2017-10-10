@@ -40,10 +40,9 @@ export class SocketService {
     }
 
     protected initSocketListeners(io) {
-        let self = this;
-        io.on("connected", function(data) {
-            //this._playerInfoService.player.id = data.uid;
-            self._playerInfoService.player.id = this.id;
+        io.on("connected", data => {
+            this._playerInfoService.player.id = data.uid;
+            //this._playerInfoService.player.id = this.id;
         })
         io.on("room created", data => {
             this.roomID = data.id;
@@ -53,7 +52,7 @@ export class SocketService {
             this.roomChangedSubject.next(data);
         });
         io.on("game started", data => {
-            this._gameService.gameState = data;
+            this._gameService.configureGameState(data);
             this._onNext(this.gameStartedSubject, data);
         });
         io.on("on all players chosen", data => {
@@ -74,10 +73,10 @@ export class SocketService {
         io.on("on extort material", data => {
             this._onNext(this.extortMaterialSubject, data);
         });
-        io.on("receive message", (message: IMessage ) => {
+        io.on("receive message", (message: IMessage) => {
             this.receiveMessageSubject.next(message);
         });
-        io.on("on player chat", (text: string ) => {
+        io.on("on player chat", (text: string) => {
             this.playerChatSubject.next(text);
         });
         io.on("game ended", data => {
@@ -86,13 +85,21 @@ export class SocketService {
         io.on("on state changed", data => {
             this._onNext(null, data);
         });
+        io.on("player disconnected", data => {
+            this.playerDisconnectedSubject.next(data.id);
+        });
+        io.on("restore state", data => {
+            if (data && data.gameState) {
+                this._gameService.gameState = data;
+                this._onNext(this.gameStartedSubject, data);
+            }
+        });
     }
 
     private _onNext(subject: Subject<IGameState>, data: IGameState) {
         if (data === null) return;
         
-        let gState = this._gameService.gameState;
-        _.extend(gState, data);
+        let gState = this._gameService.configureGameState(data);
         this._playerInfoService.setPlayerState(gState)
         subject && subject.next(data);
     }
@@ -248,5 +255,10 @@ export class SocketService {
     private playerChatSubject = new Subject<string>();
     onPlayerChat = () => {
         return this.playerChatSubject.asObservable();
+    }
+
+    private playerDisconnectedSubject = new Subject<string>();
+    onPlayerDisconnected = () => {
+        return this.playerDisconnectedSubject.asObservable();
     }
 }

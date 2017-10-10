@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { CardFactoryService } from './card/card.factory.service';
 import { IPlayer, PlayerInfoService } from './player.info.service';
 import { SocketService } from './socket.service';
+import { GameService } from './game.service';
 import { eWorkerType, ICard, IFoundation } from './card/card';
 
 export enum eMessageType {
@@ -36,7 +37,8 @@ export class MessageService {
     constructor(
         @Inject(CardFactoryService) private _cardFactoryService: CardFactoryService,
         @Inject(SocketService) private _socketService: SocketService,
-        @Inject(PlayerInfoService) private _playerInfoService: PlayerInfoService
+        @Inject(PlayerInfoService) private _playerInfoService: PlayerInfoService,
+        @Inject(GameService) private _gameService: GameService
     ) {
         _socketService.onReceiveMessage().subscribe(message => {
             this.messages.push(message);
@@ -46,6 +48,11 @@ export class MessageService {
         _socketService.onPlayerChat().subscribe((text: string) => {
             this.messages[this.messages.length - 1].textBlocks.push({ text });
             this.rerenderScrollSubject.next();
+        });
+
+        _socketService.onPlayerDisconnected().subscribe((id: string) => {
+            const pState = _gameService.getPlayerFromId(id);
+            this.onPlayerDisconnectedMessage(pState.player);
         });
     }
 
@@ -281,6 +288,18 @@ export class MessageService {
     addLine() {
         let msg = { type: eMessageType.line };
         this.messages.push(msg);
+    }
+
+    onPlayerDisconnectedMessage(player: IPlayer) {
+        let msg = {
+            type: eMessageType.custom,
+            textBlocks: [
+                { player },
+                { text: "has disconnected, waiting for reconnection" }
+            ]
+        };
+        this.messages.push(msg);
+        this.rerenderScrollSubject.next();
     }
 
     private rerenderScrollSubject: Subject<void> = new Subject<void>();

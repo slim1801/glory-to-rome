@@ -66,6 +66,11 @@ export class GameService {
 
     }
 
+    configureGameState(data: IGameState) {
+        this.gameState = !this.gameState ? data : _.extend(this.gameState, data);
+        return this.gameState;
+    }
+
     isPlayersTurn(playerID: string) {
         return this.gameState.playerOrder[this.gameState.playerTurn].id === playerID
     }
@@ -80,6 +85,10 @@ export class GameService {
 
     getPlayerIndex(pState: IPlayerState) {
         return _.findLastIndex(this.gameState.playerOrder, player => player.id == pState.player.id);
+    }
+
+    getPlayerFromId(id: string) {
+        return _.find(this.gameState.playerStates, pState => pState.player.id === id);
     }
 
     /* POOL SECTION */
