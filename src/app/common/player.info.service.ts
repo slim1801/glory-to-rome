@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 
 const userConfig = require('../config/user.config.json');
 
-import { ICard, IFoundation, ICompletedFoundation } from './card/card';
+import { ICard, IRawCard, IFoundation, IRawFoundation, ICompletedFoundation, IRawCompletedFoundation } from './card/card';
 import { IGameState, eActions } from './game.service';
 
 export interface IPlayer {
@@ -12,8 +12,23 @@ export interface IPlayer {
     name: string;
 }
 
-export interface IPlayerState {
+interface IBasePlayerState {
     player: IPlayer;
+    
+    influence: number;
+    cardsInHand: number;
+    maxHandSize: number;
+    maxVault: number;
+    maxClientelles: number;
+
+    action: eActions;
+    cardsForJack: number;
+
+    hasLooted: boolean;
+    gloryToRome: boolean;
+}
+
+export interface IPlayerState extends IBasePlayerState {
     completed: ICompletedFoundation[];
     stockpile: ICard[];
     underConstruction: IFoundation[];
@@ -22,21 +37,27 @@ export interface IPlayerState {
     functionAvailable: ICard[];
     hand: ICard[],
 
-    influence: number;
-    cardsInHand: number;
-    maxHandSize: number;
-    maxVault: number;
-    maxClientelles: number;
-
     actionCard: ICard;
-    action: eActions;
     additionalActions: ICard[];
     jackCards: ICard[];
-    cardsForJack: number,
 
-    loot: Array<ICard>;
-    hasLooted: boolean;
-    gloryToRome: boolean;
+    loot: ICard[];
+}
+
+export interface IRawPlayerState extends IBasePlayerState {
+    completed: IRawCompletedFoundation[];
+    stockpile: IRawCard[];
+    underConstruction: IRawFoundation[];
+    vault: IRawCard[];
+    clientelles: IRawCard[];
+    functionAvailable: IRawCard[];
+    hand: IRawCard[],
+
+    actionCard: IRawCard;
+    additionalActions: IRawCard[];
+    jackCards: IRawCard[];
+
+    loot: IRawCard[];
 }
 
 @Injectable()
@@ -47,7 +68,7 @@ export class PlayerInfoService {
         name: "Player1"
     };
 
-    private playerState: IPlayerState = {
+    playerState: IPlayerState = {
         player: this.player,
         completed: [],
         stockpile: [],

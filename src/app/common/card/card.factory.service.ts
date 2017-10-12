@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
     ICard,
+    IRawCard,
     ICardData,
     ICompletedFoundation,
     IFoundation,
@@ -19,10 +20,12 @@ const cardConfig = require('../../config/card.config.json');
 export class CardFactoryService {
 
     cards: ICardData[];
-    cardArray: ICard[];
+    cardArray: ICard[] = [];
     cardDictionary: Object = {};
     jackCard: ICard;
     foundationCards: ICard[];
+
+    cardDataArray: Object = {};
 
     constructor() {
         this._init();
@@ -34,47 +37,54 @@ export class CardFactoryService {
     }
 
     private _initCards() {
-        this.cardArray = _.map(this.cards, card => {
-            let curr_card = new Card(card);
-            //Add to Dictionary
-            this.cardDictionary[card.title] = curr_card;
-            return curr_card;
+        _.forEach(this.cards, card => {
+            this.cardDataArray[card.id] = card;
         });
+        this.cardDataArray[cardConfig.jack.id] = cardConfig.jack;
 
-        this.jackCard = new Card(cardConfig.jack);
+        _.forOwn(cardConfig.foundations, foundation => {
+            this.cardDataArray[foundation.id] = foundation;
+        })
+    }
 
-        let fCards = cardConfig.foundations;
-        this.foundationCards = [
-            new Card(fCards.wood),
-            new Card(fCards.rubble),
-            new Card(fCards.brick),
-            new Card(fCards.concrete),
-            new Card(fCards.marble),
-            new Card(fCards.stone)
-        ]
-        _.forEach(this.foundationCards, fCard => {
-            this.cardDictionary[fCard.title] = _.assign(fCard);
+    private _uid() {
+        return Math.random().toString(36).substring(7);
+    }
+
+    private createGameCard(rawCard: IRawCard, card: ICardData) {
+        this.cardDictionary[rawCard.uid] = new Card(card, rawCard.uid);
+    }
+
+    createCards(rawCards: IRawCard[]) {
+        _.forEach(rawCards, rawCard => {
+            this.createGameCard(rawCard, this.cardDataArray[rawCard.id]);
         });
     }
     
     getCard = (id: eCardEffect): ICard => this.cardArray[id];
-    getCardByName = (title: string) => this.cardDictionary[title];
+    getCardByName = (id: eCardEffect) => this.cardDictionary[id];
     getJack = (): ICard => new Card(cardConfig.jack);
+
+    getCardByUID = (uid: string): ICard => this.cardDictionary[uid];
+
+    getCardFromType(cardType: IRawCard) {
+        return _.clone(this.cardDictionary[cardType.id]);
+    }
 
     createCard(cardID: eCardEffect) {
         return new Card(this.cards[cardID]);
     }
 
-    createFoundation(card: ICard, siteType: eWorkerType, materials: ICard[]): IFoundation {
+    createFoundation(card: ICard, site: ICard, materials: ICard[]): IFoundation {
         return {
             building: card,
-            site: this.getCardSite(siteType),
+            site,
             materials
         }
     }
 
-    createCompletedFoundation(card: ICard, siteType: eWorkerType, materials: ICard[], stairway?: boolean): ICompletedFoundation {
-        return _.extend({}, this.createFoundation(card, siteType, materials), { stairway: stairway ? true : false });
+    createCompletedFoundation(card: ICard, siteCard: ICard, materials: ICard[], stairway?: boolean): ICompletedFoundation {
+        return _.extend({}, this.createFoundation(card, siteCard, materials), { stairway: stairway ? true : false });
     }
 
     createCompletedFromFoundation(foundation: IFoundation, stairway?: boolean) {
@@ -99,23 +109,6 @@ export class CardFactoryService {
         }
     }
 
-    getCardSite(type: eWorkerType) {
-        switch(type) {
-            case eWorkerType.architect:
-                return this.cardDictionary['Concrete'];
-            case eWorkerType.craftsman:
-                return this.cardDictionary['Wood'];
-            case eWorkerType.laborer:
-                return this.cardDictionary['Rubble'];
-            case eWorkerType.legionary:
-                return this.cardDictionary['Brick'];
-            case eWorkerType.merchant:
-                return this.cardDictionary['Stone'];
-            case eWorkerType.patron:
-                return this.cardDictionary['Marble'];
-        }
-    }
-
     getRole(card: ICard) {
         switch(card.role) {
             case eWorkerType.architect: return 'architect';
@@ -137,6 +130,7 @@ export class CardFactoryService {
             case eWorkerType.legionary: return 'legionary';
             case eWorkerType.merchant: return 'merchant';
             case eWorkerType.patron: return 'patron';
+            default: return "";
         }
     }
 

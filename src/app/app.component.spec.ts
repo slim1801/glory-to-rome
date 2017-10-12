@@ -908,7 +908,7 @@ describe('Test whole application', () => {
         gth.addPlayer("0", {
             completed: [srvs.cfs.createCompletedFoundation(
                 srvs.cfs.createCard(eCardEffect.shrine),
-                eWorkerType.legionary,
+                srvs.gs.getAvailableFoundation(eWorkerType.legionary),
                 []
             )]
         });
@@ -1035,7 +1035,7 @@ describe('Test whole application', () => {
         gth.addPlayer("0", {
             completed: [srvs.cfs.createCompletedFoundation(
                 srvs.cfs.createCard(cardEff),
-                eWorkerType.legionary,
+                srvs.gs.getAvailableFoundation(eWorkerType.legionary),
                 []
             )]
         });
@@ -1228,12 +1228,13 @@ describe('Test whole application', () => {
         fixture.detectChanges();
 
         for (let i = 0; i < 6; i++) {
-            srvs.gs.gameState.foundations[i].inTown = 0;
+            const tempInTown = srvs.gs.gameState.foundations[i].inTown;
+            srvs.gs.gameState.foundations[i].inTown = [];
             gth.clickOnHandCard(0);
             gth.clickOnHandCard(0);
             expect(srvs.pis.getPlayerHand().length).toBe(12 - (i * 2 + 2), "Hand size is wrong");
             expect(srvs.pis.getPlayerState().underConstruction.length).toBe(i + 1, "Under Construction is wrong");
-            srvs.gs.gameState.foundations[i].inTown = 2;
+            srvs.gs.gameState.foundations[i].inTown = tempInTown;
         }
 
     }));

@@ -110,7 +110,7 @@ export class ControlComponent {
     }
 
     enableJack = () => {
-        if (this._gameService.gameState.jacks == 0) return false;
+        if (this._gameService.gameState.jacks.length == 0) return false;
         if (this._playerService.actionFinishTrigger || this._playerService.actionPerformTrigger) return false;
         if (this._enableInActionMode())return true;
         if (this._enableOnActionModeResponse() && !this._playerInfoService.isFollowing) return true;

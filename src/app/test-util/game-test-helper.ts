@@ -119,7 +119,11 @@ export class GameTestHelper<T> {
         if (conf.completed) {
             forEach(conf.completed, comp => {
                 let newCard = this.srvs.cfs.createCard(comp);
-                let completed = this.srvs.cfs.createCompletedFoundation(newCard, newCard.role, []);
+                let completed = this.srvs.cfs.createCompletedFoundation(
+                    newCard,
+                    this.srvs.gs.getAvailableFoundation(newCard.role),
+                    []
+                );
                 pState.completed.push(completed);
             });
         }
@@ -135,7 +139,11 @@ export class GameTestHelper<T> {
                     materials.push(this.srvs.cfs.createCard(unco.cardEff));
                 }
 
-                let foundation = this.srvs.cfs.createFoundation(newCard, newCard.role, materials);
+                let foundation = this.srvs.cfs.createFoundation(
+                    newCard,
+                    this.srvs.gs.getAvailableFoundation(newCard.role),
+                    materials
+                );
                 pState.underConstruction.push(foundation);
             });
         }
@@ -166,17 +174,17 @@ export class GameTestHelper<T> {
             case eSelector.noButton:
                 return this.testHelper.getElement('.message-action .no-button');
 
-            case eSelector.woodFoundation:
-                return this.testHelper.getElement('.foundation-card:nth-of-type(1)');
-            case eSelector.rubbleFoundation:
-                return this.testHelper.getElement('.foundation-card:nth-of-type(2)');
             case eSelector.brickFoundation:
-                return this.testHelper.getElement('.foundation-card:nth-of-type(3)');
+                return this.testHelper.getElement('.foundation-card:nth-of-type(1)');
             case eSelector.concreteFoundation:
-                return this.testHelper.getElement('.foundation-card:nth-of-type(4)');
+                return this.testHelper.getElement('.foundation-card:nth-of-type(2)');
             case eSelector.marbleFoundation:
-                return this.testHelper.getElement('.foundation-card:nth-of-type(5)');
+                return this.testHelper.getElement('.foundation-card:nth-of-type(3)');
+            case eSelector.rubbleFoundation:
+                return this.testHelper.getElement('.foundation-card:nth-of-type(4)');
             case eSelector.stoneFoundation:
+                return this.testHelper.getElement('.foundation-card:nth-of-type(5)');
+            case eSelector.woodFoundation:
                 return this.testHelper.getElement('.foundation-card:nth-of-type(6)');
             
             case eSelector.fountain:

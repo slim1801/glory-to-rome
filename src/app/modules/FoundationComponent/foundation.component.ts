@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import { Component } from '@angular/core';
 
-import { ICard, IFoundationPile, eCardEffect, eCardSize } from '../../common/card/card';
+import { ICard, IFoundationPile, eCardEffect, eCardSize, eWorkerType } from '../../common/card/card';
 import { CardFactoryService } from '../../common/card/card.factory.service';
 import { ICustomCardSize } from '../../common/card/card.image.component';
 
@@ -19,26 +19,26 @@ import { PlayerService } from '../../common/player.service';
 
                 <div
                     class="out-of-town-image"
-                    *ngIf="pile.inTown == 0"
+                    *ngIf="pile.inTown.length === 0"
                     [ngStyle]="outOfTownStyle">
                     <out-of-town-component
-                        [role]="pile.foundation.role">
+                        [role]="pile.outOfTown[0].role">
                     </out-of-town-component>
                 </div>
             
-                <div class="in-town-count" *ngIf="pile.inTown > 0">
-                    {{pile.inTown}}
+                <div class="in-town-count" *ngIf="pile.inTown.length > 0">
+                    {{pile.inTown.length}}
                 </div>
 
-                <div class="out-town-count" *ngIf="pile.inTown == 0">
-                    {{pile.outOfTown}}
+                <div class="out-town-count" *ngIf="pile.inTown.length == 0">
+                    {{pile.outOfTown.length}}
                 </div>
 
-                <card-image *ngIf="pile.inTown > 0"
-                            [card]="pile.foundation"
+                <card-image *ngIf="pile.inTown.length > 0"
+                            [card]="pile.inTown[0]"
                             [size]="size"
                             [customSize]="customSize"
-                            [interactable]="enableFoundation(pile)">
+                            [interactable]="enableFoundation(pile.inTown[0])">
                 </card-image>
         </div>
     `,
@@ -65,16 +65,6 @@ export class FoundationComponent {
     }
 
     private _init() {
-         _.forEach(this._cardFactoryService.foundationCards, foundation => {
-             let f = {
-                foundation,
-                inTown: this._gameService.players,
-                outOfTown: this._cardFactoryService.getCardByName(foundation.title).count - this._gameService.players
-            };
-            this._gameService.gameState.foundations.push(f);
-            this._gameService.foundationMap[foundation.role] = f;
-         });
-
          this.outOfTownStyle = {
              width: this.customSize.width + 'px',
              height: this.customSize.height + 'px'
@@ -84,31 +74,31 @@ export class FoundationComponent {
     private _initListeners() {
         this._playerService.onNewBuilding().subscribe(card => {
             if (card.id != eCardEffect.statue) {
-                this.useFoundation(card);
+                this.useFoundation(card.role);
             }
         })
     }
 
-    private useFoundation(card: ICard) {
+    private useFoundation(role: eWorkerType) {
         let gState = this._gameService.gameState;
-        let foundation = _.find(gState.foundations, f => f.foundation.role == card.role);
+        let foundation = _.find(gState.foundations, f => f.role == role);
 
-        if (foundation.inTown > 0) {
-            foundation.inTown = foundation.inTown - 1;
+        if (foundation.inTown.length > 0) {
+            foundation.inTown.splice(0, 1);
         }
-        else if (foundation.outOfTown > 0) {
-            foundation.outOfTown = foundation.outOfTown - 1;
+        else if (foundation.outOfTown.length > 0) {
+            foundation.outOfTown.splice(0, 1);
         }
     }
 
     onFoundationClick = (pile: IFoundationPile) => {
-        if (this.enableFoundation(pile)) {
-            this.useFoundation(pile.foundation);
+        if (this.enableFoundation()) {
+            this.useFoundation(pile.role);
             this._playerService.foundationChosen(pile);
         }
     }
 
-    enableFoundation = (pile: IFoundationPile) => {
+    enableFoundation = () => {
         return  this._playerService.actionPerformTrigger == eCardEffect.statue &&
                 this._playerService.canAddNewBuilding(eCardEffect.statue);
     }

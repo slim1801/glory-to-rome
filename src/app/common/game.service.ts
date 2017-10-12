@@ -3,9 +3,9 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
-import { ICard, IFoundationPile, eCardEffect, eWorkerType, Card } from './card/card';
+import { ICard, IRawCard, IFoundationPile, eCardEffect, eWorkerType, Card, IRawFoundationPile } from './card/card';
 import { CardFactoryService } from './card/card.factory.service';
-import { PlayerInfoService, IPlayer, IPlayerState } from './player.info.service';
+import { PlayerInfoService, IPlayer, IPlayerState, IRawPlayerState } from './player.info.service';
 import { SocketService } from './socket.service';
 
 const userConfig = require('../config/user.config.json');
@@ -33,16 +33,14 @@ export interface IGameState {
     playerLead: IPlayer;
     playerTurn: number;
     playerOrder: IPlayer[];
-    startingHand: ICard[][];
     playerStates: IPlayerState[];
 
     deck: ICard[];
     pool: ICard[];
-    jacks: number;
+    jacks: ICard[];
     foundations: IFoundationPile[];
     publicBuildings: ICard[];
 
-    card: ICard;
     mode: eWorkerType;
 
     actionMode: eActionMode;
@@ -52,12 +50,50 @@ export interface IGameState {
     legionaryStage: eLegionaryStage;
 }
 
+export interface IRawGameState {
+    playerLead: IPlayer;
+    playerTurn: number;
+    playerOrder: IPlayer[];
+    playerStates: IRawPlayerState[];
+
+    deck: IRawCard[];
+    pool: IRawCard[];
+    jacks: number;
+    foundations: IRawFoundationPile[];
+    publicBuildings: ICard[];
+
+    mode: eWorkerType;
+
+    actionMode: eActionMode;
+    actionTriggers: eCardEffect[];
+
+    romeDemands: IRawCard[];
+    legionaryStage: eLegionaryStage;
+}
+
 @Injectable()
 export class GameService {
 
     players = 2;
 
-    gameState: IGameState;
+    gameState: IGameState = {
+        playerLead: null,
+        playerTurn: 0,
+        playerOrder: [],
+        playerStates: [],
+        deck: [],
+        pool: [],
+        jacks: [],
+        foundations: [],
+        publicBuildings: [],
+        mode: null,
+        actionMode: null,
+        actionTriggers: [],
+        romeDemands: [],
+        legionaryStage: null
+    };
+
+    rawGameState: IRawGameState;
 
     constructor(
         private _cardFactoryService: CardFactoryService,
@@ -66,9 +102,75 @@ export class GameService {
 
     }
 
-    configureGameState(data: IGameState) {
-        this.gameState = !this.gameState ? data : _.extend(this.gameState, data);
-        return this.gameState;
+    processGameState(data: IRawGameState) {
+        _.extend(this.gameState, data);
+        // Process Deck
+        this.processCardArray(data.deck, this.gameState, "deck");
+        // Process Pool
+        this.processCardArray(data.pool, this.gameState, "pool");
+        // Process Rome Demands
+        this.processCardArray(data.romeDemands, this.gameState, "romeDemands");
+        // Process Public Buildings
+        this.processCardArray(data.publicBuildings, this.gameState, "publicBuildings");
+        // Process Foundations
+        _.forEach(data.foundations, (foundationPile, index) => {
+            const foundationPiles = this.gameState.foundations[index];
+            this.processCardArray(foundationPile.inTown, foundationPiles, "inTown");
+            this.processCardArray(foundationPile.outOfTown, foundationPiles, "outOfTown");
+        });
+        // Process Player States
+        _.forEach(data.playerStates, (pState, index) => {
+            const playerState = this.gameState.playerStates[index];
+
+            // Process hand
+            this.processCardArray(pState.hand, playerState, "hand");
+            // Process clientelles
+            this.processCardArray(pState.clientelles, playerState, "clientelles");
+            // Process stockpile
+            this.processCardArray(pState.stockpile, playerState, "stockpile");
+            // Process vault
+            this.processCardArray(pState.vault, playerState, "vault");
+            // Process function available
+            this.processCardArray(pState.functionAvailable, playerState, "functionAvailable");
+            // Process additional actions
+            this.processCardArray(pState.additionalActions, playerState, "additionalActions");
+            // Process jack cards
+            this.processCardArray(pState.jackCards, playerState, "jackCards");
+            // Process loot
+            this.processCardArray(pState.loot, playerState, "loot");
+            // Process completed foundation
+            _.forEach(pState.completed, (completedFoundation, index2) => {
+                const completed = pState.completed[index2];
+
+                completed.building = this.extendCard(completedFoundation.building);
+                this.processCardArray(completedFoundation.materials, completed, "materials");
+                completed.site = this.extendCard(completedFoundation.site);
+            });
+            // Process completed foundation
+            _.forEach(pState.underConstruction, (rawUnderCo, index2) => {
+                const underCon = pState.underConstruction[index2];
+
+                underCon.building = this.extendCard(rawUnderCo.building);
+                this.processCardArray(rawUnderCo.materials, underCon, "materials");
+                underCon.site = this.extendCard(rawUnderCo.site);
+            });
+            // Process action card
+            if (pState.actionCard) {
+                playerState.actionCard = this.extendCard(pState.actionCard);
+            }
+        });
+    }
+
+    private processCardArray(rawCardArray: IRawCard[], context: Object, key: string) {
+        const newArray = [];
+        _.forEach(rawCardArray, rawCard => {
+            newArray.push(this.extendCard(rawCard));
+        });
+        context[key] = newArray;
+    }
+
+    private extendCard(rawCard: IRawCard) {
+        return _.extend(this._cardFactoryService.getCardByUID(rawCard.uid), rawCard);
     }
 
     isPlayersTurn(playerID: string) {
@@ -135,12 +237,12 @@ export class GameService {
     }
 
     drawJack() {
-        this.gameState.jacks = this.gameState.jacks > 0 ? this.gameState.jacks - 1 : 0;
-        return [this._cardFactoryService.getJack()];
+        return this.gameState.jacks.slice(0,1);
     }
 
-    addJack() {
-        this.gameState.jacks = this.gameState.jacks < 6 ? this.gameState.jacks + 1 : 6;
+    addJack(card: ICard) {
+        this.gameState.jacks.length < 6 &&
+            this.gameState.jacks.push(card);
     }
 
     /* FOUNDATION SECTION */
@@ -149,13 +251,23 @@ export class GameService {
 
     noMoreInTownFoundations = () => {
         return _.every(this.gameState.foundations, foundation => {
-            return foundation.inTown == 0
+            return foundation.inTown.length == 0
         });
     }
 
+    getAvailableFoundation(role: eWorkerType) {
+        const foundation = _.find(this.gameState.foundations, foundation => foundation.role === role);
+        if (foundation.inTown.length > 0) {
+            return foundation.inTown[0];
+        }
+        else {
+            return foundation.outOfTown[0];
+        }
+    }
+
     hasFoundationToLay(wType: eWorkerType) {
-        let foundation = _.find(this.gameState.foundations, foundationPile => foundationPile.foundation.role == wType);
-        return foundation.outOfTown > 0
+        let foundation = _.find(this.gameState.foundations, foundationPile => foundationPile.role == wType);
+        return foundation.outOfTown.length > 0
     }
 
     getNameOfAction(type: eWorkerType) {

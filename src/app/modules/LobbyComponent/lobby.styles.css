@@ -136,6 +136,7 @@
     background-color: black;
     cursor: pointer;
     position: relative;
+    padding: 3px;
 }
 
 .create-game-button:hover {
@@ -144,19 +145,12 @@
 
 .button-border,
 .join-game-border {
-    width: 95%;
-    height: 75%;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    position: absolute;
+    height: 100%;
     border-radius: 5px;
     border: 1px solid white;
-}
-
-.join-game-border {
-    width: 91%;
-    height: 75%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .button-text,
@@ -164,10 +158,6 @@
 .exit-game-text {
     color: white;
     font-size: 16px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
 
 .room-container {
@@ -190,6 +180,7 @@
     background-color: black;
     cursor: pointer;
     position: relative;
+    padding: 3px;
 }
 
 .room-is-full {
@@ -248,4 +239,19 @@
 
 .room-player-name {
     margin-left: 15px;
+}
+
+.rejoin-game-button {
+    height: 40px;
+    border-radius: 5px;
+    background-color: black;
+    cursor: pointer;
+    position: relative;
+    padding: 3px;
+    font-size: 30px;
+}
+
+.rejoin-game-text {
+    color: white;
+    font-size: 14px;
 }

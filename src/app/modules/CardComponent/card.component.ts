@@ -121,7 +121,7 @@ export class CardComponent {
             }
             else if (this._playerService.activeActionTrigger == eCardEffect.latrine) {
                 this._playerService.removeFromHand(this.card);
-                this._gameService.addJack();
+                this._gameService.addJack(this.card);
                 this._playerService.thinkAction();
             }
             else if (this.card.role === eWorkerType.jack && this._playerInfoService.isFollowing) {
@@ -280,7 +280,7 @@ export class CardComponent {
         this._messageService.discardMessage([this.card]);
         
         if (this.card.role == eWorkerType.jack) {
-            this._gameService.addJack();
+            this._gameService.addJack(this.card);
         }
         else {
             this._gameService.addToPool([this.card]);

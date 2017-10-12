@@ -48,8 +48,9 @@
                         </div>
 
                         <div class="create-game-button" (click)="createRoomClick()">
-                            <div class="button-border"></div>
-                            <div class="button-text">Create Game</div>
+                            <div class="button-border">
+                                <div class="button-text">Create Game</div>
+                            </div>
                         </div>
 
                     </div>
@@ -57,6 +58,14 @@
                 </div>
 
                 <div class="ag-right-column">
+                    <div class="player-rejoined-section" *ngIf="playerRejoined">
+                            <div class="rejoin-game-button"
+                                (click)="onPlayerRejoinedClicked()">
+                                <div class="join-game-border">
+                                    <div class="rejoin-game-text">Rejoin Previous Game</div>
+                                </div>
+                            </div>
+                    </div>
                     <div class="room-container" *ngFor="let room of rooms">
                         <div class="left-players">
                             <div class="room-player">
@@ -83,22 +92,25 @@
                             <div class="join-room"
                                  *ngIf="!hideJoinButton(room) && room.players.length != room.numPlayers"
                                 (click)="joinGame(room)">
-                                <div class="join-game-border"></div>
-                                <div class="join-game-text">Join Game</div>
+                                <div class="join-game-border">
+                                    <div class="join-game-text">Join Game</div>
+                                </div>
                             </div>
 
                             <div class="join-room"
                                  *ngIf="_inRoom(room) && room.host.id != _playerInfoService.player.id"
                                  (click)="leaveRoom(room)">
-                                <div class="join-game-border"></div>
-                                <div class="exit-game-text">Leave Game</div>
+                                <div class="join-game-border">
+                                    <div class="exit-game-text">Leave Game</div>
+                                </div>
                             </div>
 
                             <div class="join-room"
                                  *ngIf="room.numPlayers == room.players.length && room.host.id == _playerInfoService.player.id"
                                  (click)="startGame(room)">
-                                <div class="join-game-border"></div>
-                                <div class="exit-game-text">Start Game</div>
+                                <div class="join-game-border">
+                                    <div class="exit-game-text">Start Game</div>
+                                </div>
                             </div>
 
                             <div class="room-is-full"

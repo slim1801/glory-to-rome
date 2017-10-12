@@ -9,6 +9,7 @@ module.exports = function() {
     this.roomsArray = [];
 
     this.gameStates = {};
+    this.baseGameStates = {};
 
     this.listen = socket => {
         socket.on("create", function(params) { this.createRoom(params, socket) }.bind(this) );
@@ -25,24 +26,33 @@ module.exports = function() {
         socket.on("player chat", function(params) { this.playerChat(params, socket) }.bind(this) );
         socket.on("turn end", function(params) { this.turnEnd(params, socket) }.bind(this) );
         socket.on("end game", function(params) { this.emitAll(params, socket, 'game ended') }.bind(this) );
+        socket.on("rejoin game", function(params) { this.rejoin(params, socket) }.bind(this) );
 
         // DISCONNECT
         socket.on('disconnect', function(params) { this.onDisconnect(params, socket) }.bind(this));
 
         // Restore Game State
         const { uid, roomID } = socket.handshake.session;
-        console.log("ROOM ID: ", roomID);
-        console.log("Game State: ", gameStates[roomID]);
 
         if (roomID && gameStates[roomID]) {
-            console.log("GAME STATE RESTORE");
-            socket.emit("restore state", { gameState: gameStates[roomID] });
-        }
-        else {
-            console.log("NORMAL RESTORE");
-            socket.emit("restore state");
+            socket.emit("rejoin game");
         }
     };
+
+    this.rejoin = function(params, socket) {
+        const { uid, roomID } = socket.handshake.session;
+
+        if (gameStates[roomID]) {
+            delete disconnectedPlayers[uid];
+            socket.join(roomID);
+
+            socket.emit("restore state", { 
+                baseGameState: baseGameStates[roomID],
+                gameState: gameStates[roomID]
+            });
+            socket.broadcast.emit("player rejoined", { id: uid });
+        }
+    }
 
     this.createRoom = function(params, socket) {
         let id = Math.random().toString(36).substring(7);
@@ -63,6 +73,9 @@ module.exports = function() {
         gameStates[id] = initGameState(room);
         gameStates[id].playerStates.push(newPlayerState(params.player));
 
+        const { deck, jacks, foundations } = gameStates[id];
+        baseGameStates[id] = _.cloneDeep({ deck, jacks, foundations });
+
         //Join Room as well
         socket.join(id);
         socket.handshake.session.roomID = id;
@@ -70,6 +83,7 @@ module.exports = function() {
             socket.broadcast.emit("room created", room);
             socket.emit("room changed", this.roomsArray);
             socket.broadcast.emit("room changed", this.roomsArray);
+            socket.emit("cards created", { deck, jacks, foundations });
         });
     }
 
@@ -86,12 +100,15 @@ module.exports = function() {
         let state = gameStates[roomID];
         state.playerStates.push(newPlayerState(params.player));
 
+        const { deck, jacks, foundations } = state;
+
         room.players.push(params.player);
         socket.join(roomID);
         socket.handshake.session.roomID = roomID;
         socket.handshake.session.save(error => {
             // Emit to clients
             socket.broadcast.emit("room changed", this.roomsArray);
+            socket.emit("cards created", { deck, jacks, foundations });
         });
     }
 
@@ -103,22 +120,29 @@ module.exports = function() {
     removePlayerFromRoom = function(socket) {
         if (!socket.handshake.session.roomID) return;
 
-        let roomIndex = _.findIndex(this.roomsArray, room => socket.handshake.session.roomID == room.id);
+        const { roomID } = socket.handshake.session
+        let roomIndex = _.findIndex(this.roomsArray, room => roomID == room.id);
         let room = this.roomsArray[roomIndex];
         if (room) {
             _.remove(room.players, player => player.id == socket.handshake.session.uid);
             if (room.players.length === 0) {
                 this.roomsArray.splice(roomIndex, 1);
+                clearStates(roomID);
             }
             socket.broadcast.emit("room changed", this.roomsArray);
         }
+    }
+
+    function clearStates(roomID) {
+        delete gameStates[roomID];
+        delete baseGameState[roomID];
     }
 
     this.startGame = function(params, socket) {
         let id = socket.handshake.session.roomID;
         _.remove(this.roomsArray, room => room.id == id);
 
-        startGameState(rooms, params.deck);
+        startGameState(rooms[id], params);
 
         socket.to(id).emit("game started", this.gameStates[id]);
         socket.emit("game started", this.gameStates[id]);
@@ -154,21 +178,58 @@ module.exports = function() {
             foundations: [],
             romeDemands: [],
             legionaryStage: null,
-            publicBuildings: []
+            publicBuildings: [],
+            deck: createDeck(),
+            jacks: createJacks(),
+            foundations: createFoundations()
         })
         
         return state;
     }
 
-    function createJack() {
-        return _.clone(cardConfig.jack);
+    createDeck = function() {
+        const deck = [];
+        _.forEach(cards, card => {
+            for(let i = 0; i < card.count; i++) {
+                deck.push(createCardData(card));
+            }
+        });
+        return deck;
     }
 
-    startGameState = function(room, deck) {
-        let state = gameStates[room.id];
-        state.deck = deck;
+    createCardData = function(card) {
+        return {
+            uid: Math.random().toString(36).substring(7),
+            id: card.id
+        }
+    }
+
+    createJacks = function() {
+        // Init Jacks
+        const jacks = [];
+        for (let i = 0; i < cardConfig.jack.count; i++) {
+            jacks.push(createCardData(cardConfig.jack));
+        }
+        return jacks;
+    }
+    
+    createFoundations = function() {
+        const foundations = [];
+        // Init Foundations
+        _.forOwn(cardConfig.foundations, (foundation, key) => {
+            for (let i = 0; i < foundation.count; i++) {
+                foundations.push(_.extend(createCardData(foundation), foundation));
+            }
+        });
+        return foundations;
+    }
+
+    startGameState = function(room, params) {
+        const state = gameStates[room.id];
+        const { deck, jacks, foundations } = state;
 
         let players = room.players.length;
+        state.deck = _.shuffle(deck);
         state.pool = state.deck.splice(0, players);
 
         let poolWithIndex = _.map(state.pool, (card, i) => {
@@ -182,17 +243,24 @@ module.exports = function() {
         state.playerOrder = _.map(_.sortBy(poolWithIndex, 'title'), card => room.players[card.index]);
         _.forEach(state.playerStates, pState => {
             pState.hand = state.deck.splice(0,4);
-            pState.hand.push(createJack());
+            pState.hand.push(state.jacks.shift());
         });
         state.playerLead = playerOrder[0];
-        state.jacks = 6 - playerOrder.length;
 
-        state.foundations = createFoundation();
+        state.foundations = createFoundation(state.foundations, state.playerStates.length);
     }
 
-    function createFoundation() {
-        return [
-        ]
+    function createFoundation(foundations, inTown) {
+        const groupedFoundations = _.groupBy(foundations, "id");
+        const foundationPiles = [];
+        _.forOwn(groupedFoundations, (foundation, key) => {
+            foundationPiles.push({
+                role: foundation[0].role,
+                inTown: foundation.slice(0, inTown),
+                outOfTown: foundation.slice(inTown, foundation.length)
+            });
+        });
+        return foundationPiles;
     }
 
     newPlayerState = function(player) {
@@ -241,8 +309,7 @@ module.exports = function() {
     }
 
     stateChanged = function(params, socket) {
-        let state = gameStates[socket.handshake.session.roomID];
-        _.extend(state, params.gameState);
+        let state = _.extend(gameStates[socket.handshake.session.roomID], params.gameState);
         socket.to(socket.handshake.session.roomID).emit('on state changed', state);
     }
 
@@ -297,7 +364,7 @@ module.exports = function() {
                     state.pool.push(pState.actionCard);
                 }
                 else if (pState.jackCards === null) {
-                    state.jacks++;
+                    state.jacks.push(pState.actionCard)
                 }
             }
         });
@@ -310,7 +377,7 @@ module.exports = function() {
                     state.pool.push(card);
                 }
                 else {
-                    state.jacks++;
+                    state.jacks.push(card)
                 }
             });
         });
@@ -448,20 +515,14 @@ module.exports = function() {
         if (roomState.playerStates.length === 1) {
             _.forEach(roomState.playerStates, pState => {
                 if (disconnectedPlayers[pState.player.id]) {
-                    clearTimeout(disconnectedPlayers[pState.player.id]);
                     delete disconnectedPlayers[pState.player.id];
                 }
-            })
-            delete gameStates[roomID];
+            });
+            clearStates(roomID);
             delete socket.handshake.session.roomID;
         }
         else {
-            disconnectedPlayers[uid] = setTimeout(() => {
-                removePlayerFromState(roomID, uid);
-                delete socket.handshake.session.roomID;
-                delete disconnectedPlayers[uid];
-            }, 60000);
-
+            disconnectedPlayers[uid] = true;
             socket.to(roomID).emit("player disconnected", { id: uid });
         }
     }

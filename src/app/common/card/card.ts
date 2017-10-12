@@ -18,14 +18,36 @@ export interface IFoundation {
     materials: ICard[];
 }
 
+export interface IRawFoundation {
+    building: IRawCard;
+    site: IRawCard;
+    materials: IRawCard[];
+}
+
 export interface ICompletedFoundation extends IFoundation {
     stairway: boolean;
 }
 
+export interface IRawCompletedFoundation extends IRawFoundation {
+    stairway: boolean;
+}
+
 export interface IFoundationPile {
-    foundation: ICard;
-    inTown: number;
-    outOfTown: number;
+    role: eWorkerType;
+    inTown: ICard[];
+    outOfTown: ICard[];
+}
+
+export interface IRawFoundationPile {
+    role: eWorkerType;
+    inTown: IRawCard[];
+    outOfTown: IRawCard[];
+}
+
+export interface IRawCard {
+    uid: string;
+    id: eCardEffect;
+    jackType?: eWorkerType;
 }
 
 export interface ICard {
@@ -138,9 +160,9 @@ export class Card implements ICard {
     selected = false;
     animationState = 'none';
 
-    constructor(data?: ICardData) {
+    constructor(data?: ICardData, uid?: string) {
         this.assignData(data);
-        this.uid =  Math.random().toString(36).substring(7);
+        this.uid = uid ? uid : Math.random().toString(36).substring(7);
     }
 
     changeValues(data: ICard) {
@@ -168,7 +190,7 @@ export class Card implements ICard {
             this.count = data.count;
             this.asset = data.asset;
 
-            if (data.role != eWorkerType.jack)
+            if (data.role !== eWorkerType.jack)
                 this.mode = data.role;
         }
     }

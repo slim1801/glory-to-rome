@@ -46,7 +46,7 @@ export class PlayerService {
             materials = [card, card];
         
         this._playerInfoService.getPlayerState().underConstruction.push(
-            this._cardFactoryService.createFoundation(card, card.role, materials)
+            this._cardFactoryService.createFoundation(card, this._gameService.getAvailableFoundation(card.role), materials)
         );
     }
 
@@ -55,7 +55,7 @@ export class PlayerService {
 
         let completedCard = this._cardFactoryService.createCompletedFoundation(
             card,
-            this._cardFactoryService.getCardSite(card.role),
+            this._gameService.getAvailableFoundation(card.role),
             []
         );
         
@@ -259,7 +259,7 @@ export class PlayerService {
         this._messageService.discardMessage(this.playerHand());
         _.forEach(this.playerHand(), card => {
             if (card.role == eWorkerType.jack) {
-                this._gameService.addJack();
+                this._gameService.addJack(card);
             }
             else {
                 this._gameService.addToPool([card]);
@@ -461,7 +461,7 @@ export class PlayerService {
 
         // Jack cards add back to deck
         let jackCards = _.remove(this.playerHand(), card => {
-            this._gameService.addJack();
+            this._gameService.addJack(card);
             return card.role == eWorkerType.jack;
         });
     }
@@ -1301,7 +1301,7 @@ export class PlayerService {
             }
         }
         else {
-            underCo.push(this._cardFactoryService.createFoundation(card, card.role, []));
+            underCo.push(this._cardFactoryService.createFoundation(card, this._gameService.getAvailableFoundation(card.role), []));
 
             // Gate Condition
             if (card.role == eWorkerType.patron && this.hasBuildingFunction(eCardEffect.gate)) {
@@ -1333,7 +1333,7 @@ export class PlayerService {
 
     foundationChosen(fPile: IFoundationPile) {
         let newBuilding = _.last(this._playerInfoService.getPlayerState().underConstruction);
-        newBuilding.site = this._cardFactoryService.getCardSite(fPile.foundation.role);
+        newBuilding.site = this._gameService.getAvailableFoundation(fPile.role);
         this.decrementActions();
     }
 
@@ -1499,8 +1499,8 @@ export class PlayerService {
     }
 
     foundationCost = (workType: eWorkerType) => {
-        let foundation = _.find(this._gameService.gameState.foundations, fPile => fPile.foundation.role === workType);
-        return foundation.inTown == 0 ? this.hasBuildingFunction(eCardEffect.tower) ? 1 : 2 : 1;
+        let foundation = _.find(this._gameService.gameState.foundations, fPile => fPile.role === workType);
+        return foundation.inTown.length == 0 ? this.hasBuildingFunction(eCardEffect.tower) ? 1 : 2 : 1;
     }
 
     

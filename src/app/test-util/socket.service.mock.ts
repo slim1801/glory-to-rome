@@ -2,6 +2,7 @@ import { SocketService } from '../common/socket.service';
 
 import { GameService, IGameState, eLegionaryStage } from '../common/game.service';
 import { PlayerInfoService, IPlayer, IPlayerState } from '../common/player.info.service';
+import { CardFactoryService } from '../common/card/card.factory.service';
 
 import { Injectable } from '@angular/core';
 
@@ -12,11 +13,13 @@ export class MockSocketService extends SocketService {
 
     constructor(
         _gameService: GameService,
-        _playerInfoService: PlayerInfoService
+        _playerInfoService: PlayerInfoService,
+        _cardFactoryService: CardFactoryService
     ) {
         super(
             _gameService,
-            _playerInfoService
+            _playerInfoService,
+            _cardFactoryService
         );
 
         this.initSocketListeners(this.io);
@@ -52,7 +55,11 @@ class MockIO {
 class MockSocket {
 
     private messageListeners = {};
-    handshake = {};
+    handshake = {
+        session: {
+            save: callback => callback()
+        }  
+    };
 
     constructor(
         private socketServer: MockIO

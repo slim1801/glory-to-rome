@@ -54,6 +54,11 @@ export class MessageService {
             const pState = _gameService.getPlayerFromId(id);
             this.onPlayerDisconnectedMessage(pState.player);
         });
+        
+        _socketService.onPlayerRejoinedGame().subscribe((id: string) => {
+            const pState = _gameService.getPlayerFromId(id);
+            this.onPlayerRejoinMessage(pState.player);
+        });
     }
 
     isType(message: ICustomMessage) {
@@ -296,6 +301,18 @@ export class MessageService {
             textBlocks: [
                 { player },
                 { text: "has disconnected, waiting for reconnection" }
+            ]
+        };
+        this.messages.push(msg);
+        this.rerenderScrollSubject.next();
+    }
+
+    onPlayerRejoinMessage(player: IPlayer) {
+        let msg = {
+            type: eMessageType.custom,
+            textBlocks: [
+                { player },
+                { text: "has rejoined!" }
             ]
         };
         this.messages.push(msg);

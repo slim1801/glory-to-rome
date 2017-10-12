@@ -20,6 +20,8 @@ export class LobbyComponent {
     rooms: IRoom[] = [];
     room: IRoom;
 
+    playerRejoined = false;
+
     playerChoices = [{
         players: 2,
         selected: true
@@ -49,6 +51,9 @@ export class LobbyComponent {
         });
         skt.onRoomCreated().subscribe(room => {
             this.room = room;
+        });
+        skt.onPlayerRejoined().subscribe(room => {
+            this.playerRejoined = true;
         });
         skt.getAllRooms();
     }
@@ -89,8 +94,7 @@ export class LobbyComponent {
     }
 
     startGame = (room: IRoom) => {
-        let deck = this._gameService.createDeck();
-        this._socketService.startGame(room, deck);
+        this._socketService.startGame(room);
     }
 
     hideJoinButton = (room: IRoom) => {
@@ -99,6 +103,11 @@ export class LobbyComponent {
 
     roomIsFull = (room: IRoom) => {
         return room.numPlayers == room.players.length && !this._inRoom(room);
+    }
+
+    onPlayerRejoinedClicked() {
+        this.playerRejoined = false;
+        this._socketService.rejoinGame();
     }
 
     private _inRoom(room: IRoom) {
