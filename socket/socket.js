@@ -135,7 +135,7 @@ module.exports = function() {
 
     function clearStates(roomID) {
         delete gameStates[roomID];
-        delete baseGameState[roomID];
+        delete baseGameStates[roomID];
     }
 
     this.startGame = function(params, socket) {
@@ -512,7 +512,9 @@ module.exports = function() {
         const roomState = gameStates[roomID];
         if (!roomState) return;
 
-        if (roomState.playerStates.length === 1) {
+        const playersDisconnected = _.sumBy(roomState.playerStates, pState => !!disconnectedPlayers[pState.player.id]);
+
+        if (playersDisconnected === roomState.playerStates.length - 1) {
             _.forEach(roomState.playerStates, pState => {
                 if (disconnectedPlayers[pState.player.id]) {
                     delete disconnectedPlayers[pState.player.id];
