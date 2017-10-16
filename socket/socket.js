@@ -110,25 +110,28 @@ module.exports = function() {
     }
 
     removePlayerFromRoom = function(socket) {
-        if (!socket.handshake.roomID) return;
+        if (!socket.handshake.session.roomID) return;
 
-        let roomIndex = _.findIndex(this.roomsArray, room => socket.handshake.roomID == room.id);
+        const { roomID } = socket.handshake.session
+        let roomIndex = _.findIndex(this.roomsArray, room => roomID == room.id);
         let room = this.roomsArray[roomIndex];
         if (room) {
-            _.remove(room.players, player => player.id == socket.id);
-            room.numPlayers--;
+            _.remove(room.players, player => player.id == socket.handshake.session.uid);
             if (room.players.length === 0) {
                 this.roomsArray.splice(roomIndex, 1);
+                clearStates(roomID);
             }
-            removePlayerFromState(socket.handshake.roomID, socket.id);
             socket.broadcast.emit("room changed", this.roomsArray);
         }
+    }
 
-        socket.handshake.roomID = null;
+    function clearStates(roomID) {
+        delete gameStates[roomID];
+        delete baseGameStates[roomID];
     }
 
     this.startGame = function(params, socket) {
-        let id = params.room.id;
+        let id = socket.handshake.session.roomID;
         _.remove(this.roomsArray, room => room.id == id);
 
         startGameState(rooms[id], params.deck);

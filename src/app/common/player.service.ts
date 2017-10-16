@@ -265,7 +265,7 @@ export class PlayerService {
                 this._gameService.addToPool([card]);
             }
         });
-        this._playerInfoService.setPlayerHand([])
+        this._playerInfoService.setPlayerHand([]);
     }
 
     drawCards(num: number) {

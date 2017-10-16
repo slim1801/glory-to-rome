@@ -33,7 +33,6 @@ export interface IGameState {
     playerLead: IPlayer;
     playerTurn: number;
     playerOrder: IPlayer[];
-    startingHand: ICard[][];
     playerStates: IPlayerState[];
 
     deck: ICard[];
@@ -42,7 +41,6 @@ export interface IGameState {
     foundations: IFoundationPile[];
     publicBuildings: ICard[];
 
-    card: ICard;
     mode: eWorkerType;
 
     actionMode: eActionMode;

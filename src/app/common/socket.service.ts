@@ -99,6 +99,9 @@ export class SocketService {
                 this._onNext(this.gameStartedSubject, data.gameState);
             }
         });
+        io.on("player rejoined", data => {
+            this.playerRejoinedGameSubject.next(data.id);
+        });
     }
 
     restoreHandJacks() {
