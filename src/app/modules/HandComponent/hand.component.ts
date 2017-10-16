@@ -4,6 +4,7 @@ import { Component, AfterContentInit, ViewChild } from '@angular/core';
 
 import { GameService } from '../../common/game.service';
 import { PlayerService } from '../../common/player.service';
+import { PlayerInfoService } from '../../common/player.info.service';
 
 const largeWidth = require('../../config/card.config.json').sprites.large.cardWidth;
 
@@ -21,12 +22,13 @@ export class HandComponent implements AfterContentInit {
     private containerWidth: number;
 
     constructor(
-        private _playerService: PlayerService
+        private _playerService: PlayerService,
+        private _playerInfoService: PlayerInfoService
     ) {
     }
 
     cardPosition = (index: number) => {
-        let numCards = this._playerService.handCards.length;
+        let numCards = this._playerInfoService.getPlayerHand().length;
 
         if (numCards <= 1) return;
 

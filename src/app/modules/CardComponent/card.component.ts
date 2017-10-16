@@ -236,7 +236,7 @@ export class CardComponent {
 
         if (
             activeAction.numActions == 0 ||
-            demanded.length === _.filter(this._playerService.handCards, card => card.role !== eWorkerType.jack).length
+            demanded.length === _.filter(this._playerInfoService.getPlayerHand(), card => card.role !== eWorkerType.jack).length
         ) {
             this._playerService.romeDemands();
         }
@@ -245,7 +245,7 @@ export class CardComponent {
     private _extortMaterial() {
         this._playerService.addRemoveFromLoot(this.card);
 
-        if (!this._playerService.hasCardsToLoot(this._playerService.handCards)) {
+        if (!this._playerService.hasCardsToLoot(this._playerInfoService.getPlayerHand())) {
             _.forEach(this._playerInfoService.getPlayerState().loot, card => {
                 this._playerService.removeFromHand(card);
             })
@@ -427,7 +427,7 @@ export class CardComponent {
             gState.legionaryStage === eLegionaryStage.romeDemanding
         ) {
             return  !!_.find(gState.romeDemands, card => card.role === this.card.role) &&
-                    this._playerService.hasTypeToLoot(this.card.role, this._playerService.handCards) ||
+                    this._playerService.hasTypeToLoot(this.card.role, this._playerInfoService.getPlayerHand()) ||
                     this.card.selected;
         }
         else return false;

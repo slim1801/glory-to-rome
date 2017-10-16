@@ -71,7 +71,7 @@ export enum eWorkerType {
 }
 
 export enum eCardEffect {
-    academy,
+    academy = 0,
     amphitheatre,
     aqueduct,
     archway,
@@ -117,7 +117,8 @@ export enum eCardEffect {
     marble,
     rubble,
     stone,
-    wood
+    wood,
+    jack = 46
 }
 
 export class Card implements ICard {

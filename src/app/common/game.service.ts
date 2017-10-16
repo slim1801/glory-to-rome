@@ -82,6 +82,10 @@ export class GameService {
         return _.findLastIndex(this.gameState.playerOrder, player => player.id == pState.player.id);
     }
 
+    getPlayerFromId(id: string) {
+        return _.find(this.gameState.playerStates, pState => pState.player.id === id);
+    }
+
     /* POOL SECTION */
 
     addToPool(cards: ICard[]) {

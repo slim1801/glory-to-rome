@@ -97,7 +97,7 @@ export class GameTestHelper<T> {
 
         // Create Hand Cards
         if (conf.handCards)
-            this.replaceCards(conf.handCards, this.srvs.ps.handCards);
+            this.replaceCards(conf.handCards, this.srvs.pis.getPlayerHand());
 
         // Create Stockpile
         if (conf.stockpile)

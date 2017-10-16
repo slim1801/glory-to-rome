@@ -85,6 +85,7 @@
         "winCondition": 0
     },
     "jack": {
+        "id": 46,
         "title":"Jack",
         "count":6,
         "role":6,

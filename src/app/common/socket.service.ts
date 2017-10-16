@@ -3,7 +3,8 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
-import { ICard, eWorkerType, IFoundationPile } from './card/card';
+import { ICard, eWorkerType, IFoundationPile, eCardEffect } from './card/card';
+import { CardFactoryService } from './card/card.factory.service';
 import { GameService, IGameState, eLegionaryStage } from './game.service';
 import { PlayerInfoService, IPlayer, IPlayerState } from './player.info.service';
 import { IMessage } from './message.service';
@@ -31,7 +32,8 @@ export class SocketService {
 
     constructor(
         private _gameService: GameService,
-        private _playerInfoService: PlayerInfoService
+        private _playerInfoService: PlayerInfoService,
+        private _cardFactoryService: CardFactoryService
     ){
         this.hostUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         this.io = io(this.hostUrl);
@@ -40,11 +42,10 @@ export class SocketService {
     }
 
     protected initSocketListeners(io) {
-        let self = this;
-        io.on("connected", function(data) {
-            //this._playerInfoService.player.id = data.uid;
-            self._playerInfoService.player.id = this.id;
-        })
+        io.on("connected", data => {
+            this._playerInfoService.player.id = data.uid;
+            //this._playerInfoService.player.id = this.id;
+        });
         io.on("room created", data => {
             this.roomID = data.id;
             this.roomCreatedSubject.next(data);
@@ -74,10 +75,10 @@ export class SocketService {
         io.on("on extort material", data => {
             this._onNext(this.extortMaterialSubject, data);
         });
-        io.on("receive message", (message: IMessage ) => {
+        io.on("receive message", (message: IMessage) => {
             this.receiveMessageSubject.next(message);
         });
-        io.on("on player chat", (text: string ) => {
+        io.on("on player chat", (text: string) => {
             this.playerChatSubject.next(text);
         });
         io.on("game ended", data => {
@@ -86,6 +87,28 @@ export class SocketService {
         io.on("on state changed", data => {
             this._onNext(null, data);
         });
+        io.on("rejoin game", data => {
+            this.playerRoomSubject.next();
+        });
+        io.on("player disconnected", data => {
+            this.playerDisconnectedSubject.next(data.id);
+        });
+        io.on("restore state", data => {
+            if (data && data.gameState) {
+                this._gameService.gameState = data.gameState;
+                this._onNext(this.gameStartedSubject, data.gameState);
+            }
+        });
+    }
+
+    restoreHandJacks() {
+        _.forEach(this._gameService.gameState.playerStates, pState => {
+            _.forEach(pState.hand, (card, index) => {
+                if (card.id === eCardEffect.jack) {
+                    pState.hand[index] = this._cardFactoryService.getJack()
+                }
+            });
+        })
     }
 
     private _onNext(subject: Subject<IGameState>, data: IGameState) {
@@ -93,6 +116,7 @@ export class SocketService {
         
         let gState = this._gameService.gameState;
         _.extend(gState, data);
+        this.restoreHandJacks();
         this._playerInfoService.setPlayerState(gState)
         subject && subject.next(data);
     }
@@ -185,9 +209,18 @@ export class SocketService {
         });
     }
 
+    rejoinGame() {
+        this.io.emit("rejoin game");
+    }
+
     private roomCreatedSubject = new Subject<IRoom>();
     onRoomCreated = () => {
         return this.roomCreatedSubject.asObservable();
+    }
+    
+    private playerRoomSubject = new Subject<void>();
+    onPlayerRejoined = () => {
+        return this.playerRoomSubject.asObservable();
     }
 
     private roomChangedSubject = new Subject<IRoom[]>();
@@ -248,5 +281,15 @@ export class SocketService {
     private playerChatSubject = new Subject<string>();
     onPlayerChat = () => {
         return this.playerChatSubject.asObservable();
+    }
+
+    private playerDisconnectedSubject = new Subject<string>();
+    onPlayerDisconnected = () => {
+        return this.playerDisconnectedSubject.asObservable();
+    }
+
+    private playerRejoinedGameSubject = new Subject<string>();
+    onPlayerRejoinedGame = () => {
+        return this.playerRejoinedGameSubject.asObservable();
     }
 }

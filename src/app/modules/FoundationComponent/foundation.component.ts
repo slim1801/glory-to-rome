@@ -65,15 +65,17 @@ export class FoundationComponent {
     }
 
     private _init() {
-         _.forEach(this._cardFactoryService.foundationCards, foundation => {
-             let f = {
-                foundation,
-                inTown: this._gameService.players,
-                outOfTown: this._cardFactoryService.getCardByName(foundation.title).count - this._gameService.players
-            };
-            this._gameService.gameState.foundations.push(f);
-            this._gameService.foundationMap[foundation.role] = f;
-         });
+        if (this._gameService.gameState.foundations.length === 0) {
+            _.forEach(this._cardFactoryService.foundationCards, foundation => {
+                let f = {
+                   foundation,
+                   inTown: this._gameService.players,
+                   outOfTown: this._cardFactoryService.getCardByName(foundation.title).count - this._gameService.players
+               };
+               this._gameService.gameState.foundations.push(f);
+               this._gameService.foundationMap[foundation.role] = f;
+            });
+        }
 
          this.outOfTownStyle = {
              width: this.customSize.width + 'px',

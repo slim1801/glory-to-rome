@@ -27,6 +27,7 @@ export interface IPlayerState {
     maxVault: number;
     maxClientelles: number;
 
+    hand: ICard[];
     actionCard: ICard;
     action: eActions;
     additionalActions: ICard[];
@@ -54,6 +55,7 @@ export class PlayerInfoService {
         vault: [],
         clientelles: [],
         functionAvailable: [],
+        hand: [],
         
         influence: 2,
         maxHandSize: 5,
@@ -74,6 +76,14 @@ export class PlayerInfoService {
 
     getPlayerState() {
         return this.playerState;
+    }
+
+    getPlayerHand() {
+        return this.playerState.hand;
+    }
+    
+    setPlayerHand(hand: ICard[]) {
+        this.playerState.hand = hand;
     }
 
     setPlayerState(gameState: IGameState) {
